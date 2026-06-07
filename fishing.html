@@ -38,14 +38,15 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .location-card .lv{font-size:11px;color:inherit;opacity:.8}
 .location-thumb{width:100%;height:110px;object-fit:cover;border-radius:10px;margin-bottom:6px;image-rendering:pixelated;display:block}
 
-#pond{position:relative;height:190px;border-radius:22px;background-image:linear-gradient(#38bdf8,#0369a1);background-size:contain;background-position:center;background-repeat:no-repeat;background-color:#06182a;overflow:hidden;border:4px solid rgba(255,255,255,.25)}
+#pond{position:relative;height:220px;border-radius:22px;background-image:linear-gradient(#38bdf8,#0369a1);background-size:cover;background-position:center;background-repeat:no-repeat;background-color:#06182a;overflow:hidden;border:4px solid rgba(255,255,255,.25)}
+#pond::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(2,6,23,.08),rgba(2,6,23,.18));z-index:1;pointer-events:none}
 #pond.pond-night{box-shadow:inset 0 0 0 9999px rgba(2,6,23,.28)}
 #pond.pond-day{box-shadow:inset 0 0 0 9999px rgba(255,255,255,.02)}
 #locationTitle{position:absolute;left:10px;top:8px;z-index:5;background:rgba(2,6,23,.62);color:white;border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:5px 10px;font-size:13px;font-weight:bold;text-shadow:0 1px 2px #000}
 #timeBadge{position:absolute;right:10px;top:8px;z-index:5;background:rgba(2,6,23,.62);color:#facc15;border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:5px 10px;font-size:13px;font-weight:bold;text-shadow:0 1px 2px #000}
 #pondHint{position:absolute;left:50%;top:50%;z-index:5;transform:translate(-50%,-50%);background:rgba(2,6,23,.58);color:#facc15;border:1px solid rgba(255,255,255,.22);border-radius:16px;padding:8px 14px;font-size:15px;font-weight:bold;text-shadow:0 1px 2px #000;max-width:86%;line-height:1.35}
 #pondHint.hidden{display:none!important}
-.wave{position:absolute;left:0;right:0;height:24px;background:rgba(255,255,255,.18);border-radius:50%;animation:wave 3s infinite linear}
+.wave{position:absolute;left:0;right:0;height:24px;background:rgba(255,255,255,.18);border-radius:50%;animation:wave 3s infinite linear;z-index:2}
 .wave:nth-child(1){top:28px}
 .wave:nth-child(2){top:84px;animation-duration:4s}
 .wave:nth-child(3){top:138px;animation-duration:5s}
@@ -118,7 +119,7 @@ body.playing-mini #holdBtn{position:fixed;left:12px;right:12px;bottom:118px;z-in
   button{padding:9px 10px;font-size:13px}
   .fish-row{grid-template-columns:1fr}
   .sell-control{justify-content:flex-end}
-  #pond{height:175px}
+  #pond{height:210px}
   .location-grid{grid-template-columns:repeat(3,1fr)}
 }
 </style>
@@ -397,7 +398,7 @@ function updateLocationBackground(){
 
   if(!isCasting && !miniRunning){
     pondHint.classList.remove("hidden");
-    pondHint.textContent=`${loc.emoji} ${loc.name} · ${timeInfo.label}  |  찌를 던져보세요`;
+    pondHint.textContent=`찌를 던져보세요`;
   }
 }
 
