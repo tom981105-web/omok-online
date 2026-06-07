@@ -36,16 +36,22 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .location-card.active{background:#f59e0b;color:#111827;font-weight:bold}
 .location-card.locked{opacity:.42;filter:grayscale(1)}
 .location-card .lv{font-size:11px;color:inherit;opacity:.8}
-.location-thumb{width:100%;height:90px;object-fit:cover;border-radius:10px;margin-bottom:6px;image-rendering:pixelated;display:block}
+.location-thumb{width:100%;height:110px;object-fit:cover;border-radius:10px;margin-bottom:6px;image-rendering:pixelated;display:block}
 
-#pond{position:relative;height:170px;border-radius:22px;background-image:linear-gradient(#38bdf8,#0369a1);background-size:cover;background-position:center;background-repeat:no-repeat;overflow:hidden;border:4px solid rgba(255,255,255,.25)}
+#pond{position:relative;height:190px;border-radius:22px;background-image:linear-gradient(#38bdf8,#0369a1);background-size:contain;background-position:center;background-repeat:no-repeat;background-color:#06182a;overflow:hidden;border:4px solid rgba(255,255,255,.25)}
+#pond.pond-night{box-shadow:inset 0 0 0 9999px rgba(2,6,23,.28)}
+#pond.pond-day{box-shadow:inset 0 0 0 9999px rgba(255,255,255,.02)}
+#locationTitle{position:absolute;left:10px;top:8px;z-index:5;background:rgba(2,6,23,.62);color:white;border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:5px 10px;font-size:13px;font-weight:bold;text-shadow:0 1px 2px #000}
+#timeBadge{position:absolute;right:10px;top:8px;z-index:5;background:rgba(2,6,23,.62);color:#facc15;border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:5px 10px;font-size:13px;font-weight:bold;text-shadow:0 1px 2px #000}
+#pondHint{position:absolute;left:50%;top:50%;z-index:5;transform:translate(-50%,-50%);background:rgba(2,6,23,.58);color:#facc15;border:1px solid rgba(255,255,255,.22);border-radius:16px;padding:8px 14px;font-size:15px;font-weight:bold;text-shadow:0 1px 2px #000;max-width:86%;line-height:1.35}
+#pondHint.hidden{display:none!important}
 .wave{position:absolute;left:0;right:0;height:24px;background:rgba(255,255,255,.18);border-radius:50%;animation:wave 3s infinite linear}
 .wave:nth-child(1){top:28px}
 .wave:nth-child(2){top:84px;animation-duration:4s}
 .wave:nth-child(3){top:138px;animation-duration:5s}
 @keyframes wave{from{transform:translateX(-60px)}to{transform:translateX(60px)}}
 
-#floatBobber{position:absolute;left:50%;top:42%;width:16px;height:34px;transform:translate(-50%,-50%);display:none}
+#floatBobber{position:absolute;left:50%;top:42%;width:16px;height:34px;transform:translate(-50%,-50%);display:none;z-index:6}
 #floatBobber::before{content:"";display:block;width:16px;height:16px;background:#ef4444;border-radius:50% 50% 0 0}
 #floatBobber::after{content:"";display:block;width:16px;height:16px;background:#f8fafc;border-radius:0 0 50% 50%}
 #floatBobber.waiting{display:block;animation:bobberWait 1.8s infinite ease-in-out}
@@ -53,7 +59,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
 @keyframes bobberWait{0%,100%{transform:translate(-50%,-50%)}50%{transform:translate(-50%,-42%)}}
 @keyframes bobberBite{0%,100%{transform:translate(-50%,-44%)}50%{transform:translate(-50%,-20%)}}
 
-#fishShadow{position:absolute;left:50%;top:62%;width:90px;height:28px;background:rgba(0,0,0,.35);border-radius:50%;transform:translate(-50%,-50%);filter:blur(2px);display:none;animation:shadowMove 2.4s infinite ease-in-out}
+#fishShadow{position:absolute;left:50%;top:62%;width:90px;height:28px;background:rgba(0,0,0,.35);border-radius:50%;transform:translate(-50%,-50%);filter:blur(2px);display:none;animation:shadowMove 2.4s infinite ease-in-out;z-index:4}
 @keyframes shadowMove{0%{transform:translate(-55%,-50%) scale(1)}50%{transform:translate(-45%,-45%) scale(1.08)}100%{transform:translate(-55%,-50%) scale(1)}}
 
 .catch-result{margin-top:8px}
@@ -112,7 +118,7 @@ body.playing-mini #holdBtn{position:fixed;left:12px;right:12px;bottom:118px;z-in
   button{padding:9px 10px;font-size:13px}
   .fish-row{grid-template-columns:1fr}
   .sell-control{justify-content:flex-end}
-  #pond{height:155px}
+  #pond{height:175px}
   .location-grid{grid-template-columns:repeat(3,1fr)}
 }
 </style>
@@ -151,6 +157,9 @@ body.playing-mini #holdBtn{position:fixed;left:12px;right:12px;bottom:118px;z-in
       </div>
 
       <div id="pond">
+        <div id="locationTitle"></div>
+        <div id="timeBadge"></div>
+        <div id="pondHint">찌를 던져보세요.</div>
         <div class="wave"></div>
         <div class="wave"></div>
         <div class="wave"></div>
@@ -296,6 +305,7 @@ const loadingBox=$("loadingBox"), gameBox=$("gameBox"), bottomTabs=$("bottomTabs
 const userEmail=$("userEmail"), userName=$("userName");
 const goldText=$("goldText"), rodText=$("rodText"), baitText=$("baitText"), caughtText=$("caughtText");
 const mainStatus=$("mainStatus"), catchResult=$("catchResult");
+const locationTitle=$("locationTitle"), timeBadge=$("timeBadge"), pondHint=$("pondHint");
 const locationGrid=$("locationGrid"), normalControls=$("normalControls"), miniGameBox=$("miniGameBox");
 const miniStatus=$("miniStatus"), catchBar=$("catchBar"), fishSprite=$("fishSprite"), fishShadow=$("fishShadow");
 const floatBobber=$("floatBobber"), biteBtn=$("biteBtn"), progress=$("progress");
@@ -376,7 +386,31 @@ function updateLocationBackground(){
   const loc=LOCATIONS[selectedLocation];
   const pond=$("pond");
   if(!loc||!pond)return;
-  pond.style.backgroundImage=`linear-gradient(rgba(3,7,18,.12),rgba(3,7,18,.12)), url("${loc.image}")`;
+
+  const timeInfo=getTimeInfo();
+  pond.style.backgroundImage=`url("${loc.image}")`;
+  pond.classList.toggle("pond-night", timeInfo.key==="night");
+  pond.classList.toggle("pond-day", timeInfo.key==="day");
+
+  locationTitle.textContent=`${loc.emoji} ${loc.name}`;
+  timeBadge.textContent=timeInfo.label;
+
+  if(!isCasting && !miniRunning){
+    pondHint.classList.remove("hidden");
+    pondHint.textContent=`${loc.emoji} ${loc.name} · ${timeInfo.label}  |  찌를 던져보세요`;
+  }
+}
+
+function getTimeInfo(){
+  const hour=new Date().getHours();
+  if(hour>=19 || hour<6) return {key:"night", label:"🌙 밤"};
+  return {key:"day", label:"☀️ 낮"};
+}
+
+function setPondHint(text, hide=false){
+  if(!pondHint)return;
+  pondHint.textContent=text||"";
+  pondHint.classList.toggle("hidden", hide);
 }
 
 function renderInventory(){
@@ -457,6 +491,7 @@ function castLine(){
   hideFishShadow();
 
   mainStatus.textContent=`${loc.emoji} ${loc.name}에 찌를 던졌습니다...`;
+  setPondHint("찌가 물 위에 떠 있습니다...", false);
   render();
 
   const wait=1800+Math.random()*4200;
@@ -470,6 +505,7 @@ function showBite(){
   showFishShadow(targetFishKey);
   biteBtn.classList.remove("hidden");
   mainStatus.textContent="입질! 지금 낚아채세요!";
+  setPondHint("입질! 지금 낚아채세요!", false);
   const windowMs=Math.min(2600,1300+(fishing.rodLevel||1)*130);
   biteWindowTimer=setTimeout(()=>missBite(),windowMs);
 }
@@ -481,6 +517,7 @@ async function missBite(){
   hideFishShadow();
   biteBtn.classList.add("hidden");
   floatBobber.className="";
+  setPondHint("물고기가 도망갔습니다.", false);
   mainStatus.textContent="반응이 늦었습니다. 물고기가 도망갔습니다.";
   render();
   await saveGame();
@@ -493,6 +530,7 @@ function reactBite(){
   biteBtn.classList.add("hidden");
   floatBobber.className="";
   hideFishShadow();
+  setPondHint("", true);
   startMiniGameHiddenFish();
 }
 
@@ -552,6 +590,11 @@ function pickFishByLocation(locationKey){
     let weight=fish.rate;
     if(fish.rarity==="rare")weight+=rodBonus*1.25;
     if(fish.rarity==="legend")weight+=rodBonus*.25;
+
+    const timeInfo=getTimeInfo();
+    if(timeInfo.key==="night" && ["ghostFish","octopus","sunfish","sturgeon"].includes(key)) weight*=1.45;
+    if(timeInfo.key==="day" && ["crucian","carp","trout","rainbowTrout","sardine"].includes(key)) weight*=1.25;
+
     return [key,weight];
   });
 
