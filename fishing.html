@@ -40,12 +40,6 @@ button:disabled{opacity:.45;cursor:not-allowed}
 
 #pond{position:relative;height:170px;border-radius:22px;overflow:hidden;border:4px solid rgba(255,255,255,.25);background-size:cover;background-position:center;background-repeat:no-repeat;display:none}
 #pond.active-scene{display:block}
-.wave{position:absolute;left:0;right:0;height:24px;background:rgba(255,255,255,.18);border-radius:50%;animation:wave 3s infinite linear}
-.wave:nth-child(1){top:28px}
-.wave:nth-child(2){top:84px;animation-duration:4s}
-.wave:nth-child(3){top:138px;animation-duration:5s}
-@keyframes wave{from{transform:translateX(-60px)}to{transform:translateX(60px)}}
-
 #floatBobber{position:absolute;left:50%;top:42%;width:16px;height:34px;transform:translate(-50%,-50%);display:none}
 #floatBobber::before{content:"";display:block;width:16px;height:16px;background:#ef4444;border-radius:50% 50% 0 0}
 #floatBobber::after{content:"";display:block;width:16px;height:16px;background:#f8fafc;border-radius:0 0 50% 50%}
@@ -53,6 +47,52 @@ button:disabled{opacity:.45;cursor:not-allowed}
 #floatBobber.biteReady{display:block;animation:bobberBite .28s infinite ease-in-out}
 @keyframes bobberWait{0%,100%{transform:translate(-50%,-50%)}50%{transform:translate(-50%,-42%)}}
 @keyframes bobberBite{0%,100%{transform:translate(-50%,-44%)}50%{transform:translate(-50%,-20%)}}
+
+
+#bobberRipple{
+  position:absolute;
+  left:50%;
+  top:42%;
+  width:18px;
+  height:18px;
+  border:2px solid rgba(255,255,255,.55);
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+  display:none;
+  pointer-events:none;
+  animation:rippleLoop 1.6s infinite ease-out;
+}
+@keyframes rippleLoop{
+  0%{width:14px;height:14px;opacity:.75}
+  100%{width:76px;height:28px;opacity:0}
+}
+#splashEffect{
+  position:absolute;
+  left:50%;
+  top:42%;
+  width:80px;
+  height:40px;
+  transform:translate(-50%,-50%);
+  display:none;
+  pointer-events:none;
+}
+#splashEffect::before,
+#splashEffect::after{
+  content:"";
+  position:absolute;
+  width:10px;
+  height:10px;
+  background:rgba(255,255,255,.9);
+  border-radius:50%;
+  top:16px;
+  animation:splashPop .55s ease-out forwards;
+}
+#splashEffect::before{left:20px}
+#splashEffect::after{right:20px}
+@keyframes splashPop{
+  0%{transform:translateY(0) scale(.7);opacity:1}
+  100%{transform:translateY(-28px) scale(1.4);opacity:0}
+}
 
 #fishShadow{position:absolute;left:50%;top:62%;width:90px;height:28px;background:rgba(0,0,0,.35);border-radius:50%;transform:translate(-50%,-50%);filter:blur(2px);display:none;animation:shadowMove 2.4s infinite ease-in-out}
 @keyframes shadowMove{0%{transform:translate(-55%,-50%) scale(1)}50%{transform:translate(-45%,-45%) scale(1.08)}100%{transform:translate(-55%,-50%) scale(1)}}
@@ -153,10 +193,9 @@ body.playing-mini #holdBtn{position:fixed;left:12px;right:12px;bottom:118px;z-in
       </div>
 
       <div id="pond">
-        <div class="wave"></div>
-        <div class="wave"></div>
-        <div class="wave"></div>
         <div id="floatBobber"></div>
+        <div id="bobberRipple"></div>
+        <div id="splashEffect"></div>
         <div id="fishShadow"></div>
       </div>
 
@@ -300,7 +339,7 @@ const goldText=$("goldText"), rodText=$("rodText"), baitText=$("baitText"), caug
 const mainStatus=$("mainStatus"), catchResult=$("catchResult");
 const locationGrid=$("locationGrid"), normalControls=$("normalControls"), miniGameBox=$("miniGameBox");
 const miniStatus=$("miniStatus"), catchBar=$("catchBar"), fishSprite=$("fishSprite"), fishShadow=$("fishShadow");
-const floatBobber=$("floatBobber"), biteBtn=$("biteBtn"), progress=$("progress");
+const floatBobber=$("floatBobber"), bobberRipple=$("bobberRipple"), splashEffect=$("splashEffect"), biteBtn=$("biteBtn"), progress=$("progress");
 const inventoryList=$("inventoryList"), fishBook=$("fishBook"), upgradeCostText=$("upgradeCostText"), bookProgress=$("bookProgress");
 
 onAuthStateChanged(auth, async user=>{
@@ -467,6 +506,7 @@ function castLine(){
   catchResult.innerHTML="";
   biteBtn.classList.add("hidden");
   floatBobber.className="waiting";
+  showBobberRipple();
   hideFishShadow();
   showLocationScene();
 
@@ -481,6 +521,7 @@ function showBite(){
   if(!isCasting)return;
   biteReady=true;
   floatBobber.className="biteReady";
+  playSplash();
   showFishShadow(targetFishKey);
   biteBtn.classList.remove("hidden");
   mainStatus.textContent="입질! 지금 낚아채세요!";
@@ -496,6 +537,7 @@ async function missBite(){
   hideLocationScene();
   biteBtn.classList.add("hidden");
   floatBobber.className="";
+  hideBobberRipple();
   mainStatus.textContent="반응이 늦었습니다. 물고기가 도망갔습니다.";
   render();
   await saveGame();
@@ -552,6 +594,21 @@ function showFishShadow(key){
 }
 
 function hideFishShadow(){fishShadow.style.display="none";}
+
+function showBobberRipple(){
+  bobberRipple.style.display="block";
+}
+
+function hideBobberRipple(){
+  bobberRipple.style.display="none";
+}
+
+function playSplash(){
+  splashEffect.style.display="none";
+  void splashEffect.offsetWidth;
+  splashEffect.style.display="block";
+  setTimeout(()=>{splashEffect.style.display="none";},600);
+}
 
 function forceStartMiniGame(){
   if(!miniRunning||actualMiniStarted)return;
