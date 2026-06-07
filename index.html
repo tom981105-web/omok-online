@@ -6,176 +6,49 @@
   <title>온라인 오목</title>
   <style>
     * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #111827;
-      color: white;
-      text-align: center;
-    }
-    h1 { margin: 18px 0 10px; font-size: 32px; }
-    input, button {
-      padding: 12px;
-      border-radius: 12px;
-      border: none;
-      font-size: 15px;
-      margin: 4px;
-    }
-    input { width: 170px; }
-    button {
-      background: #f59e0b;
-      color: #111;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    button.secondary { background: #374151; color: white; }
-    button.danger { background: #ef4444; color: white; }
-    .wrap {
-      max-width: 760px;
-      margin: 0 auto;
-      padding: 10px;
-    }
-    .box {
-      background: rgba(255,255,255,.08);
-      border-radius: 18px;
-      padding: 14px;
-      margin: 10px 0;
-    }
-    #status {
-      margin: 10px 0;
-      color: #facc15;
-      font-weight: bold;
-      line-height: 1.5;
-    }
-    .room-card {
-      text-align: left;
-      background: rgba(255,255,255,.1);
-      border-radius: 16px;
-      padding: 14px;
-      margin: 10px 0;
-      cursor: pointer;
-      border: 1px solid rgba(255,255,255,.12);
-    }
-    .room-card:hover { background: rgba(255,255,255,.16); }
-    .room-title {
-      font-size: 18px;
-      font-weight: bold;
-      color: #fff;
-    }
-    .room-meta {
-      margin-top: 6px;
-      color: #d1d5db;
-      font-size: 14px;
-      line-height: 1.6;
-    }
-    .badge {
-      display: inline-block;
-      padding: 4px 8px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: bold;
-      margin-left: 4px;
-    }
-    .wait { background: #22c55e; color: #052e16; }
-    .play { background: #facc15; color: #422006; }
-    .watch { background: #60a5fa; color: #082f49; }
-    .hidden { display: none; }
-    .top-row {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 4px;
-      align-items: center;
-    }
-    .players {
-      font-size: 14px;
-      line-height: 1.8;
-      color: #e5e7eb;
-    }
-    .board-wrap {
-      width: 100vw;
-      overflow-x: auto;
-      padding: 12px 0 22px;
-      margin-left: calc(50% - 50vw);
-    }
-    #board {
-      display: grid;
-      grid-template-columns: repeat(15, 38px);
-      grid-template-rows: repeat(15, 38px);
-      width: 570px;
-      height: 570px;
-      margin: 0 auto;
-      background: #d6a44f;
-      border: 4px solid #7c4a12;
-      box-sizing: content-box;
-      touch-action: manipulation;
-    }
-    .cell {
-      position: relative;
-      border-right: 1px solid rgba(80, 40, 0, .55);
-      border-bottom: 1px solid rgba(80, 40, 0, .55);
-    }
-    .cell::after {
-      content: "";
-      position: absolute;
-      width: 74%;
-      height: 74%;
-      border-radius: 50%;
-      top: 13%;
-      left: 13%;
-    }
-    .black::after {
-      background: #111;
-      box-shadow: inset -3px -3px 5px rgba(255,255,255,.15);
-    }
-    .white::after {
-      background: #f8fafc;
-      box-shadow: inset -3px -3px 5px rgba(0,0,0,.22);
-    }
-    .selected::before {
-      content: "";
-      position: absolute;
-      width: 40%;
-      height: 40%;
-      top: 30%;
-      left: 30%;
-      border-radius: 50%;
-      background: rgba(239,68,68,.75);
-      z-index: 2;
-    }
-    @media (max-width: 720px) {
-      input { width: 140px; }
-      #board {
-        grid-template-columns: repeat(15, 36px);
-        grid-template-rows: repeat(15, 36px);
-        width: 540px;
-        height: 540px;
-      }
-    }
+    body { margin:0; font-family:Arial,sans-serif; background:#111827; color:white; text-align:center; }
+    h1 { margin:18px 0 10px; font-size:32px; }
+    input, button { padding:12px; border-radius:12px; border:none; font-size:15px; margin:4px; }
+    input { width:170px; }
+    button { background:#f59e0b; color:#111; font-weight:bold; cursor:pointer; }
+    button.secondary { background:#374151; color:white; }
+    button.danger { background:#ef4444; color:white; }
+    .wrap { max-width:760px; margin:0 auto; padding:10px; }
+    .box { background:rgba(255,255,255,.08); border-radius:18px; padding:14px; margin:10px 0; }
+    .hidden { display:none; }
+    #status, #lobbyStatus { margin:10px 0; color:#facc15; font-weight:bold; line-height:1.5; }
+    .room-card { text-align:left; background:rgba(255,255,255,.1); border-radius:16px; padding:14px; margin:10px 0; cursor:pointer; border:1px solid rgba(255,255,255,.12); }
+    .room-title { font-size:18px; font-weight:bold; }
+    .room-meta { margin-top:6px; color:#d1d5db; font-size:14px; line-height:1.6; }
+    .badge { display:inline-block; padding:4px 8px; border-radius:999px; font-size:12px; font-weight:bold; margin-left:4px; }
+    .wait { background:#22c55e; color:#052e16; }
+    .play { background:#facc15; color:#422006; }
+    .watch { background:#60a5fa; color:#082f49; }
+    .players { font-size:14px; line-height:1.8; color:#e5e7eb; }
+    .board-wrap { width:100vw; overflow-x:auto; padding:12px 0 22px; margin-left:calc(50% - 50vw); }
+    #board { display:grid; grid-template-columns:repeat(15,36px); grid-template-rows:repeat(15,36px); width:540px; height:540px; margin:0 auto; background:#d6a44f; border:4px solid #7c4a12; box-sizing:content-box; touch-action:manipulation; }
+    .cell { position:relative; border-right:1px solid rgba(80,40,0,.55); border-bottom:1px solid rgba(80,40,0,.55); }
+    .cell::after { content:""; position:absolute; width:74%; height:74%; border-radius:50%; top:13%; left:13%; }
+    .black::after { background:#111; box-shadow:inset -3px -3px 5px rgba(255,255,255,.15); }
+    .white::after { background:#f8fafc; box-shadow:inset -3px -3px 5px rgba(0,0,0,.22); }
+    .selected::before { content:""; position:absolute; width:40%; height:40%; top:30%; left:30%; border-radius:50%; background:rgba(239,68,68,.75); z-index:2; }
   </style>
 </head>
-
 <body>
   <div class="wrap">
     <h1>온라인 오목</h1>
 
     <section id="lobby">
       <div class="box">
-        <div class="top-row">
-          <input id="nameInput" placeholder="닉네임" />
-          <input id="titleInput" placeholder="방 제목" />
-          <button id="createBtn">방 만들기</button>
-        </div>
-
-        <div class="top-row">
-          <button id="refreshBtn" class="secondary">새로고침</button>
-          <button id="toggleEmptyBtn" class="secondary">빈 방만 보기 OFF</button>
-          <button id="cleanBtn" class="danger">오래된 방 삭제</button>
-        </div>
-
-        <div id="lobbyStatus">방 목록을 불러오는 중...</div>
+        <input id="nameInput" placeholder="닉네임" />
+        <input id="titleInput" placeholder="방 제목" />
+        <button id="createBtn">방 만들기</button>
+        <br />
+        <button id="toggleEmptyBtn" class="secondary">빈 방만 보기 OFF</button>
+        <button id="cleanBtn" class="danger">오래된 방 삭제</button>
+        <div id="lobbyStatus">익명 로그인 중...</div>
+        <div style="font-size:13px;color:#d1d5db;">내 UID: <span id="uidText">-</span></div>
       </div>
-
       <div id="roomList"></div>
     </section>
 
@@ -183,7 +56,6 @@
       <div class="box">
         <button id="backBtn" class="secondary">로비로</button>
         <button id="resetBtn">다시하기</button>
-
         <div id="status">대기 중...</div>
 
         <div class="players">
@@ -210,6 +82,11 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
     import {
+      getAuth,
+      signInAnonymously,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js";
+    import {
       getDatabase,
       ref,
       set,
@@ -233,15 +110,26 @@
     };
 
     const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
     const db = getDatabase(app);
+
     const SIZE = 15;
     const OLD_ROOM_MS = 1000 * 60 * 60 * 6;
+
+    let uid = "";
+    let rooms = {};
+    let roomId = "";
+    let myColor = "";
+    let currentRoomData = null;
+    let selected = null;
+    let emptyOnly = false;
+    let unsubscribeRoom = null;
 
     const lobby = document.getElementById("lobby");
     const game = document.getElementById("game");
     const roomList = document.getElementById("roomList");
     const lobbyStatus = document.getElementById("lobbyStatus");
-
+    const uidText = document.getElementById("uidText");
     const nameInput = document.getElementById("nameInput");
     const titleInput = document.getElementById("titleInput");
     const boardEl = document.getElementById("board");
@@ -254,18 +142,21 @@
     const gameStateEl = document.getElementById("gameState");
     const confirmBox = document.getElementById("confirmBox");
 
-    let rooms = {};
-    let roomId = "";
-    let myColor = "";
-    let currentRoomData = null;
-    let selected = null;
-    let emptyOnly = false;
-    let unsubscribeRoom = null;
-
-    const clientId = localStorage.getItem("omokClientId") || crypto.randomUUID();
-    localStorage.setItem("omokClientId", clientId);
-
     nameInput.value = localStorage.getItem("omokNickname") || "";
+
+    signInAnonymously(auth).catch(err => {
+      alert("익명 로그인 실패: " + err.message);
+      console.error(err);
+    });
+
+    onAuthStateChanged(auth, user => {
+      if (!user) return;
+      uid = user.uid;
+      uidText.textContent = uid.slice(0, 8) + "...";
+      lobbyStatus.textContent = "방 목록을 불러오는 중...";
+      listenLobby();
+      renderBoard();
+    });
 
     function getNickname() {
       const name = nameInput.value.trim();
@@ -293,72 +184,53 @@
       return "대기 중";
     }
 
-    function roomBadge(data) {
-      const black = !!data.players?.black;
-      const white = !!data.players?.white;
-      if (black && white) return `<span class="badge watch">관전 가능</span>`;
-      return `<span class="badge wait">입장 가능</span>`;
-    }
-
     function renderLobby() {
       roomList.innerHTML = "";
 
       const entries = Object.entries(rooms || {})
-        .filter(([id, data]) => {
-          if (!emptyOnly) return true;
-          return !data.players?.white;
-        })
+        .filter(([id, data]) => emptyOnly ? !data.players?.white : true)
         .sort((a, b) => (b[1].updatedAtValue || 0) - (a[1].updatedAtValue || 0));
 
-      lobbyStatus.textContent = entries.length
-        ? `현재 방 ${entries.length}개`
-        : "생성된 방이 없습니다.";
+      lobbyStatus.textContent = entries.length ? `현재 방 ${entries.length}개` : "생성된 방이 없습니다.";
 
       for (const [id, data] of entries) {
+        const status = roomStatus(data);
         const card = document.createElement("div");
         card.className = "room-card";
-
-        const blackName = data.players?.blackName || "없음";
-        const whiteName = data.players?.whiteName || "없음";
-        const status = roomStatus(data);
-
         card.innerHTML = `
           <div class="room-title">
             ${escapeHtml(data.title || "제목 없는 방")}
-            ${status === "대국 중" ? '<span class="badge play">대국 중</span>' : ''}
-            ${status === "대기 중" ? '<span class="badge wait">대기 중</span>' : ''}
-            ${status === "종료" ? '<span class="badge watch">종료</span>' : ''}
-            ${roomBadge(data)}
+            <span class="badge ${status === "대국 중" ? "play" : status === "대기 중" ? "wait" : "watch"}">${status}</span>
+            <span class="badge ${data.players?.white ? "watch" : "wait"}">${data.players?.white ? "관전 가능" : "입장 가능"}</span>
           </div>
           <div class="room-meta">
             방 코드: ${id}<br />
-            ⚫ 흑돌: ${escapeHtml(blackName)} / ⚪ 백돌: ${escapeHtml(whiteName)}<br />
+            ⚫ 흑돌: ${escapeHtml(data.players?.blackName || "없음")} / ⚪ 백돌: ${escapeHtml(data.players?.whiteName || "없음")}<br />
             클릭하면 입장합니다. 가득 찬 방은 관전으로 입장합니다.
           </div>
         `;
-
         card.onclick = () => joinRoom(id);
         roomList.appendChild(card);
       }
     }
 
     function listenLobby() {
-      onValue(ref(db, "rooms"), (snap) => {
+      onValue(ref(db, "rooms"), snap => {
         rooms = snap.val() || {};
         renderLobby();
       });
     }
 
     async function createRoom() {
+      if (!uid) return alert("아직 익명 로그인 중입니다.");
       const nickname = getNickname();
       if (!nickname) return;
 
       const code = makeRoomCode();
       const title = titleInput.value.trim() || `${nickname}님의 오목방`;
-
       const now = Date.now();
 
-      const data = {
+      await set(ref(db, `rooms/${code}`), {
         title,
         board: emptyBoard(),
         turn: "black",
@@ -367,7 +239,7 @@
         createdAtValue: now,
         updatedAtValue: now,
         players: {
-          black: clientId,
+          black: uid,
           blackName: nickname,
           white: "",
           whiteName: ""
@@ -376,35 +248,32 @@
           black: true,
           white: false
         }
-      };
+      });
 
-      await set(ref(db, `rooms/${code}`), data);
       roomId = code;
       myColor = "black";
       enterRoom(code);
     }
 
     async function joinRoom(code) {
+      if (!uid) return alert("아직 익명 로그인 중입니다.");
       const nickname = getNickname();
       if (!nickname) return;
 
       const snap = await get(ref(db, `rooms/${code}`));
-      if (!snap.exists()) {
-        alert("이미 삭제된 방입니다.");
-        return;
-      }
+      if (!snap.exists()) return alert("이미 삭제된 방입니다.");
 
       const data = snap.val();
       roomId = code;
 
-      if (data.players?.black === clientId) {
+      if (data.players?.black === uid) {
         myColor = "black";
         await update(ref(db, `rooms/${code}`), {
           "players/blackName": nickname,
           "presence/black": true,
           updatedAtValue: Date.now()
         });
-      } else if (data.players?.white === clientId) {
+      } else if (data.players?.white === uid) {
         myColor = "white";
         await update(ref(db, `rooms/${code}`), {
           "players/whiteName": nickname,
@@ -414,7 +283,7 @@
       } else if (!data.players?.white) {
         myColor = "white";
         await update(ref(db, `rooms/${code}`), {
-          "players/white": clientId,
+          "players/white": uid,
           "players/whiteName": nickname,
           "presence/white": true,
           updatedAtValue: Date.now()
@@ -440,15 +309,13 @@
 
       if (unsubscribeRoom) unsubscribeRoom();
 
-      const roomRef = ref(db, `rooms/${code}`);
-      unsubscribeRoom = onValue(roomRef, (snap) => {
+      unsubscribeRoom = onValue(ref(db, `rooms/${code}`), snap => {
         currentRoomData = snap.val();
         if (!currentRoomData) {
           alert("방이 삭제되었습니다.");
           goLobby();
           return;
         }
-
         renderBoard(currentRoomData.board);
         updateGameInfo(currentRoomData);
       });
@@ -456,7 +323,6 @@
 
     function setupDisconnect() {
       if (!roomId || myColor === "watch") return;
-
       const presenceRef = ref(db, `rooms/${roomId}/presence/${myColor}`);
       set(presenceRef, true);
       onDisconnect(presenceRef).set(false);
@@ -470,7 +336,6 @@
       const status = roomStatus(data);
       const blackOnline = data.presence?.black ? "접속" : "미접속";
       const whiteOnline = data.presence?.white ? "접속" : "미접속";
-
       gameStateEl.textContent = `${status} / 흑돌 ${blackOnline} / 백돌 ${whiteOnline}`;
 
       if (data.winner) {
@@ -481,27 +346,20 @@
         return;
       }
 
-      if (myColor === "watch") {
-        statusEl.textContent = "관전 중입니다.";
-      } else if (data.turn === myColor) {
-        statusEl.textContent = "내 차례입니다. 칸 선택 후 ‘여기에 두기’를 누르세요.";
-      } else {
-        statusEl.textContent = "상대방 차례입니다.";
-      }
+      if (myColor === "watch") statusEl.textContent = "관전 중입니다.";
+      else if (data.turn === myColor) statusEl.textContent = "내 차례입니다. 칸 선택 후 ‘여기에 두기’를 누르세요.";
+      else statusEl.textContent = "상대방 차례입니다.";
     }
 
     function renderBoard(board = emptyBoard()) {
       boardEl.innerHTML = "";
-
       for (let y = 0; y < SIZE; y++) {
         for (let x = 0; x < SIZE; x++) {
           const cell = document.createElement("div");
           cell.className = "cell";
-
           if (board[y][x] === "black") cell.classList.add("black");
           if (board[y][x] === "white") cell.classList.add("white");
           if (selected && selected.x === x && selected.y === y) cell.classList.add("selected");
-
           cell.onclick = () => selectCell(x, y);
           boardEl.appendChild(cell);
         }
@@ -521,12 +379,11 @@
 
     async function confirmPlace() {
       if (!selected) return;
-
       const { x, y } = selected;
       selected = null;
       confirmBox.classList.add("hidden");
 
-      await runTransaction(ref(db, `rooms/${roomId}`), (data) => {
+      await runTransaction(ref(db, `rooms/${roomId}`), data => {
         if (!data) return data;
         if (data.winner) return data;
         if (data.turn !== myColor) return data;
@@ -535,13 +392,9 @@
         data.board[y][x] = myColor;
         data.updatedAtValue = Date.now();
 
-        if (checkWin(data.board, x, y, myColor)) {
-          data.winner = myColor;
-        } else if (isFull(data.board)) {
-          data.winner = "draw";
-        } else {
-          data.turn = myColor === "black" ? "white" : "black";
-        }
+        if (checkWin(data.board, x, y, myColor)) data.winner = myColor;
+        else if (isFull(data.board)) data.winner = "draw";
+        else data.turn = myColor === "black" ? "white" : "black";
 
         return data;
       });
@@ -554,10 +407,7 @@
     }
 
     async function resetGame() {
-      if (!roomId || myColor === "watch") {
-        alert("관전자는 다시하기를 할 수 없습니다.");
-        return;
-      }
+      if (!roomId || myColor === "watch") return alert("관전자는 다시하기를 할 수 없습니다.");
 
       selected = null;
       confirmBox.classList.add("hidden");
@@ -593,21 +443,18 @@
       roomId = "";
       myColor = "";
       currentRoomData = null;
-
       game.classList.add("hidden");
       lobby.classList.remove("hidden");
     }
 
     function checkWin(board, x, y, color) {
       const dirs = [[1,0], [0,1], [1,1], [1,-1]];
-
       for (const [dx, dy] of dirs) {
         let count = 1;
         count += countDir(board, x, y, dx, dy, color);
         count += countDir(board, x, y, -dx, -dy, color);
         if (count >= 5) return true;
       }
-
       return false;
     }
 
@@ -615,19 +462,11 @@
       let count = 0;
       let nx = x + dx;
       let ny = y + dy;
-
-      while (
-        nx >= 0 &&
-        ny >= 0 &&
-        nx < SIZE &&
-        ny < SIZE &&
-        board[ny][nx] === color
-      ) {
+      while (nx >= 0 && ny >= 0 && nx < SIZE && ny < SIZE && board[ny][nx] === color) {
         count++;
         nx += dx;
         ny += dy;
       }
-
       return count;
     }
 
@@ -645,7 +484,6 @@
     }
 
     document.getElementById("createBtn").onclick = createRoom;
-    document.getElementById("refreshBtn").onclick = renderLobby;
     document.getElementById("cleanBtn").onclick = cleanOldRooms;
     document.getElementById("resetBtn").onclick = resetGame;
     document.getElementById("backBtn").onclick = goLobby;
@@ -658,9 +496,6 @@
         emptyOnly ? "빈 방만 보기 ON" : "빈 방만 보기 OFF";
       renderLobby();
     };
-
-    renderBoard();
-    listenLobby();
   </script>
 </body>
 </html>
