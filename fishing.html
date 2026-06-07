@@ -7,32 +7,49 @@
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#082f49;color:white;text-align:center}
-h1{margin:18px 0 8px;font-size:32px}
-button{padding:12px 14px;border-radius:12px;border:none;font-size:15px;margin:4px;background:#f59e0b;color:#111;font-weight:bold;cursor:pointer}
+h1{margin:10px 0 4px;font-size:28px}
+button{padding:10px 12px;border-radius:12px;border:none;font-size:14px;margin:4px;background:#f59e0b;color:#111;font-weight:bold;cursor:pointer}
 button.secondary{background:#374151;color:white}
 button.sell{background:#22c55e;color:#052e16}
 button:disabled{opacity:.45;cursor:not-allowed}
-.wrap{max-width:900px;margin:0 auto;padding:10px}
-.box{background:rgba(255,255,255,.1);border-radius:18px;padding:14px;margin:10px 0}
+.wrap{max-width:900px;margin:0 auto;padding:6px}
+.box{background:rgba(255,255,255,.1);border-radius:18px;padding:10px;margin:7px 0}
 .hidden{display:none!important}
-.status{color:#facc15;font-weight:bold;line-height:1.5;margin:10px 0}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.stat{background:rgba(255,255,255,.1);border-radius:14px;padding:12px}
-#pond{position:relative;height:260px;border-radius:24px;background:linear-gradient(#38bdf8,#0369a1);overflow:hidden;border:4px solid rgba(255,255,255,.25)}
-.wave{position:absolute;left:0;right:0;height:30px;background:rgba(255,255,255,.18);border-radius:50%;animation:wave 3s infinite linear}
-.wave:nth-child(1){top:50px}
-.wave:nth-child(2){top:120px;animation-duration:4s}
-.wave:nth-child(3){top:190px;animation-duration:5s}
+.status{color:#facc15;font-weight:bold;line-height:1.45;margin:8px 0}
+.small{font-size:13px;color:#d1d5db;line-height:1.45}
+
+.quick-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0}
+.quick-stat{background:rgba(255,255,255,.1);border-radius:12px;padding:7px 3px;font-size:12px;line-height:1.35}
+.quick-stat b{font-size:16px}
+
+#pond{position:relative;height:150px;border-radius:22px;background:linear-gradient(#38bdf8,#0369a1);overflow:hidden;border:4px solid rgba(255,255,255,.25)}
+.wave{position:absolute;left:0;right:0;height:24px;background:rgba(255,255,255,.18);border-radius:50%;animation:wave 3s infinite linear}
+.wave:nth-child(1){top:25px}
+.wave:nth-child(2){top:75px;animation-duration:4s}
+.wave:nth-child(3){top:125px;animation-duration:5s}
 @keyframes wave{from{transform:translateX(-60px)}to{transform:translateX(60px)}}
-#fishGame{height:300px;background:#0f172a;border-radius:18px;position:relative;overflow:hidden;border:3px solid #64748b}
-#track{position:absolute;left:50%;top:20px;transform:translateX(-50%);width:80px;height:250px;background:#1e293b;border-radius:999px;border:2px solid #94a3b8}
-#catchBar{position:absolute;left:8px;width:60px;height:60px;background:rgba(34,197,94,.65);border:2px solid #bbf7d0;border-radius:12px}
+
+#fishGame{height:260px;background:#0f172a;border-radius:18px;position:relative;overflow:hidden;border:3px solid #64748b}
+#track{position:absolute;left:50%;top:12px;transform:translateX(-50%);width:80px;height:230px;background:#1e293b;border-radius:999px;border:2px solid #94a3b8}
+#catchBar{position:absolute;left:8px;width:60px;height:90px;background:rgba(34,197,94,.65);border:2px solid #bbf7d0;border-radius:12px}
 #fish{position:absolute;left:20px;width:36px;height:24px;background:#f97316;border-radius:50%;box-shadow:0 0 0 3px rgba(255,255,255,.35)}
-#progressWrap{height:20px;background:#1e293b;border-radius:999px;overflow:hidden;margin-top:10px}
+#progressWrap{height:18px;background:#1e293b;border-radius:999px;overflow:hidden;margin-top:8px}
 #progress{height:100%;width:0%;background:#22c55e}
-.fish-row{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.1);border-radius:12px;padding:10px;margin:6px 0}
-.small{font-size:13px;color:#d1d5db;line-height:1.5}
-@media(max-width:720px){.grid{grid-template-columns:1fr}}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fish-row{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.1);border-radius:12px;padding:9px;margin:5px 0}
+.compact-shop{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+@media(max-width:720px){
+  h1{font-size:24px}
+  .wrap{padding:5px}
+  .box{padding:9px;margin:6px 0}
+  .grid{grid-template-columns:1fr}
+  .quick-stats{grid-template-columns:repeat(4,1fr)}
+  .quick-stat{font-size:11px}
+  .quick-stat b{font-size:15px}
+  button{padding:9px 10px;font-size:13px}
+}
 </style>
 </head>
 
@@ -54,11 +71,11 @@ button:disabled{opacity:.45;cursor:not-allowed}
     </div>
   </div>
 
-  <div class="grid">
-    <div class="stat">💰 골드<br><b id="goldText">0</b> G</div>
-    <div class="stat">🎣 낚싯대<br>Lv.<b id="rodText">1</b></div>
-    <div class="stat">🪱 미끼<br><b id="baitText">0</b> 개</div>
-    <div class="stat">🐟 총 포획<br><b id="caughtText">0</b> 마리</div>
+  <div class="quick-stats">
+    <div class="quick-stat">💰 골드<br><b id="goldText">0</b>G</div>
+    <div class="quick-stat">🎣 낚싯대<br>Lv.<b id="rodText">1</b></div>
+    <div class="quick-stat">🪱 미끼<br><b id="baitText">0</b>개</div>
+    <div class="quick-stat">🐟 포획<br><b id="caughtText">0</b>마리</div>
   </div>
 
   <div class="box">
@@ -75,9 +92,8 @@ button:disabled{opacity:.45;cursor:not-allowed}
     </div>
 
     <div id="miniGameBox" class="hidden">
-      <div class="status">
-        물고기를 초록 구간 안에 유지하세요.<br>
-        PC: 스페이스바 / 모바일: 아래 버튼 길게 누르기
+      <div class="status" id="miniStatus">
+        준비 중... 버튼 또는 스페이스바를 누르면 바로 시작합니다.
       </div>
 
       <div id="fishGame">
@@ -98,11 +114,16 @@ button:disabled{opacity:.45;cursor:not-allowed}
   <div class="grid">
     <div class="box">
       <h2>상점</h2>
-      <button id="upgradeRodBtn">낚싯대 업그레이드</button>
-      <div class="small">필요 골드: <span id="upgradeCostText">100</span> G</div>
-      <hr>
-      <button id="buyBaitBtn">미끼 5개 구매</button>
-      <div class="small">가격: 30 G</div>
+      <div class="compact-shop">
+        <div>
+          <button id="upgradeRodBtn">낚싯대 업그레이드</button>
+          <div class="small">필요: <span id="upgradeCostText">100</span> G</div>
+        </div>
+        <div>
+          <button id="buyBaitBtn">미끼 5개 구매</button>
+          <div class="small">가격: 30 G</div>
+        </div>
+      </div>
     </div>
 
     <div class="box">
@@ -151,14 +172,20 @@ let userData = null;
 let fishing = null;
 
 let miniRunning = false;
+let waitingToStart = false;
+let actualMiniStarted = false;
 let holding = false;
+
 let fishY = 120;
 let fishV = 0;
-let barY = 100;
+let barY = 95;
 let progressValue = 0;
 let targetFishKey = "";
 let animationId = null;
 let miniStartTime = 0;
+
+let fishPattern = null;
+let fishPatternTime = 0;
 
 const loadingBox = document.getElementById("loadingBox");
 const gameBox = document.getElementById("gameBox");
@@ -173,6 +200,7 @@ const mainStatus = document.getElementById("mainStatus");
 
 const normalControls = document.getElementById("normalControls");
 const miniGameBox = document.getElementById("miniGameBox");
+const miniStatus = document.getElementById("miniStatus");
 const catchBar = document.getElementById("catchBar");
 const fishEl = document.getElementById("fish");
 const progress = document.getElementById("progress");
@@ -300,19 +328,36 @@ function startFishing() {
   targetFishKey = pickFish();
 
   miniRunning = true;
+  waitingToStart = true;
+  actualMiniStarted = false;
   holding = false;
+
   fishY = 120;
   fishV = 0;
-  barY = 110;
+  barY = 95;
   progressValue = 45;
   miniStartTime = Date.now();
+
+  fishPattern = createFishPattern(FISHES[targetFishKey]);
+  fishPatternTime = 0;
 
   normalControls.classList.add("hidden");
   miniGameBox.classList.remove("hidden");
 
-  mainStatus.textContent = "준비...";
+  miniStatus.textContent = "준비 중... 버튼 또는 스페이스바를 누르면 바로 시작합니다.";
+
   loopMiniGame();
   render();
+}
+
+function forceStartMiniGame() {
+  if (!miniRunning || actualMiniStarted) return;
+
+  waitingToStart = false;
+  actualMiniStarted = true;
+  miniStartTime = Date.now();
+
+  miniStatus.textContent = "물고기를 초록 구간 안에 유지하세요.";
 }
 
 function pickFish() {
@@ -343,8 +388,13 @@ function loopMiniGame() {
 
   const elapsed = Date.now() - miniStartTime;
 
-  if (elapsed < 1500) {
+  if (waitingToStart && elapsed >= 1500) {
+    forceStartMiniGame();
+  }
+
+  if (waitingToStart) {
     catchBar.style.top = barY + "px";
+    catchBar.style.height = "90px";
     fishEl.style.top = fishY + "px";
     progress.style.width = progressValue + "%";
     animationId = requestAnimationFrame(loopMiniGame);
@@ -357,23 +407,10 @@ function loopMiniGame() {
   const barHeight = Math.max(42, 78 + rodLevel * 8);
   const fishSpeed = targetFish.speed * Math.max(0.55, 1.1 - rodLevel * 0.06);
 
-  const jumpChance =
-    targetFish.price >= 80 ? 0.08 :
-    targetFish.price >= 50 ? 0.05 :
-    targetFish.price >= 28 ? 0.035 :
-    0.015;
+  fishPatternTime += 1;
 
-  const jumpPower =
-    targetFish.price >= 80 ? 7 :
-    targetFish.price >= 50 ? 5 :
-    targetFish.price >= 28 ? 3.5 :
-    2;
-
-  fishV += (Math.random() - 0.45) * fishSpeed;
-
-  if (Math.random() < jumpChance) {
-    fishV += (Math.random() > 0.5 ? 1 : -1) * jumpPower;
-  }
+  const movement = getFishMovement(targetFish, fishPattern, fishPatternTime);
+  fishV += movement * fishSpeed;
 
   fishV *= 0.86;
   fishY += fishV;
@@ -383,8 +420,8 @@ function loopMiniGame() {
     fishV *= -0.5;
   }
 
-  if (fishY > 226) {
-    fishY = 226;
+  if (fishY > 206) {
+    fishY = 206;
     fishV *= -0.5;
   }
 
@@ -394,7 +431,7 @@ function loopMiniGame() {
     barY += 3.2;
   }
 
-  barY = Math.max(0, Math.min(250 - barHeight, barY));
+  barY = Math.max(0, Math.min(230 - barHeight, barY));
 
   const fishCenter = fishY + 12;
   const inBar = fishCenter >= barY && fishCenter <= barY + barHeight;
@@ -425,8 +462,83 @@ function loopMiniGame() {
   animationId = requestAnimationFrame(loopMiniGame);
 }
 
+function createFishPattern(fish) {
+  const priceTier =
+    fish.price >= 200 ? 5 :
+    fish.price >= 80 ? 4 :
+    fish.price >= 50 ? 3 :
+    fish.price >= 28 ? 2 :
+    1;
+
+  return {
+    type: Math.floor(Math.random() * 120),
+    phaseA: Math.random() * Math.PI * 2,
+    phaseB: Math.random() * Math.PI * 2,
+    phaseC: Math.random() * Math.PI * 2,
+    speedA: 0.025 + Math.random() * 0.055,
+    speedB: 0.04 + Math.random() * 0.08,
+    speedC: 0.008 + Math.random() * 0.025,
+    twitchRate: 0.004 * priceTier + Math.random() * 0.01,
+    twitchPower: 0.8 + priceTier * 0.75 + Math.random() * 1.4,
+    drift: (Math.random() - 0.5) * 0.35,
+    tier: priceTier
+  };
+}
+
+function getFishMovement(fish, p, t) {
+  let m = 0;
+
+  const waveA = Math.sin(t * p.speedA + p.phaseA);
+  const waveB = Math.sin(t * p.speedB + p.phaseB);
+  const waveC = Math.sin(t * p.speedC + p.phaseC);
+
+  const mode = p.type % 12;
+
+  if (mode === 0) {
+    m = waveA * 0.35 + waveB * 0.2;
+  } else if (mode === 1) {
+    m = waveA > 0 ? 0.45 : -0.25;
+  } else if (mode === 2) {
+    m = waveA * waveB * 0.65;
+  } else if (mode === 3) {
+    m = Math.sign(waveA) * 0.35 + waveB * 0.15;
+  } else if (mode === 4) {
+    m = waveA * 0.2 + Math.sin(t * 0.13 + p.phaseB) * 0.35;
+  } else if (mode === 5) {
+    m = waveC * 0.5 + p.drift;
+  } else if (mode === 6) {
+    m = Math.sin(t * p.speedA + Math.sin(t * 0.03)) * 0.55;
+  } else if (mode === 7) {
+    m = waveA * 0.15 + (Math.random() - 0.5) * 0.35;
+  } else if (mode === 8) {
+    m = waveA * 0.55;
+    if (Math.abs(waveA) > 0.85) m *= 1.8;
+  } else if (mode === 9) {
+    m = waveA * 0.25 + waveB * 0.25 + waveC * 0.25;
+  } else if (mode === 10) {
+    m = Math.sin(t * 0.02 + p.phaseA) * 0.8;
+  } else {
+    m = (Math.random() - 0.48) * 0.55;
+  }
+
+  if (Math.random() < p.twitchRate) {
+    m += (Math.random() > 0.5 ? 1 : -1) * p.twitchPower;
+  }
+
+  const priceBoost =
+    fish.price >= 200 ? 1.45 :
+    fish.price >= 80 ? 1.25 :
+    fish.price >= 50 ? 1.12 :
+    fish.price >= 28 ? 1.0 :
+    0.82;
+
+  return m * priceBoost;
+}
+
 async function finishFishing(success) {
   miniRunning = false;
+  waitingToStart = false;
+  actualMiniStarted = false;
   holding = false;
 
   if (animationId) cancelAnimationFrame(animationId);
@@ -512,6 +624,7 @@ function getUpgradeCost() {
 
 document.addEventListener("keydown", e => {
   if (e.code === "Space") {
+    forceStartMiniGame();
     holding = true;
     e.preventDefault();
   }
@@ -526,13 +639,20 @@ document.addEventListener("keyup", e => {
 
 const holdBtn = document.getElementById("holdBtn");
 
-holdBtn.addEventListener("mousedown", () => holding = true);
+holdBtn.addEventListener("mousedown", () => {
+  forceStartMiniGame();
+  holding = true;
+});
+
 holdBtn.addEventListener("mouseup", () => holding = false);
 holdBtn.addEventListener("mouseleave", () => holding = false);
+
 holdBtn.addEventListener("touchstart", e => {
+  forceStartMiniGame();
   holding = true;
   e.preventDefault();
 }, { passive:false });
+
 holdBtn.addEventListener("touchend", e => {
   holding = false;
   e.preventDefault();
