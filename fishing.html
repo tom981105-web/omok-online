@@ -21,7 +21,6 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .hidden{display:none!important}
 .status{color:#facc15;font-weight:bold;line-height:1.45;margin:8px 0}
 .small{font-size:13px;color:#d1d5db;line-height:1.45}
-
 .top-bar{display:flex;justify-content:space-between;align-items:center;gap:6px}
 .top-bar .small{text-align:left;flex:1}
 
@@ -53,16 +52,8 @@ button:disabled{opacity:.45;cursor:not-allowed}
 @keyframes bobberWait{0%,100%{transform:translate(-50%,-50%)}50%{transform:translate(-50%,-42%)}}
 @keyframes bobberBite{0%,100%{transform:translate(-50%,-44%)}50%{transform:translate(-50%,-20%)}}
 
-#fishShadow{
-  position:absolute;left:50%;top:62%;width:90px;height:28px;
-  background:rgba(0,0,0,.35);border-radius:50%;transform:translate(-50%,-50%);
-  filter:blur(2px);display:none;animation:shadowMove 2.4s infinite ease-in-out;
-}
-@keyframes shadowMove{
-  0%{transform:translate(-55%,-50%) scale(1)}
-  50%{transform:translate(-45%,-45%) scale(1.08)}
-  100%{transform:translate(-55%,-50%) scale(1)}
-}
+#fishShadow{position:absolute;left:50%;top:62%;width:90px;height:28px;background:rgba(0,0,0,.35);border-radius:50%;transform:translate(-50%,-50%);filter:blur(2px);display:none;animation:shadowMove 2.4s infinite ease-in-out}
+@keyframes shadowMove{0%{transform:translate(-55%,-50%) scale(1)}50%{transform:translate(-45%,-45%) scale(1.08)}100%{transform:translate(-55%,-50%) scale(1)}}
 
 .catch-result{margin-top:8px}
 .catch-result img{width:56px;height:42px;object-fit:contain;image-rendering:pixelated;vertical-align:middle;margin-right:6px}
@@ -72,8 +63,9 @@ button:disabled{opacity:.45;cursor:not-allowed}
 #catchBar{position:absolute;left:10px;width:60px;height:60px;background:rgba(34,197,94,.65);border:2px solid #bbf7d0;border-radius:12px}
 #fishSprite{position:absolute;left:14px;top:112px;width:56px;height:auto;object-fit:contain;image-rendering:pixelated;pointer-events:none}
 #fishSprite.unknown{filter:brightness(0);opacity:.65}
-#progressWrap{height:18px;background:#1e293b;border-radius:999px;overflow:hidden;margin-top:8px}
-#progress{height:100%;width:0%;background:#22c55e}
+
+#progressWrap{height:24px;background:#1e293b;border-radius:999px;overflow:hidden;margin-top:10px;border:2px solid rgba(255,255,255,.35)}
+#progress{height:100%;width:0%;background:linear-gradient(90deg,#22c55e,#a3e635)}
 
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .fish-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;background:rgba(255,255,255,.1);border-radius:12px;padding:9px;margin:5px 0;text-align:left}
@@ -84,18 +76,12 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .compact-shop{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .book-fish-img{width:42px;height:32px;object-fit:contain;image-rendering:pixelated;vertical-align:middle;margin-right:6px}
 .undiscovered{filter:brightness(0);opacity:.5}
-
 .r-common{color:#e5e7eb}
 .r-uncommon{color:#86efac}
 .r-rare{color:#93c5fd}
 .r-legend{color:#facc15}
 
-.bottom-tabs{
-  position:fixed;left:0;right:0;bottom:0;z-index:20;
-  display:grid;grid-template-columns:repeat(4,1fr);
-  background:#020617;border-top:1px solid rgba(255,255,255,.16);
-  padding:8px 8px calc(8px + env(safe-area-inset-bottom));
-}
+.bottom-tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;display:grid;grid-template-columns:repeat(4,1fr);background:#020617;border-top:1px solid rgba(255,255,255,.16);padding:8px 8px calc(8px + env(safe-area-inset-bottom))}
 .tab-btn{background:transparent;color:#d1d5db;margin:0;padding:8px 2px;border-radius:14px;font-size:12px;line-height:1.25}
 .tab-btn.active{background:#f59e0b;color:#111827}
 
@@ -111,6 +97,8 @@ body.playing-mini #miniGameBox{display:block!important;margin-top:4px}
 body.playing-mini #fishGame{height:calc(100vh - 165px);min-height:430px}
 body.playing-mini #track{height:calc(100vh - 205px);min-height:390px}
 body.playing-mini #fishSprite{left:14px}
+body.playing-mini #progressWrap{position:fixed;left:12px;right:12px;bottom:82px;z-index:30}
+body.playing-mini #holdBtn{position:fixed;left:12px;right:12px;bottom:118px;z-index:30;height:48px}
 
 @media(max-width:720px){
   h1{font-size:23px}
@@ -177,9 +165,7 @@ body.playing-mini #fishSprite{left:14px}
       </div>
 
       <div id="miniGameBox" class="hidden">
-        <div class="status" id="miniStatus">
-          버튼 또는 스페이스바를 누르면 낚시가 시작됩니다.
-        </div>
+        <div class="status" id="miniStatus">버튼 또는 스페이스바를 누르면 낚시가 시작됩니다.</div>
 
         <div id="fishGame">
           <div id="track">
@@ -289,11 +275,11 @@ const FISH_SIZES = {
 };
 
 const LOCATIONS = {
-  pond:{name:"초보 연못",emoji:"🌱",requiredRod:1,desc:"기본 물고기 위주",fishes:["flounder","crucian","carp","sardine","mackerel","perch"]},
-  river:{name:"강",emoji:"🏞️",requiredRod:2,desc:"빠른 물고기 등장",fishes:["trout","bass","grayMullet","rainbowTrout","pike","carp","perch"]},
-  lake:{name:"호수",emoji:"🌊",requiredRod:3,desc:"중급·희귀 물고기",fishes:["bass","tuna","puffer","sturgeon","tropicalFish","goldenCarp","mackerel"]},
-  lava:{name:"용암지대",emoji:"🌋",requiredRod:5,desc:"고위험 고가 물고기",fishes:["lavaEel","goldenCarp","ghostFish","puffer","sunfish"]},
-  deep:{name:"심해",emoji:"🌌",requiredRod:6,desc:"전설급 물고기",fishes:["octopus","sunfish","angler","ghostFish","sturgeon","tuna","tropicalFish"]}
+  pond:{name:"초보 연못",emoji:"🌱",requiredRod:1,fishes:["flounder","crucian","carp","sardine","mackerel","perch"]},
+  river:{name:"강",emoji:"🏞️",requiredRod:2,fishes:["trout","bass","grayMullet","rainbowTrout","pike","carp","perch"]},
+  lake:{name:"호수",emoji:"🌊",requiredRod:3,fishes:["bass","tuna","puffer","sturgeon","tropicalFish","goldenCarp","mackerel"]},
+  lava:{name:"용암지대",emoji:"🌋",requiredRod:5,fishes:["lavaEel","goldenCarp","ghostFish","puffer","sunfish"]},
+  deep:{name:"심해",emoji:"🌌",requiredRod:6,fishes:["octopus","sunfish","ghostFish","sturgeon","tuna","tropicalFish"]}
 };
 
 let uid="", userData=null, fishing=null;
@@ -326,10 +312,11 @@ onAuthStateChanged(auth, async user=>{
 async function loadUser(){
   const snap=await get(ref(db,`users/${uid}`));
   userData=snap.val()||{};
-  const defaultFishing={gold:0,rodLevel:1,bait:5,inventory:{},discovered:{},totalCaught:0,totalEarned:0,updatedAt:Date.now()};
+  const defaultFishing={gold:0,rodLevel:1,bait:5,inventory:{},discovered:{},treasureOpened:0,totalCaught:0,totalEarned:0,updatedAt:Date.now()};
   fishing={...defaultFishing,...(userData.fishing||{})};
   fishing.inventory=fishing.inventory||{};
   fishing.discovered=fishing.discovered||{};
+  fishing.treasureOpened=fishing.treasureOpened||0;
 
   for(const key of Object.keys(fishing.inventory)){
     const parsed=parseInventoryKey(key);
@@ -386,7 +373,6 @@ function renderLocations(){
 function renderInventory(){
   inventoryList.innerHTML="";
   const entries=Object.entries(fishing.inventory||{}).filter(([key,count])=>count>0);
-
   if(!entries.length){inventoryList.innerHTML=`<div class="small">보유한 물고기가 없습니다.</div>`;return;}
 
   for(const [key,count] of entries){
@@ -506,10 +492,9 @@ function startMiniGameHiddenFish(){
   waitingToStart=true;
   actualMiniStarted=false;
   holding=false;
-
   document.body.classList.add("playing-mini");
-  targetSizeKey=pickFishSize();
 
+  targetSizeKey=pickFishSize();
   fishY=112; fishV=0; barY=85; progressValue=25;
   fishPattern=createFishPattern(FISHES[targetFishKey]);
   fishPatternTime=0;
@@ -619,14 +604,19 @@ function loopMiniGame(){
 
   fishPatternTime+=1;
   fishV+=getFishMovement(targetFish,fishPattern,fishPatternTime)*fishSpeed;
-  fishV*=.855;
+  fishV*=.82;
   fishY+=fishV;
 
   if(fishY<4){fishY=4;fishV*=-.58;}
   const maxFishY=trackHeight-28;
   if(fishY>maxFishY){fishY=maxFishY;fishV*=-.58;}
 
-  if(holding)barY-=3.4; else barY+=2.8;
+  const controlSpeed=4.6+rodLevel*.25;
+  const gravitySpeed=3.6+rodLevel*.18;
+
+  if(holding)barY-=controlSpeed;
+  else barY+=gravitySpeed;
+
   barY=Math.max(0,Math.min(trackHeight-barHeight,barY));
 
   const fishCenter=fishY+16;
@@ -713,7 +703,13 @@ async function finishFishing(success){
     fishing.discovered[targetFishKey]=true;
     fishing.totalCaught=(fishing.totalCaught||0)+1;
 
-    catchResult.innerHTML=`<img src="${fish.img}" alt="${fish.name}"><b class="r-${fish.rarity}">${sizedName}</b> 획득!`;
+    const treasureText=applyTreasureReward();
+
+    catchResult.innerHTML=`
+      <img src="${fish.img}" alt="${fish.name}">
+      <b class="r-${fish.rarity}">${sizedName}</b> 획득!
+      ${treasureText ? `<div class="status">${treasureText}</div>` : ""}
+    `;
     mainStatus.textContent=`정체는 ${sizedName}이었습니다!`;
   }else{
     catchResult.innerHTML="";
@@ -722,6 +718,37 @@ async function finishFishing(success){
 
   render();
   await saveGame();
+}
+
+function applyTreasureReward(){
+  let chance=0.06;
+  if(targetSizeKey==="huge")chance+=0.04;
+  if(targetSizeKey==="monster")chance+=0.08;
+  if(FISHES[targetFishKey].rarity==="rare")chance+=0.03;
+  if(FISHES[targetFishKey].rarity==="legend")chance+=0.06;
+
+  if(Math.random()>chance)return "";
+
+  const roll=Math.random();
+  fishing.treasureOpened=(fishing.treasureOpened||0)+1;
+
+  if(roll<0.45){
+    const gold=50+Math.floor(Math.random()*151);
+    fishing.gold+=gold;
+    return `📦 보물상자 발견! ${gold}G 획득!`;
+  }
+
+  if(roll<0.8){
+    const bait=3+Math.floor(Math.random()*8);
+    fishing.bait+=bait;
+    return `📦 보물상자 발견! 미끼 ${bait}개 획득!`;
+  }
+
+  const gold=200+Math.floor(Math.random()*301);
+  const bait=5+Math.floor(Math.random()*11);
+  fishing.gold+=gold;
+  fishing.bait+=bait;
+  return `📦 희귀 보물상자! ${gold}G + 미끼 ${bait}개 획득!`;
 }
 
 function clearTimers(){
