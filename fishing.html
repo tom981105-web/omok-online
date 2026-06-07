@@ -12,7 +12,7 @@ h2{margin:8px 0}
 button{padding:10px 12px;border-radius:12px;border:none;font-size:14px;margin:4px;background:#f59e0b;color:#111;font-weight:bold;cursor:pointer}
 button.secondary{background:#374151;color:white}
 button.sell{background:#22c55e;color:#052e16}
-button.bite{background:#ef4444;color:white;animation:pulse 0.75s infinite}
+button.bite{background:#ef4444;color:white;animation:pulse .75s infinite}
 button:disabled{opacity:.45;cursor:not-allowed}
 @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
 
@@ -45,11 +45,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .wave:nth-child(3){top:138px;animation-duration:5s}
 @keyframes wave{from{transform:translateX(-60px)}to{transform:translateX(60px)}}
 
-#floatBobber{
-  position:absolute;left:50%;top:42%;width:16px;height:34px;
-  transform:translate(-50%,-50%);
-  display:none;
-}
+#floatBobber{position:absolute;left:50%;top:42%;width:16px;height:34px;transform:translate(-50%,-50%);display:none}
 #floatBobber::before{content:"";display:block;width:16px;height:16px;background:#ef4444;border-radius:50% 50% 0 0}
 #floatBobber::after{content:"";display:block;width:16px;height:16px;background:#f8fafc;border-radius:0 0 50% 50%}
 #floatBobber.waiting{display:block;animation:bobberWait 1.8s infinite ease-in-out}
@@ -100,11 +96,21 @@ button:disabled{opacity:.45;cursor:not-allowed}
   background:#020617;border-top:1px solid rgba(255,255,255,.16);
   padding:8px 8px calc(8px + env(safe-area-inset-bottom));
 }
-.tab-btn{
-  background:transparent;color:#d1d5db;margin:0;padding:8px 2px;border-radius:14px;
-  font-size:12px;line-height:1.25;
-}
+.tab-btn{background:transparent;color:#d1d5db;margin:0;padding:8px 2px;border-radius:14px;font-size:12px;line-height:1.25}
 .tab-btn.active{background:#f59e0b;color:#111827}
+
+body.playing-mini{overflow:hidden}
+body.playing-mini h1,
+body.playing-mini .top-bar,
+body.playing-mini .quick-stats,
+body.playing-mini #locationBox,
+body.playing-mini #pond,
+body.playing-mini #normalControls{display:none!important}
+body.playing-mini .wrap{padding:4px}
+body.playing-mini #miniGameBox{display:block!important;margin-top:4px}
+body.playing-mini #fishGame{height:calc(100vh - 165px);min-height:430px}
+body.playing-mini #track{height:calc(100vh - 205px);min-height:390px}
+body.playing-mini #fishSprite{left:14px}
 
 @media(max-width:720px){
   h1{font-size:23px}
@@ -150,8 +156,10 @@ button:disabled{opacity:.45;cursor:not-allowed}
 
   <section id="tabFishing" class="tab-page active">
     <div class="box">
-      <h2>낚시터 선택</h2>
-      <div id="locationGrid" class="location-grid"></div>
+      <div id="locationBox">
+        <h2>낚시터 선택</h2>
+        <div id="locationGrid" class="location-grid"></div>
+      </div>
 
       <div id="pond">
         <div class="wave"></div>
@@ -250,92 +258,61 @@ const auth = getAuth(app);
 const db = getDatabase(app);
 
 const FISHES = {
-  flounder: { name:"넙치", price:10, rarity:"common", rate:32, speed:1.1, img:"./assets/fish/fish01.png" },
-  octopus: { name:"문어", price:95, rarity:"rare", rate:5, speed:4.2, img:"./assets/fish/fish02.png" },
-  sunfish: { name:"개복치", price:180, rarity:"legend", rate:1.5, speed:5.2, img:"./assets/fish/fish03.png" },
-  tuna: { name:"참치", price:85, rarity:"rare", rate:6, speed:3.8, img:"./assets/fish/fish04.png" },
-  bass: { name:"배스", price:35, rarity:"uncommon", rate:14, speed:2.5, img:"./assets/fish/fish05.png" },
-  perch: { name:"농어", price:22, rarity:"common", rate:20, speed:1.9, img:"./assets/fish/fish06.png" },
-  lavaEel: { name:"용암장어", price:260, rarity:"legend", rate:0.8, speed:6.2, img:"./assets/fish/fish07.png" },
-  trout: { name:"송어", price:28, rarity:"uncommon", rate:16, speed:2.3, img:"./assets/fish/fish08.png" },
-  carp: { name:"잉어", price:15, rarity:"common", rate:26, speed:1.5, img:"./assets/fish/fish09.png" },
-  crucian: { name:"붕어", price:12, rarity:"common", rate:28, speed:1.35, img:"./assets/fish/fish10.png" },
-  goldenCarp: { name:"황금붕어", price:120, rarity:"rare", rate:3.5, speed:3.7, img:"./assets/fish/fish11.png" },
-  ghostFish: { name:"유령고기", price:150, rarity:"legend", rate:1.8, speed:4.8, img:"./assets/fish/fish12.png" },
-  grayMullet: { name:"숭어", price:26, rarity:"uncommon", rate:15, speed:2.1, img:"./assets/fish/fish13.png" },
-  rainbowTrout: { name:"무지개송어", price:45, rarity:"uncommon", rate:10, speed:2.8, img:"./assets/fish/fish14.png" },
-  puffer: { name:"복어", price:90, rarity:"rare", rate:5.5, speed:4.0, img:"./assets/fish/fish15.png" },
-  pike: { name:"강꼬치고기", price:60, rarity:"rare", rate:7, speed:3.4, img:"./assets/fish/fish16.png" },
-  sardine: { name:"정어리", price:9, rarity:"common", rate:30, speed:1.25, img:"./assets/fish/fish17.png" },
-  tropicalFish: { name:"열대어", price:70, rarity:"rare", rate:6.5, speed:3.6, img:"./assets/fish/fish18.png" },
-  sturgeon: { name:"철갑상어", price:110, rarity:"rare", rate:4, speed:3.9, img:"./assets/fish/fish19.png" },
-  mackerel: { name:"고등어", price:20, rarity:"common", rate:22, speed:1.8, img:"./assets/fish/fish20.png" }
+  flounder:{name:"넙치",price:10,rarity:"common",rate:32,speed:1.1,img:"./assets/fish/fish01.png"},
+  octopus:{name:"문어",price:95,rarity:"rare",rate:5,speed:4.2,img:"./assets/fish/fish02.png"},
+  sunfish:{name:"개복치",price:180,rarity:"legend",rate:1.5,speed:5.2,img:"./assets/fish/fish03.png"},
+  tuna:{name:"참치",price:85,rarity:"rare",rate:6,speed:3.8,img:"./assets/fish/fish04.png"},
+  bass:{name:"배스",price:35,rarity:"uncommon",rate:14,speed:2.5,img:"./assets/fish/fish05.png"},
+  perch:{name:"농어",price:22,rarity:"common",rate:20,speed:1.9,img:"./assets/fish/fish06.png"},
+  lavaEel:{name:"용암장어",price:260,rarity:"legend",rate:.8,speed:6.2,img:"./assets/fish/fish07.png"},
+  trout:{name:"송어",price:28,rarity:"uncommon",rate:16,speed:2.3,img:"./assets/fish/fish08.png"},
+  carp:{name:"잉어",price:15,rarity:"common",rate:26,speed:1.5,img:"./assets/fish/fish09.png"},
+  crucian:{name:"붕어",price:12,rarity:"common",rate:28,speed:1.35,img:"./assets/fish/fish10.png"},
+  goldenCarp:{name:"황금붕어",price:120,rarity:"rare",rate:3.5,speed:3.7,img:"./assets/fish/fish11.png"},
+  ghostFish:{name:"유령고기",price:150,rarity:"legend",rate:1.8,speed:4.8,img:"./assets/fish/fish12.png"},
+  grayMullet:{name:"숭어",price:26,rarity:"uncommon",rate:15,speed:2.1,img:"./assets/fish/fish13.png"},
+  rainbowTrout:{name:"무지개송어",price:45,rarity:"uncommon",rate:10,speed:2.8,img:"./assets/fish/fish14.png"},
+  puffer:{name:"복어",price:90,rarity:"rare",rate:5.5,speed:4,img:"./assets/fish/fish15.png"},
+  pike:{name:"강꼬치고기",price:60,rarity:"rare",rate:7,speed:3.4,img:"./assets/fish/fish16.png"},
+  sardine:{name:"정어리",price:9,rarity:"common",rate:30,speed:1.25,img:"./assets/fish/fish17.png"},
+  tropicalFish:{name:"열대어",price:70,rarity:"rare",rate:6.5,speed:3.6,img:"./assets/fish/fish18.png"},
+  sturgeon:{name:"철갑상어",price:110,rarity:"rare",rate:4,speed:3.9,img:"./assets/fish/fish19.png"},
+  mackerel:{name:"고등어",price:20,rarity:"common",rate:22,speed:1.8,img:"./assets/fish/fish20.png"}
+};
+
+const FISH_SIZES = {
+  small:{name:"작은",rate:24,priceMul:.8,difficulty:.9},
+  normal:{name:"보통",rate:42,priceMul:1,difficulty:1},
+  big:{name:"큰",rate:22,priceMul:1.4,difficulty:1.12},
+  huge:{name:"거대",rate:9,priceMul:2,difficulty:1.28},
+  monster:{name:"괴물급",rate:3,priceMul:3.5,difficulty:1.55}
 };
 
 const LOCATIONS = {
-  pond: {
-    name:"초보 연못", emoji:"🌱", requiredRod:1,
-    desc:"기본 물고기 위주",
-    fishes:["flounder","crucian","carp","sardine","mackerel","perch"]
-  },
-  river: {
-    name:"강", emoji:"🏞️", requiredRod:2,
-    desc:"빠른 물고기 등장",
-    fishes:["trout","bass","grayMullet","rainbowTrout","pike","carp","perch"]
-  },
-  lake: {
-    name:"호수", emoji:"🌊", requiredRod:3,
-    desc:"중급·희귀 물고기",
-    fishes:["bass","tuna","puffer","sturgeon","tropicalFish","goldenCarp","mackerel"]
-  },
-  lava: {
-    name:"용암지대", emoji:"🌋", requiredRod:5,
-    desc:"고위험 고가 물고기",
-    fishes:["lavaEel","goldenCarp","ghostFish","puffer","sunfish"]
-  },
-  deep: {
-    name:"심해", emoji:"🌌", requiredRod:6,
-    desc:"전설급 물고기",
-    fishes:["octopus","sunfish","angler","ghostFish","sturgeon","tuna","tropicalFish"]
-  }
+  pond:{name:"초보 연못",emoji:"🌱",requiredRod:1,desc:"기본 물고기 위주",fishes:["flounder","crucian","carp","sardine","mackerel","perch"]},
+  river:{name:"강",emoji:"🏞️",requiredRod:2,desc:"빠른 물고기 등장",fishes:["trout","bass","grayMullet","rainbowTrout","pike","carp","perch"]},
+  lake:{name:"호수",emoji:"🌊",requiredRod:3,desc:"중급·희귀 물고기",fishes:["bass","tuna","puffer","sturgeon","tropicalFish","goldenCarp","mackerel"]},
+  lava:{name:"용암지대",emoji:"🌋",requiredRod:5,desc:"고위험 고가 물고기",fishes:["lavaEel","goldenCarp","ghostFish","puffer","sunfish"]},
+  deep:{name:"심해",emoji:"🌌",requiredRod:6,desc:"전설급 물고기",fishes:["octopus","sunfish","angler","ghostFish","sturgeon","tuna","tropicalFish"]}
 };
 
 let uid="", userData=null, fishing=null;
 let selectedLocation="pond";
-
 let miniRunning=false, isCasting=false, biteReady=false, waitingToStart=false, actualMiniStarted=false, holding=false;
-let fishY=112, fishV=0, barY=85, progressValue=0, targetFishKey="", animationId=null;
+let fishY=112, fishV=0, barY=85, progressValue=0, targetFishKey="", targetSizeKey="normal", animationId=null;
 let fishPattern=null, fishPatternTime=0;
 let biteTimer=null, biteWindowTimer=null;
 
-const loadingBox=document.getElementById("loadingBox");
-const gameBox=document.getElementById("gameBox");
-const bottomTabs=document.getElementById("bottomTabs");
-const userEmail=document.getElementById("userEmail");
-const userName=document.getElementById("userName");
+const $=id=>document.getElementById(id);
 
-const goldText=document.getElementById("goldText");
-const rodText=document.getElementById("rodText");
-const baitText=document.getElementById("baitText");
-const caughtText=document.getElementById("caughtText");
-const mainStatus=document.getElementById("mainStatus");
-const catchResult=document.getElementById("catchResult");
-
-const locationGrid=document.getElementById("locationGrid");
-const normalControls=document.getElementById("normalControls");
-const miniGameBox=document.getElementById("miniGameBox");
-const miniStatus=document.getElementById("miniStatus");
-const catchBar=document.getElementById("catchBar");
-const fishSprite=document.getElementById("fishSprite");
-const fishShadow=document.getElementById("fishShadow");
-const floatBobber=document.getElementById("floatBobber");
-const biteBtn=document.getElementById("biteBtn");
-const progress=document.getElementById("progress");
-
-const inventoryList=document.getElementById("inventoryList");
-const fishBook=document.getElementById("fishBook");
-const upgradeCostText=document.getElementById("upgradeCostText");
-const bookProgress=document.getElementById("bookProgress");
+const loadingBox=$("loadingBox"), gameBox=$("gameBox"), bottomTabs=$("bottomTabs");
+const userEmail=$("userEmail"), userName=$("userName");
+const goldText=$("goldText"), rodText=$("rodText"), baitText=$("baitText"), caughtText=$("caughtText");
+const mainStatus=$("mainStatus"), catchResult=$("catchResult");
+const locationGrid=$("locationGrid"), normalControls=$("normalControls"), miniGameBox=$("miniGameBox");
+const miniStatus=$("miniStatus"), catchBar=$("catchBar"), fishSprite=$("fishSprite"), fishShadow=$("fishShadow");
+const floatBobber=$("floatBobber"), biteBtn=$("biteBtn"), progress=$("progress");
+const inventoryList=$("inventoryList"), fishBook=$("fishBook"), upgradeCostText=$("upgradeCostText"), bookProgress=$("bookProgress");
 
 onAuthStateChanged(auth, async user=>{
   if(!user){location.href="./index.html";return;}
@@ -349,25 +326,20 @@ onAuthStateChanged(auth, async user=>{
 async function loadUser(){
   const snap=await get(ref(db,`users/${uid}`));
   userData=snap.val()||{};
-
-  const defaultFishing={
-    gold:0,rodLevel:1,bait:5,inventory:{},discovered:{},
-    totalCaught:0,totalEarned:0,updatedAt:Date.now()
-  };
-
+  const defaultFishing={gold:0,rodLevel:1,bait:5,inventory:{},discovered:{},totalCaught:0,totalEarned:0,updatedAt:Date.now()};
   fishing={...defaultFishing,...(userData.fishing||{})};
   fishing.inventory=fishing.inventory||{};
   fishing.discovered=fishing.discovered||{};
 
   for(const key of Object.keys(fishing.inventory)){
-    if(fishing.inventory[key]>0) fishing.discovered[key]=true;
+    const parsed=parseInventoryKey(key);
+    if(FISHES[parsed.fishKey]) fishing.discovered[parsed.fishKey]=true;
+    else if(FISHES[key]) fishing.discovered[key]=true;
   }
 
   if(!userData.fishing) await update(ref(db,`users/${uid}`),{fishing});
-
   userEmail.textContent=userData.email||auth.currentUser.email;
   userName.textContent=userData.nickname||auth.currentUser.email.split("@")[0];
-
   render();
 }
 
@@ -385,10 +357,9 @@ function render(){
 
   const upgradeCost=getUpgradeCost();
   upgradeCostText.textContent=upgradeCost;
-
-  document.getElementById("upgradeRodBtn").disabled=fishing.gold<upgradeCost;
-  document.getElementById("buyBaitBtn").disabled=fishing.gold<30;
-  document.getElementById("fishBtn").disabled=fishing.bait<=0 || isCasting || miniRunning;
+  $("upgradeRodBtn").disabled=fishing.gold<upgradeCost;
+  $("buyBaitBtn").disabled=fishing.gold<30;
+  $("fishBtn").disabled=fishing.bait<=0||isCasting||miniRunning;
 
   renderLocations();
   renderInventory();
@@ -401,16 +372,9 @@ function renderLocations(){
     const locked=(fishing.rodLevel||1)<loc.requiredRod;
     const div=document.createElement("div");
     div.className=`location-card ${selectedLocation===key?"active":""} ${locked?"locked":""}`;
-    div.innerHTML=`
-      <div>${loc.emoji}</div>
-      <b>${loc.name}</b>
-      <div class="lv">Lv.${loc.requiredRod}+ 필요</div>
-    `;
+    div.innerHTML=`<div>${loc.emoji}</div><b>${loc.name}</b><div class="lv">Lv.${loc.requiredRod}+ 필요</div>`;
     div.onclick=()=>{
-      if(locked){
-        mainStatus.textContent=`${loc.name}은 낚싯대 Lv.${loc.requiredRod}부터 갈 수 있습니다.`;
-        return;
-      }
+      if(locked){mainStatus.textContent=`${loc.name}은 낚싯대 Lv.${loc.requiredRod}부터 갈 수 있습니다.`;return;}
       selectedLocation=key;
       mainStatus.textContent=`${loc.emoji} ${loc.name}에서 낚시합니다.`;
       renderLocations();
@@ -421,23 +385,27 @@ function renderLocations(){
 
 function renderInventory(){
   inventoryList.innerHTML="";
-  const inv=fishing.inventory||{};
-  const entries=Object.entries(inv).filter(([key,count])=>count>0);
+  const entries=Object.entries(fishing.inventory||{}).filter(([key,count])=>count>0);
 
-  if(!entries.length){
-    inventoryList.innerHTML=`<div class="small">보유한 물고기가 없습니다.</div>`;
-    return;
-  }
+  if(!entries.length){inventoryList.innerHTML=`<div class="small">보유한 물고기가 없습니다.</div>`;return;}
 
   for(const [key,count] of entries){
-    const fish=FISHES[key]; if(!fish) continue;
+    const parsed=parseInventoryKey(key);
+    const fishKey=FISHES[parsed.fishKey]?parsed.fishKey:key;
+    const sizeKey=FISHES[parsed.fishKey]?parsed.sizeKey:"normal";
+    const fish=FISHES[fishKey];
+    if(!fish) continue;
+
+    const sellPrice=getFishSellPrice(fishKey,sizeKey);
+    const displayName=getSizedFishName(fishKey,sizeKey);
+
     const row=document.createElement("div");
     row.className="fish-row";
     row.innerHTML=`
       <div>
         <img class="book-fish-img" src="${fish.img}" alt="${fish.name}">
-        <b class="r-${fish.rarity}">${fish.name}</b> x ${count}<br>
-        <span class="small">1마리 ${fish.price} G / 전체 ${fish.price*count} G</span>
+        <b class="r-${fish.rarity}">${displayName}</b> x ${count}<br>
+        <span class="small">1마리 ${sellPrice} G / 전체 ${sellPrice*count} G</span>
       </div>
       <div class="sell-control">
         <div class="qty-box">
@@ -458,7 +426,10 @@ function renderFishBook(){
   bookProgress.textContent=`도감 ${ownedCount} / ${Object.keys(FISHES).length}`;
 
   for(const [key,fish] of Object.entries(FISHES)){
-    const owned=fishing.inventory?.[key]||0;
+    const owned=Object.entries(fishing.inventory||{}).reduce((sum,[invKey,count])=>{
+      const parsed=parseInventoryKey(invKey);
+      return sum+(parsed.fishKey===key?count:0);
+    },0);
     const known=!!discovered[key];
 
     const row=document.createElement("div");
@@ -476,27 +447,15 @@ function renderFishBook(){
 
 function castLine(){
   if(isCasting||miniRunning)return;
-
-  if(fishing.bait<=0){
-    mainStatus.textContent="미끼가 부족합니다.";
-    return;
-  }
+  if(fishing.bait<=0){mainStatus.textContent="미끼가 부족합니다.";return;}
 
   const loc=LOCATIONS[selectedLocation];
-  if((fishing.rodLevel||1)<loc.requiredRod){
-    mainStatus.textContent=`이 낚시터는 낚싯대 Lv.${loc.requiredRod}부터 가능합니다.`;
-    return;
-  }
+  if((fishing.rodLevel||1)<loc.requiredRod){mainStatus.textContent=`이 낚시터는 낚싯대 Lv.${loc.requiredRod}부터 가능합니다.`;return;}
 
   fishing.bait-=1;
   targetFishKey=pickFishByLocation(selectedLocation);
 
-  isCasting=true;
-  biteReady=false;
-  waitingToStart=false;
-  actualMiniStarted=false;
-  holding=false;
-
+  isCasting=true; biteReady=false; waitingToStart=false; actualMiniStarted=false; holding=false;
   catchResult.innerHTML="";
   biteBtn.classList.add("hidden");
   floatBobber.className="waiting";
@@ -511,46 +470,34 @@ function castLine(){
 
 function showBite(){
   if(!isCasting)return;
-
   biteReady=true;
   floatBobber.className="biteReady";
   showFishShadow(targetFishKey);
   biteBtn.classList.remove("hidden");
-
   mainStatus.textContent="입질! 지금 낚아채세요!";
-
   const windowMs=Math.min(2600,1300+(fishing.rodLevel||1)*130);
   biteWindowTimer=setTimeout(()=>missBite(),windowMs);
 }
 
 async function missBite(){
   if(!isCasting)return;
-
   clearTimers();
-
-  isCasting=false;
-  biteReady=false;
+  isCasting=false; biteReady=false;
   hideFishShadow();
   biteBtn.classList.add("hidden");
   floatBobber.className="";
-
   mainStatus.textContent="반응이 늦었습니다. 물고기가 도망갔습니다.";
-
   render();
   await saveGame();
 }
 
 function reactBite(){
-  if(!isCasting || !biteReady)return;
-
+  if(!isCasting||!biteReady)return;
   clearTimers();
-
-  isCasting=false;
-  biteReady=false;
+  isCasting=false; biteReady=false;
   biteBtn.classList.add("hidden");
   floatBobber.className="";
   hideFishShadow();
-
   startMiniGameHiddenFish();
 }
 
@@ -560,11 +507,10 @@ function startMiniGameHiddenFish(){
   actualMiniStarted=false;
   holding=false;
 
-  fishY=112;
-  fishV=0;
-  barY=85;
-  progressValue=25;
+  document.body.classList.add("playing-mini");
+  targetSizeKey=pickFishSize();
 
+  fishY=112; fishV=0; barY=85; progressValue=25;
   fishPattern=createFishPattern(FISHES[targetFishKey]);
   fishPatternTime=0;
 
@@ -572,7 +518,6 @@ function startMiniGameHiddenFish(){
 
   normalControls.classList.add("hidden");
   miniGameBox.classList.remove("hidden");
-
   miniStatus.textContent="정체를 알 수 없는 물고기가 걸렸습니다. 버튼 또는 스페이스바로 시작하세요.";
 
   loopMiniGame();
@@ -585,61 +530,71 @@ function setUnknownFishSprite(){
   fishSprite.style.width="58px";
 }
 
-function setRevealedFishSprite(key){
-  const fish=FISHES[key];
-  fishSprite.src=fish.img;
-  fishSprite.classList.remove("unknown");
-  fishSprite.style.width=fish.rarity==="legend"?"72px":fish.rarity==="rare"?"64px":fish.rarity==="uncommon"?"58px":"52px";
-}
-
 function showFishShadow(key){
   const fish=FISHES[key];
   let size=70;
   if(fish.rarity==="uncommon")size=95;
   if(fish.rarity==="rare")size=125;
   if(fish.rarity==="legend")size=165;
-
   fishShadow.style.display="block";
   fishShadow.style.width=size+"px";
   fishShadow.style.height=Math.round(size*.32)+"px";
 }
 
-function hideFishShadow(){
-  fishShadow.style.display="none";
-}
+function hideFishShadow(){fishShadow.style.display="none";}
 
 function forceStartMiniGame(){
   if(!miniRunning||actualMiniStarted)return;
-
   waitingToStart=false;
   actualMiniStarted=true;
-
   miniStatus.textContent="물고기를 초록 구간 안에 유지하세요.";
 }
 
 function pickFishByLocation(locationKey){
   const loc=LOCATIONS[locationKey];
   const rodBonus=Math.max(0,(fishing.rodLevel||1)-1);
-
   const table=loc.fishes.map(key=>{
     const fish=FISHES[key];
     let weight=fish.rate;
-
     if(fish.rarity==="rare")weight+=rodBonus*1.25;
     if(fish.rarity==="legend")weight+=rodBonus*.25;
-
     return [key,weight];
   });
 
   const total=table.reduce((sum,item)=>sum+item[1],0);
   let r=Math.random()*total;
-
-  for(const [key,weight] of table){
-    r-=weight;
-    if(r<=0)return key;
-  }
-
+  for(const [key,weight] of table){r-=weight;if(r<=0)return key;}
   return loc.fishes[0];
+}
+
+function pickFishSize(){
+  const entries=Object.entries(FISH_SIZES);
+  const total=entries.reduce((sum,item)=>sum+item[1].rate,0);
+  let r=Math.random()*total;
+  for(const [key,size] of entries){r-=size.rate;if(r<=0)return key;}
+  return "normal";
+}
+
+function getInventoryKey(fishKey,sizeKey){return `${fishKey}_${sizeKey}`;}
+
+function parseInventoryKey(invKey){
+  const parts=invKey.split("_");
+  const sizeKey=parts.pop();
+  const fishKey=parts.join("_");
+  if(FISHES[fishKey]&&FISH_SIZES[sizeKey]) return {fishKey,sizeKey};
+  return {fishKey:invKey,sizeKey:"normal"};
+}
+
+function getFishSellPrice(fishKey,sizeKey){
+  const fish=FISHES[fishKey];
+  const size=FISH_SIZES[sizeKey]||FISH_SIZES.normal;
+  return Math.round(fish.price*size.priceMul);
+}
+
+function getSizedFishName(fishKey,sizeKey){
+  const fish=FISHES[fishKey];
+  const size=FISH_SIZES[sizeKey]||FISH_SIZES.normal;
+  return `${size.name} ${fish.name}`;
 }
 
 function loopMiniGame(){
@@ -656,8 +611,11 @@ function loopMiniGame(){
 
   const targetFish=FISHES[targetFishKey];
   const rodLevel=fishing.rodLevel||1;
-  const barHeight=Math.max(34,54+rodLevel*5);
-  const fishSpeed=targetFish.speed*Math.max(.68,1.22-rodLevel*.045);
+  const sizeInfo=FISH_SIZES[targetSizeKey]||FISH_SIZES.normal;
+  const trackHeight=$("track").clientHeight;
+
+  const barHeight=Math.max(50,70+rodLevel*6);
+  const fishSpeed=targetFish.speed*sizeInfo.difficulty*Math.max(.68,1.14-rodLevel*.045);
 
   fishPatternTime+=1;
   fishV+=getFishMovement(targetFish,fishPattern,fishPatternTime)*fishSpeed;
@@ -665,16 +623,17 @@ function loopMiniGame(){
   fishY+=fishV;
 
   if(fishY<4){fishY=4;fishV*=-.58;}
-  if(fishY>206){fishY=206;fishV*=-.58;}
+  const maxFishY=trackHeight-28;
+  if(fishY>maxFishY){fishY=maxFishY;fishV*=-.58;}
 
-  if(holding)barY-=4.15; else barY+=3.35;
-  barY=Math.max(0,Math.min(230-barHeight,barY));
+  if(holding)barY-=3.4; else barY+=2.8;
+  barY=Math.max(0,Math.min(trackHeight-barHeight,barY));
 
   const fishCenter=fishY+16;
   const inBar=fishCenter>=barY&&fishCenter<=barY+barHeight;
 
-  if(inBar)progressValue+=.28+rodLevel*.045;
-  else progressValue-=.34;
+  if(inBar)progressValue+=.42+rodLevel*.06;
+  else progressValue-=.22;
 
   progressValue=Math.max(0,Math.min(100,progressValue));
 
@@ -685,7 +644,6 @@ function loopMiniGame(){
 
   if(progressValue>=100){finishFishing(true);return;}
   if(progressValue<=0){finishFishing(false);return;}
-
   animationId=requestAnimationFrame(loopMiniGame);
 }
 
@@ -737,6 +695,7 @@ async function finishFishing(success){
   waitingToStart=false;
   actualMiniStarted=false;
   holding=false;
+  document.body.classList.remove("playing-mini");
 
   if(animationId)cancelAnimationFrame(animationId);
 
@@ -745,18 +704,17 @@ async function finishFishing(success){
 
   if(success){
     const fish=FISHES[targetFishKey];
+    const invKey=getInventoryKey(targetFishKey,targetSizeKey);
+    const sizedName=getSizedFishName(targetFishKey,targetSizeKey);
 
     fishing.inventory=fishing.inventory||{};
     fishing.discovered=fishing.discovered||{};
-    fishing.inventory[targetFishKey]=(fishing.inventory[targetFishKey]||0)+1;
+    fishing.inventory[invKey]=(fishing.inventory[invKey]||0)+1;
     fishing.discovered[targetFishKey]=true;
     fishing.totalCaught=(fishing.totalCaught||0)+1;
 
-    catchResult.innerHTML=`
-      <img src="${fish.img}" alt="${fish.name}">
-      <b class="r-${fish.rarity}">${fish.name}</b> 획득!
-    `;
-    mainStatus.textContent=`정체는 ${fish.name}이었습니다!`;
+    catchResult.innerHTML=`<img src="${fish.img}" alt="${fish.name}"><b class="r-${fish.rarity}">${sizedName}</b> 획득!`;
+    mainStatus.textContent=`정체는 ${sizedName}이었습니다!`;
   }else{
     catchResult.innerHTML="";
     mainStatus.textContent="물고기가 도망갔습니다. 정체는 알 수 없습니다.";
@@ -778,13 +736,11 @@ async function sellAllFish(){
   let earn=0;
 
   for(const [key,count] of Object.entries(inv)){
-    if(FISHES[key])earn+=FISHES[key].price*count;
+    const parsed=parseInventoryKey(key);
+    if(FISHES[parsed.fishKey]) earn+=getFishSellPrice(parsed.fishKey,parsed.sizeKey)*count;
   }
 
-  if(earn<=0){
-    mainStatus.textContent="판매할 물고기가 없습니다.";
-    return;
-  }
+  if(earn<=0){mainStatus.textContent="판매할 물고기가 없습니다.";return;}
 
   fishing.gold+=earn;
   fishing.totalEarned=(fishing.totalEarned||0)+earn;
@@ -799,11 +755,9 @@ window.changeSellQty=function(key,delta){
   const el=document.getElementById(`sell_${key}`);
   const have=fishing.inventory?.[key]||0;
   if(!el||have<=0)return;
-
   let value=Number(el.textContent||1)+delta;
   if(value<1)value=1;
   if(value>have)value=have;
-
   el.textContent=value;
 };
 
@@ -811,23 +765,20 @@ window.sellFish=async function(key){
   const input=document.getElementById(`sell_${key}`);
   const have=fishing.inventory?.[key]||0;
   let amount=Math.floor(Number(input.textContent||1));
-
   if(amount<1)amount=1;
+  if(amount>have){mainStatus.textContent="보유 수량보다 많이 팔 수 없습니다.";return;}
 
-  if(amount>have){
-    mainStatus.textContent="보유 수량보다 많이 팔 수 없습니다.";
-    return;
-  }
-
-  const earn=FISHES[key].price*amount;
+  const parsed=parseInventoryKey(key);
+  const fishKey=parsed.fishKey;
+  const sizeKey=parsed.sizeKey;
+  const earn=getFishSellPrice(fishKey,sizeKey)*amount;
 
   fishing.inventory[key]-=amount;
   if(fishing.inventory[key]<=0)delete fishing.inventory[key];
 
   fishing.gold+=earn;
   fishing.totalEarned=(fishing.totalEarned||0)+earn;
-
-  mainStatus.textContent=`${FISHES[key].name} ${amount}마리를 팔아 ${earn} G를 벌었습니다.`;
+  mainStatus.textContent=`${getSizedFishName(fishKey,sizeKey)} ${amount}마리를 팔아 ${earn} G를 벌었습니다.`;
 
   render();
   await saveGame();
@@ -835,15 +786,10 @@ window.sellFish=async function(key){
 
 async function upgradeRod(){
   const cost=getUpgradeCost();
-
-  if(fishing.gold<cost){
-    mainStatus.textContent="골드가 부족합니다.";
-    return;
-  }
+  if(fishing.gold<cost){mainStatus.textContent="골드가 부족합니다.";return;}
 
   fishing.gold-=cost;
   fishing.rodLevel+=1;
-
   mainStatus.textContent=`낚싯대가 Lv.${fishing.rodLevel}(으)로 업그레이드되었습니다.`;
 
   render();
@@ -851,55 +797,43 @@ async function upgradeRod(){
 }
 
 async function buyBait(){
-  if(fishing.gold<30){
-    mainStatus.textContent="골드가 부족합니다.";
-    return;
-  }
+  if(fishing.gold<30){mainStatus.textContent="골드가 부족합니다.";return;}
 
   fishing.gold-=30;
   fishing.bait+=5;
-
   mainStatus.textContent="미끼 5개를 구매했습니다.";
 
   render();
   await saveGame();
 }
 
-function getUpgradeCost(){
-  return 100+((fishing.rodLevel||1)-1)*120;
-}
+function getUpgradeCost(){return 100+((fishing.rodLevel||1)-1)*120;}
 
 document.addEventListener("keydown",e=>{
   if(e.code==="Space"){
     if(isCasting&&biteReady) reactBite();
-    else {
-      forceStartMiniGame();
-      holding=true;
-    }
+    else {forceStartMiniGame();holding=true;}
     e.preventDefault();
   }
 });
 
 document.addEventListener("keyup",e=>{
-  if(e.code==="Space"){
-    holding=false;
-    e.preventDefault();
-  }
+  if(e.code==="Space"){holding=false;e.preventDefault();}
 });
 
-const holdBtn=document.getElementById("holdBtn");
+const holdBtn=$("holdBtn");
 holdBtn.addEventListener("mousedown",()=>{forceStartMiniGame();holding=true;});
 holdBtn.addEventListener("mouseup",()=>holding=false);
 holdBtn.addEventListener("mouseleave",()=>holding=false);
 holdBtn.addEventListener("touchstart",e=>{forceStartMiniGame();holding=true;e.preventDefault();},{passive:false});
 holdBtn.addEventListener("touchend",e=>{holding=false;e.preventDefault();},{passive:false});
 
-document.getElementById("fishBtn").onclick=castLine;
-document.getElementById("biteBtn").onclick=reactBite;
-document.getElementById("sellAllBtn").onclick=sellAllFish;
-document.getElementById("upgradeRodBtn").onclick=upgradeRod;
-document.getElementById("buyBaitBtn").onclick=buyBait;
-document.getElementById("saveBtn").onclick=saveGame;
+$("fishBtn").onclick=castLine;
+$("biteBtn").onclick=reactBite;
+$("sellAllBtn").onclick=sellAllFish;
+$("upgradeRodBtn").onclick=upgradeRod;
+$("buyBaitBtn").onclick=buyBait;
+$("saveBtn").onclick=saveGame;
 
 document.querySelectorAll(".tab-btn").forEach(btn=>{
   btn.onclick=()=>{
