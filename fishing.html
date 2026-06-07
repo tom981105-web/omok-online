@@ -36,8 +36,9 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .location-card.active{background:#f59e0b;color:#111827;font-weight:bold}
 .location-card.locked{opacity:.42;filter:grayscale(1)}
 .location-card .lv{font-size:11px;color:inherit;opacity:.8}
+.location-thumb{width:100%;height:90px;object-fit:cover;border-radius:10px;margin-bottom:6px;image-rendering:pixelated;display:block}
 
-#pond{position:relative;height:170px;border-radius:22px;background:linear-gradient(#38bdf8,#0369a1);overflow:hidden;border:4px solid rgba(255,255,255,.25)}
+#pond{position:relative;height:170px;border-radius:22px;background-image:linear-gradient(#38bdf8,#0369a1);background-size:cover;background-position:center;background-repeat:no-repeat;overflow:hidden;border:4px solid rgba(255,255,255,.25)}
 .wave{position:absolute;left:0;right:0;height:24px;background:rgba(255,255,255,.18);border-radius:50%;animation:wave 3s infinite linear}
 .wave:nth-child(1){top:28px}
 .wave:nth-child(2){top:84px;animation-duration:4s}
@@ -275,11 +276,11 @@ const FISH_SIZES = {
 };
 
 const LOCATIONS = {
-  pond:{name:"초보 연못",emoji:"🌱",requiredRod:1,fishes:["flounder","crucian","carp","sardine","mackerel","perch"]},
-  river:{name:"강",emoji:"🏞️",requiredRod:2,fishes:["trout","bass","grayMullet","rainbowTrout","pike","carp","perch"]},
-  lake:{name:"호수",emoji:"🌊",requiredRod:3,fishes:["bass","tuna","puffer","sturgeon","tropicalFish","goldenCarp","mackerel"]},
-  lava:{name:"용암지대",emoji:"🌋",requiredRod:5,fishes:["lavaEel","goldenCarp","ghostFish","puffer","sunfish"]},
-  deep:{name:"심해",emoji:"🌌",requiredRod:6,fishes:["octopus","sunfish","ghostFish","sturgeon","tuna","tropicalFish"]}
+  pond:{name:"초보 연못",emoji:"🌱",image:"./assets/locations/pond.png",requiredRod:1,fishes:["flounder","crucian","carp","sardine","mackerel","perch"]},
+  river:{name:"강",emoji:"🏞️",image:"./assets/locations/river.png",requiredRod:2,fishes:["trout","bass","grayMullet","rainbowTrout","pike","carp","perch"]},
+  lake:{name:"호수",emoji:"🌅",image:"./assets/locations/lake.png",requiredRod:3,fishes:["bass","tuna","puffer","sturgeon","tropicalFish","goldenCarp","mackerel"]},
+  lava:{name:"용암지대",emoji:"🌋",image:"./assets/locations/lava.png",requiredRod:5,fishes:["lavaEel","goldenCarp","ghostFish","puffer","sunfish"]},
+  deep:{name:"심해",emoji:"🌊",image:"./assets/locations/deep.png",requiredRod:6,fishes:["octopus","sunfish","ghostFish","sturgeon","tuna","tropicalFish"]}
 };
 
 let uid="", userData=null, fishing=null;
@@ -359,7 +360,7 @@ function renderLocations(){
     const locked=(fishing.rodLevel||1)<loc.requiredRod;
     const div=document.createElement("div");
     div.className=`location-card ${selectedLocation===key?"active":""} ${locked?"locked":""}`;
-    div.innerHTML=`<div>${loc.emoji}</div><b>${loc.name}</b><div class="lv">Lv.${loc.requiredRod}+ 필요</div>`;
+    div.innerHTML=`<img class="location-thumb" src="${loc.image}" alt="${loc.name}"><b>${loc.name}</b><div class="lv">Lv.${loc.requiredRod}+ 필요</div>`;
     div.onclick=()=>{
       if(locked){mainStatus.textContent=`${loc.name}은 낚싯대 Lv.${loc.requiredRod}부터 갈 수 있습니다.`;return;}
       selectedLocation=key;
@@ -368,6 +369,14 @@ function renderLocations(){
     };
     locationGrid.appendChild(div);
   }
+  updateLocationBackground();
+}
+
+function updateLocationBackground(){
+  const loc=LOCATIONS[selectedLocation];
+  const pond=$("pond");
+  if(!loc||!pond)return;
+  pond.style.backgroundImage=`linear-gradient(rgba(3,7,18,.12),rgba(3,7,18,.12)), url("${loc.image}")`;
 }
 
 function renderInventory(){
