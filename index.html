@@ -1,955 +1,361 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-<title>온라인 미니게임</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#111827;color:white;text-align:center}
-h1{margin:18px 0 10px;font-size:32px}
-h2{margin:10px 0}
-input,button{padding:12px;border-radius:12px;border:none;font-size:15px;margin:4px}
-input{width:220px}
-button{background:#f59e0b;color:#111;font-weight:bold;cursor:pointer}
-button.secondary{background:#374151;color:white}
-button.red{background:#ef4444;color:white}
-.wrap{max-width:860px;margin:0 auto;padding:10px}
-.box{background:rgba(255,255,255,.08);border-radius:18px;padding:14px;margin:10px 0}
-.hidden{display:none!important}
-.status{margin:10px 0;color:#facc15;font-weight:bold;line-height:1.5}
-.card{background:rgba(255,255,255,.1);border-radius:18px;padding:16px;margin:10px 0;cursor:pointer;text-align:left;border:1px solid rgba(255,255,255,.12)}
-.card:hover{background:rgba(255,255,255,.16)}
-.room-title{font-size:18px;font-weight:bold}
-.room-meta{margin-top:6px;color:#d1d5db;font-size:14px;line-height:1.6}
-.badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:bold;margin-left:4px}
-.wait{background:#22c55e;color:#052e16}
-.play{background:#facc15;color:#422006}
-.watch{background:#60a5fa;color:#082f49}
-.players{font-size:14px;line-height:1.8;color:#e5e7eb}
-.game-select{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.game-card{text-align:center;padding:24px;border-radius:20px;background:rgba(255,255,255,.1);cursor:pointer}
-.game-card:hover{background:rgba(255,255,255,.18)}
-.board-wrap{width:100vw;overflow-x:auto;padding:12px 0 22px;margin-left:calc(50% - 50vw)}
-#omokBoard{display:grid;grid-template-columns:repeat(15,36px);grid-template-rows:repeat(15,36px);width:540px;height:540px;margin:0 auto;background:#d6a44f;border:4px solid #7c4a12;box-sizing:content-box;touch-action:manipulation}
-.cell{position:relative;border-right:1px solid rgba(80,40,0,.55);border-bottom:1px solid rgba(80,40,0,.55)}
-.cell::after{content:"";position:absolute;width:74%;height:74%;border-radius:50%;top:13%;left:13%}
-.black::after{background:#111;box-shadow:inset -3px -3px 5px rgba(255,255,255,.15)}
-.white::after{background:#f8fafc;box-shadow:inset -3px -3px 5px rgba(0,0,0,.22)}
-.selected::before{content:"";position:absolute;width:40%;height:40%;top:30%;left:30%;border-radius:50%;background:rgba(239,68,68,.75);z-index:2}
-#algagiCanvas{width:min(96vw,760px);height:min(96vw,760px);background:#0f172a;border:5px solid #64748b;border-radius:26px;touch-action:none}
-.small{font-size:13px;color:#d1d5db}
-@media(max-width:700px){.game-select{grid-template-columns:1fr}input{width:180px}}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>온라인 미니게임 허브</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background:
+        radial-gradient(circle at top, #1f2937 0, #111827 45%, #030712 100%);
+      color: white;
+      text-align: center;
+    }
+
+    .wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px 14px 40px;
+    }
+
+    h1 {
+      margin: 18px 0 8px;
+      font-size: 38px;
+    }
+
+    .subtitle {
+      color: #d1d5db;
+      margin-bottom: 22px;
+      line-height: 1.6;
+    }
+
+    .box {
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid rgba(255, 255, 255, .12);
+      border-radius: 22px;
+      padding: 18px;
+      margin: 14px 0;
+      box-shadow: 0 18px 60px rgba(0,0,0,.22);
+    }
+
+    input, button {
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      font-size: 15px;
+      margin: 5px;
+    }
+
+    input {
+      width: min(92vw, 260px);
+      background: #f8fafc;
+      color: #111827;
+    }
+
+    button {
+      background: #f59e0b;
+      color: #111827;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button.secondary {
+      background: #374151;
+      color: white;
+    }
+
+    button:hover {
+      filter: brightness(1.05);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .status {
+      margin-top: 12px;
+      color: #facc15;
+      font-weight: bold;
+      line-height: 1.5;
+    }
+
+    .small {
+      color: #d1d5db;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .game-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .game-card {
+      display: block;
+      text-decoration: none;
+      color: white;
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 24px;
+      padding: 24px 18px;
+      transition: transform .15s ease, background .15s ease;
+    }
+
+    .game-card:hover {
+      transform: translateY(-3px);
+      background: rgba(255,255,255,.17);
+    }
+
+    .emoji {
+      font-size: 48px;
+      margin-bottom: 8px;
+    }
+
+    .game-card h2 {
+      margin: 6px 0;
+      font-size: 24px;
+    }
+
+    .game-card p {
+      margin: 8px 0 0;
+      color: #d1d5db;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .badge {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: #22c55e;
+      color: #052e16;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    @media (max-width: 720px) {
+      h1 {
+        font-size: 30px;
+      }
+
+      .game-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .box {
+        border-radius: 18px;
+      }
+    }
+  </style>
 </head>
 
 <body>
-<div class="wrap">
-<h1>온라인 미니게임</h1>
-
-<section id="authBox" class="box">
-  <input id="emailInput" type="email" placeholder="이메일" /><br />
-  <input id="passwordInput" type="password" placeholder="비밀번호 6자리 이상" /><br />
-  <input id="nameInput" placeholder="닉네임" /><br />
-  <button id="signupBtn">회원가입</button>
-  <button id="loginBtn">로그인</button>
-  <div id="authStatus" class="status">로그인이 필요합니다.</div>
-</section>
-
-<section id="gameSelect" class="hidden">
-  <div class="box">
-    <div class="small">로그인: <span id="userEmail">-</span> / 닉네임: <span id="userName">-</span></div>
-    <button id="logoutBtn" class="secondary">로그아웃</button>
-  </div>
-
-  <div class="game-select">
-    <div class="game-card" onclick="selectGame('omok')">
-      <h2>⚫ 오목</h2>
-      <p>15x15 오목판에서 5개를 먼저 이으면 승리</p>
-    </div>
-    <div class="game-card" onclick="selectGame('algagi')">
-      <h2>🔴 알까기</h2>
-      <p>돌을 밀어서 상대 돌을 밖으로 떨어뜨리면 승리</p>
-    </div>
-  </div>
-</section>
-
-<section id="lobby" class="hidden">
-  <div class="box">
-    <button onclick="goGameSelect()" class="secondary">게임 선택으로</button>
-    <h2 id="lobbyTitle">로비</h2>
-    <input id="titleInput" placeholder="방 제목" />
-    <button id="createRoomBtn">방 만들기</button><br />
-    <button id="toggleEmptyBtn" class="secondary">빈 방만 보기 OFF</button>
-    <div id="lobbyStatus" class="status">방 목록을 불러오는 중...</div>
-  </div>
-  <div id="roomList"></div>
-</section>
-
-<section id="gameRoom" class="hidden">
-  <div class="box">
-    <button onclick="goLobby()" class="secondary">로비로</button>
-    <button id="resetBtn">다시하기</button>
-    <button id="deleteRoomBtn" class="red">방 삭제</button>
-
-    <div id="gameStatus" class="status">대기 중...</div>
-
-    <div class="players">
-      게임: <b id="gameTypeText">-</b><br />
-      방 제목: <b id="roomTitleText">-</b><br />
-      방 코드: <b id="roomCodeText">-</b><br />
-      내 색상: <b id="myColorText">-</b><br />
-      ⚫/🔴 선공: <span id="blackPlayerText">-</span><br />
-      ⚪/🔵 후공: <span id="whitePlayerText">-</span><br />
-      상태: <span id="gameStateText">-</span>
+  <div class="wrap">
+    <h1>온라인 미니게임 허브</h1>
+    <div class="subtitle">
+      친구와 같이 즐기는 간단한 온라인 게임 모음<br />
+      로그인 후 원하는 게임을 선택하세요.
     </div>
 
-    <div id="omokConfirmBox" class="hidden">
-      <button id="omokConfirmBtn">여기에 두기</button>
-      <button id="omokCancelBtn" class="secondary">취소</button>
-    </div>
-  </div>
+    <section id="authBox" class="box">
+      <h2>로그인 / 회원가입</h2>
 
-  <div id="omokArea" class="board-wrap hidden">
-    <div id="omokBoard"></div>
-  </div>
+      <input id="emailInput" type="email" placeholder="이메일" /><br />
+      <input id="passwordInput" type="password" placeholder="비밀번호 6자리 이상" /><br />
+      <input id="nameInput" placeholder="닉네임" /><br />
 
-  <div id="algagiArea" class="hidden">
-    <canvas id="algagiCanvas" width="760" height="760"></canvas>
-    <div class="small">내 차례에 내 돌을 누르고 드래그해서 방향과 힘을 정한 뒤 놓으면 됩니다.</div>
-  </div>
-</section>
-</div>
+      <button id="signupBtn">회원가입</button>
+      <button id="loginBtn">로그인</button>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js";
-import {
-  getDatabase,
-  ref,
-  set,
-  get,
-  onValue,
-  update,
-  runTransaction,
-  serverTimestamp,
-  onDisconnect,
-  remove
-} from "https://www.gstatic.com/firebasejs/11.9.0/firebase-database.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDTsFoSmI1oOS5XLXhhgqyeDmwr8RxEegE",
-  authDomain: "ohmok-cd7bd.firebaseapp.com",
-  databaseURL: "https://ohmok-cd7bd-default-rtdb.firebaseio.com",
-  projectId: "ohmok-cd7bd",
-  storageBucket: "ohmok-cd7bd.firebasestorage.app",
-  messagingSenderId: "640930093452",
-  appId: "1:640930093452:web:0c67d9bb5c8dc3cdb35ea9"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getDatabase(app);
-
-const SIZE = 15;
-const TWO_HOURS = 1000 * 60 * 60 * 2;
-
-let uid = "";
-let nickname = "";
-let selectedGame = "";
-let rooms = {};
-let roomId = "";
-let myColor = "";
-let currentRoomData = null;
-let emptyOnly = false;
-let unsubscribeLobby = null;
-let unsubscribeRoom = null;
-let omokSelected = null;
-
-const authBox = document.getElementById("authBox");
-const gameSelect = document.getElementById("gameSelect");
-const lobby = document.getElementById("lobby");
-const gameRoom = document.getElementById("gameRoom");
-const roomList = document.getElementById("roomList");
-
-const emailInput = document.getElementById("emailInput");
-const passwordInput = document.getElementById("passwordInput");
-const nameInput = document.getElementById("nameInput");
-const titleInput = document.getElementById("titleInput");
-
-const authStatus = document.getElementById("authStatus");
-const lobbyStatus = document.getElementById("lobbyStatus");
-const userEmail = document.getElementById("userEmail");
-const userName = document.getElementById("userName");
-
-const gameStatus = document.getElementById("gameStatus");
-const lobbyTitle = document.getElementById("lobbyTitle");
-const gameTypeText = document.getElementById("gameTypeText");
-const roomTitleText = document.getElementById("roomTitleText");
-const roomCodeText = document.getElementById("roomCodeText");
-const myColorText = document.getElementById("myColorText");
-const blackPlayerText = document.getElementById("blackPlayerText");
-const whitePlayerText = document.getElementById("whitePlayerText");
-const gameStateText = document.getElementById("gameStateText");
-
-const omokArea = document.getElementById("omokArea");
-const omokBoard = document.getElementById("omokBoard");
-const omokConfirmBox = document.getElementById("omokConfirmBox");
-
-const algagiArea = document.getElementById("algagiArea");
-const canvas = document.getElementById("algagiCanvas");
-const ctx = canvas.getContext("2d");
-
-let dragStone = null;
-let dragStart = null;
-let dragCurrent = null;
-let animating = false;
-
-nameInput.value = localStorage.getItem("gameNickname") || "";
-
-async function signup() {
-  const email = emailInput.value.trim();
-  const password = passwordInput.value.trim();
-  const name = nameInput.value.trim();
-
-  if (!email || !password || !name) {
-    alert("이메일, 비밀번호, 닉네임을 모두 입력하세요.");
-    return;
-  }
-
-  try {
-    const result = await createUserWithEmailAndPassword(auth, email, password);
-    localStorage.setItem("gameNickname", name);
-
-    await set(ref(db, `users/${result.user.uid}`), {
-      email,
-      nickname: name,
-      wins: 0,
-      losses: 0,
-      draws: 0,
-      createdAt: serverTimestamp()
-    });
-
-    authStatus.textContent = "회원가입 완료";
-  } catch (err) {
-    alert("회원가입 실패: " + koreanAuthError(err.code));
-  }
-}
-
-async function login() {
-  const email = emailInput.value.trim();
-  const password = passwordInput.value.trim();
-
-  if (!email || !password) {
-    alert("이메일과 비밀번호를 입력하세요.");
-    return;
-  }
-
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-  } catch (err) {
-    alert("로그인 실패: " + koreanAuthError(err.code));
-  }
-}
-
-async function logout() {
-  await signOut(auth);
-  location.reload();
-}
-
-onAuthStateChanged(auth, async user => {
-  if (!user) {
-    uid = "";
-    authBox.classList.remove("hidden");
-    gameSelect.classList.add("hidden");
-    lobby.classList.add("hidden");
-    gameRoom.classList.add("hidden");
-    return;
-  }
-
-  uid = user.uid;
-
-  const snap = await get(ref(db, `users/${uid}`));
-  const data = snap.val() || {};
-
-  nickname = data.nickname || localStorage.getItem("gameNickname") || user.email.split("@")[0];
-
-  userEmail.textContent = user.email;
-  userName.textContent = nickname;
-
-  authBox.classList.add("hidden");
-  gameSelect.classList.remove("hidden");
-});
-
-window.selectGame = async function(game) {
-  selectedGame = game;
-  gameSelect.classList.add("hidden");
-  lobby.classList.remove("hidden");
-  lobbyTitle.textContent = game === "omok" ? "⚫ 오목 로비" : "🔴 알까기 로비";
-  await autoCleanOldRooms(game);
-  listenLobby();
-};
-
-window.goGameSelect = function() {
-  if (unsubscribeLobby) unsubscribeLobby();
-  lobby.classList.add("hidden");
-  gameSelect.classList.remove("hidden");
-};
-
-async function autoCleanOldRooms(game) {
-  const snap = await get(ref(db, `rooms/${game}`));
-  const data = snap.val() || {};
-  const now = Date.now();
-
-  for (const [id, room] of Object.entries(data)) {
-    const updated = room.updatedAtValue || room.createdAtValue || 0;
-    if (now - updated > TWO_HOURS) {
-      await remove(ref(db, `rooms/${game}/${id}`));
-    }
-  }
-}
-
-function listenLobby() {
-  if (unsubscribeLobby) unsubscribeLobby();
-
-  unsubscribeLobby = onValue(ref(db, `rooms/${selectedGame}`), snap => {
-    rooms = snap.val() || {};
-    renderLobby();
-  });
-}
-
-function renderLobby() {
-  roomList.innerHTML = "";
-
-  const entries = Object.entries(rooms || {})
-    .filter(([id, data]) => emptyOnly ? !data.players?.white : true)
-    .sort((a, b) => (b[1].updatedAtValue || 0) - (a[1].updatedAtValue || 0));
-
-  lobbyStatus.textContent = entries.length ? `현재 방 ${entries.length}개` : "생성된 방이 없습니다.";
-
-  for (const [id, data] of entries) {
-    const status = roomStatus(data);
-    const card = document.createElement("div");
-    card.className = "card";
-
-    card.innerHTML = `
-      <div class="room-title">
-        ${escapeHtml(data.title || "제목 없는 방")}
-        <span class="badge ${status === "대국 중" ? "play" : status === "대기 중" ? "wait" : "watch"}">${status}</span>
-        <span class="badge ${data.players?.white ? "watch" : "wait"}">${data.players?.white ? "관전 가능" : "입장 가능"}</span>
+      <div id="authStatus" class="status">로그인이 필요합니다.</div>
+      <div class="small">
+        회원가입 시 닉네임이 저장됩니다. 이후 게임에서는 같은 계정 정보를 사용합니다.
       </div>
-      <div class="room-meta">
-        방 코드: ${id}<br>
-        선공: ${escapeHtml(data.players?.blackName || "없음")} / 후공: ${escapeHtml(data.players?.whiteName || "없음")}<br>
-        클릭하면 입장합니다. 가득 찬 방은 관전으로 입장합니다.
+    </section>
+
+    <section id="menuBox" class="hidden">
+      <div class="box">
+        <div>
+          로그인: <b id="userEmail">-</b><br />
+          닉네임: <b id="userName">-</b>
+        </div>
+
+        <button id="logoutBtn" class="secondary">로그아웃</button>
       </div>
-    `;
 
-    card.onclick = () => joinRoom(id);
-    roomList.appendChild(card);
-  }
-}
-
-function roomStatus(data) {
-  const black = !!data.players?.black;
-  const white = !!data.players?.white;
-  if (black && white && !data.winner) return "대국 중";
-  if (data.winner) return "종료";
-  return "대기 중";
-}
-
-async function createRoom() {
-  if (!uid) return alert("로그인이 필요합니다.");
-
-  const code = makeRoomCode();
-  const title = titleInput.value.trim() || `${nickname}님의 ${selectedGame === "omok" ? "오목방" : "알까기방"}`;
-  const now = Date.now();
-
-  const base = {
-    title,
-    turn: "black",
-    winner: "",
-    createdAt: serverTimestamp(),
-    createdAtValue: now,
-    updatedAtValue: now,
-    players: {
-      black: uid,
-      blackName: nickname,
-      white: "",
-      whiteName: ""
-    },
-    presence: {
-      black: true,
-      white: false
-    }
-  };
-
-  if (selectedGame === "omok") {
-    base.board = emptyOmokBoard();
-  } else {
-    base.stones = createAlgagiStones();
-  }
-
-  await set(ref(db, `rooms/${selectedGame}/${code}`), base);
-
-  roomId = code;
-  myColor = "black";
-  enterRoom(code);
-}
-
-async function joinRoom(code) {
-  if (!uid) return alert("로그인이 필요합니다.");
-
-  const snap = await get(ref(db, `rooms/${selectedGame}/${code}`));
-  if (!snap.exists()) return alert("이미 삭제된 방입니다.");
-
-  const data = snap.val();
-  roomId = code;
-
-  if (data.players?.black === uid) {
-    myColor = "black";
-    await update(ref(db, `rooms/${selectedGame}/${code}`), {
-      "players/blackName": nickname,
-      "presence/black": true,
-      updatedAtValue: Date.now()
-    });
-  } else if (data.players?.white === uid) {
-    myColor = "white";
-    await update(ref(db, `rooms/${selectedGame}/${code}`), {
-      "players/whiteName": nickname,
-      "presence/white": true,
-      updatedAtValue: Date.now()
-    });
-  } else if (!data.players?.white) {
-    myColor = "white";
-    await update(ref(db, `rooms/${selectedGame}/${code}`), {
-      "players/white": uid,
-      "players/whiteName": nickname,
-      "presence/white": true,
-      updatedAtValue: Date.now()
-    });
-  } else {
-    myColor = "watch";
-  }
-
-  enterRoom(code);
-}
-
-function enterRoom(code) {
-  lobby.classList.add("hidden");
-  gameRoom.classList.remove("hidden");
-
-  omokArea.classList.toggle("hidden", selectedGame !== "omok");
-  algagiArea.classList.toggle("hidden", selectedGame !== "algagi");
-
-  roomCodeText.textContent = code;
-  myColorText.textContent =
-    myColor === "black" ? "선공" :
-    myColor === "white" ? "후공" :
-    "관전";
-
-  gameTypeText.textContent = selectedGame === "omok" ? "오목" : "알까기";
-
-  setupDisconnect();
-
-  if (unsubscribeRoom) unsubscribeRoom();
-
-  unsubscribeRoom = onValue(ref(db, `rooms/${selectedGame}/${code}`), snap => {
-    currentRoomData = snap.val();
-
-    if (!currentRoomData) {
-      alert("방이 삭제되었습니다.");
-      goLobby();
-      return;
-    }
-
-    updateGameInfo(currentRoomData);
-
-    if (selectedGame === "omok") {
-      renderOmokBoard(currentRoomData.board);
-    } else {
-      drawAlgagi(currentRoomData.stones || []);
-    }
-  });
-}
-
-function setupDisconnect() {
-  if (!roomId || myColor === "watch") return;
-
-  const presenceRef = ref(db, `rooms/${selectedGame}/${roomId}/presence/${myColor}`);
-  set(presenceRef, true);
-  onDisconnect(presenceRef).set(false);
-}
-
-function updateGameInfo(data) {
-  roomTitleText.textContent = data.title || "제목 없는 방";
-  blackPlayerText.textContent = data.players?.blackName || "대기 중";
-  whitePlayerText.textContent = data.players?.whiteName || "대기 중";
-
-  const status = roomStatus(data);
-  const blackOnline = data.presence?.black ? "접속" : "미접속";
-  const whiteOnline = data.presence?.white ? "접속" : "미접속";
-
-  gameStateText.textContent = `${status} / 선공 ${blackOnline} / 후공 ${whiteOnline}`;
-
-  if (data.winner) {
-    if (data.winner === "draw") gameStatus.textContent = "무승부입니다. 다시하기 또는 방 삭제를 선택하세요.";
-    else if (data.winner === myColor) gameStatus.textContent = "승리했습니다! 다시하기 또는 방 삭제를 선택하세요.";
-    else if (myColor === "watch") gameStatus.textContent = `${data.winner === "black" ? "선공" : "후공"} 승리`;
-    else gameStatus.textContent = "패배했습니다. 다시하기 또는 방 삭제를 선택하세요.";
-    return;
-  }
-
-  if (myColor === "watch") gameStatus.textContent = "관전 중입니다.";
-  else if (data.turn === myColor) gameStatus.textContent = "내 차례입니다.";
-  else gameStatus.textContent = "상대방 차례입니다.";
-}
-
-window.goLobby = function() {
-  omokSelected = null;
-  omokConfirmBox.classList.add("hidden");
-  roomId = "";
-  myColor = "";
-  currentRoomData = null;
-  gameRoom.classList.add("hidden");
-  lobby.classList.remove("hidden");
-};
-
-async function resetGame() {
-  if (!roomId || myColor === "watch") return alert("관전자는 다시하기를 할 수 없습니다.");
-
-  const resetData = {
-    turn: "black",
-    winner: "",
-    updatedAtValue: Date.now()
-  };
-
-  if (selectedGame === "omok") resetData.board = emptyOmokBoard();
-  else resetData.stones = createAlgagiStones();
-
-  await update(ref(db, `rooms/${selectedGame}/${roomId}`), resetData);
-}
-
-async function deleteCurrentRoom() {
-  if (!roomId) return;
-
-  if (myColor === "watch") {
-    alert("관전자는 방을 삭제할 수 없습니다.");
-    return;
-  }
-
-  if (!confirm("현재 방을 삭제할까요?")) return;
-
-  await remove(ref(db, `rooms/${selectedGame}/${roomId}`));
-  goLobby();
-}
-
-/* 오목 */
-function emptyOmokBoard() {
-  return Array.from({ length: SIZE }, () => Array(SIZE).fill(""));
-}
-
-function renderOmokBoard(board = emptyOmokBoard()) {
-  omokBoard.innerHTML = "";
-
-  for (let y = 0; y < SIZE; y++) {
-    for (let x = 0; x < SIZE; x++) {
-      const cell = document.createElement("div");
-      cell.className = "cell";
-
-      if (board[y][x] === "black") cell.classList.add("black");
-      if (board[y][x] === "white") cell.classList.add("white");
-      if (omokSelected && omokSelected.x === x && omokSelected.y === y) cell.classList.add("selected");
-
-      cell.onclick = () => selectOmokCell(x, y);
-      omokBoard.appendChild(cell);
-    }
-  }
-}
-
-function selectOmokCell(x, y) {
-  if (!roomId || myColor === "watch" || !currentRoomData) return;
-  if (currentRoomData.winner) return;
-  if (currentRoomData.turn !== myColor) return;
-  if (currentRoomData.board[y][x]) return;
-
-  omokSelected = { x, y };
-  omokConfirmBox.classList.remove("hidden");
-  renderOmokBoard(currentRoomData.board);
-}
-
-async function confirmOmok() {
-  if (!omokSelected) return;
-
-  const { x, y } = omokSelected;
-  omokSelected = null;
-  omokConfirmBox.classList.add("hidden");
-
-  await runTransaction(ref(db, `rooms/omok/${roomId}`), data => {
-    if (!data) return data;
-    if (data.winner) return data;
-    if (data.turn !== myColor) return data;
-    if (data.board[y][x]) return data;
-
-    data.board[y][x] = myColor;
-    data.updatedAtValue = Date.now();
-
-    if (checkOmokWin(data.board, x, y, myColor)) data.winner = myColor;
-    else if (data.board.every(row => row.every(cell => cell))) data.winner = "draw";
-    else data.turn = myColor === "black" ? "white" : "black";
-
-    return data;
-  });
-}
-
-function cancelOmok() {
-  omokSelected = null;
-  omokConfirmBox.classList.add("hidden");
-  if (currentRoomData) renderOmokBoard(currentRoomData.board);
-}
-
-function checkOmokWin(board, x, y, color) {
-  const dirs = [[1,0],[0,1],[1,1],[1,-1]];
-
-  for (const [dx, dy] of dirs) {
-    let count = 1;
-    count += countDir(board, x, y, dx, dy, color);
-    count += countDir(board, x, y, -dx, -dy, color);
-    if (count >= 5) return true;
-  }
-
-  return false;
-}
-
-function countDir(board, x, y, dx, dy, color) {
-  let count = 0;
-  let nx = x + dx;
-  let ny = y + dy;
-
-  while (nx >= 0 && ny >= 0 && nx < SIZE && ny < SIZE && board[ny][nx] === color) {
-    count++;
-    nx += dx;
-    ny += dy;
-  }
-
-  return count;
-}
-
-/* 알까기 */
-function createAlgagiStones() {
-  const stones = [];
-  const blackXs = [260, 320, 380, 440, 500];
-  const whiteXs = [260, 320, 380, 440, 500];
-
-  blackXs.forEach((x, i) => {
-    stones.push({ id: "b" + i, color: "black", x, y: 610, vx: 0, vy: 0, alive: true });
-  });
-
-  whiteXs.forEach((x, i) => {
-    stones.push({ id: "w" + i, color: "white", x, y: 150, vx: 0, vy: 0, alive: true });
-  });
-
-  return stones;
-}
-
-function drawAlgagi(stones) {
-  ctx.clearRect(0, 0, 760, 760);
-
-  ctx.fillStyle = "#334155";
-  ctx.beginPath();
-  ctx.arc(380, 380, 340, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.strokeStyle = "#cbd5e1";
-  ctx.lineWidth = 6;
-  ctx.stroke();
-
-  ctx.strokeStyle = "rgba(255,255,255,.25)";
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(160, 380);
-  ctx.lineTo(600, 380);
-  ctx.stroke();
-
-  for (const s of stones) {
-    if (!s.alive) continue;
-
-    ctx.beginPath();
-    ctx.arc(s.x, s.y, 22, 0, Math.PI * 2);
-    ctx.fillStyle = s.color === "black" ? "#ef4444" : "#3b82f6";
-    ctx.fill();
-
-    ctx.strokeStyle = "white";
-    ctx.lineWidth = 2;
-    ctx.stroke();
-  }
-
-  if (dragStone && dragStart && dragCurrent) {
-    const dx = dragStart.x - dragCurrent.x;
-    const dy = dragStart.y - dragCurrent.y;
-
-    const len = Math.min(Math.sqrt(dx * dx + dy * dy), 150);
-    const angle = Math.atan2(dy, dx);
-
-    const startX = dragStone.x;
-    const startY = dragStone.y;
-    const endX = startX + Math.cos(angle) * len;
-    const endY = startY + Math.sin(angle) * len;
-
-    ctx.strokeStyle = "#facc15";
-    ctx.fillStyle = "#facc15";
-    ctx.lineWidth = 6;
-
-    ctx.beginPath();
-    ctx.moveTo(startX, startY);
-    ctx.lineTo(endX, endY);
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.moveTo(endX, endY);
-    ctx.lineTo(endX - Math.cos(angle - 0.45) * 22, endY - Math.sin(angle - 0.45) * 22);
-    ctx.lineTo(endX - Math.cos(angle + 0.45) * 22, endY - Math.sin(angle + 0.45) * 22);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.font = "bold 18px Arial";
-    ctx.fillText(`힘 ${Math.round(len)}`, startX + 12, startY - 28);
-  }
-}
-
-function canvasPoint(e) {
-  const rect = canvas.getBoundingClientRect();
-  const touch = e.touches ? e.touches[0] : e;
-  return {
-    x: (touch.clientX - rect.left) * (canvas.width / rect.width),
-    y: (touch.clientY - rect.top) * (canvas.height / rect.height)
-  };
-}
-
-function algagiDown(e) {
-  if (selectedGame !== "algagi") return;
-  if (!currentRoomData || currentRoomData.winner) return;
-  if (myColor === "watch" || currentRoomData.turn !== myColor) return;
-  if (animating) return;
-
-  const p = canvasPoint(e);
-  const stones = currentRoomData.stones || [];
-
-  const target = stones.find(s => {
-    if (!s.alive || s.color !== myColor) return false;
-    const dx = s.x - p.x;
-    const dy = s.y - p.y;
-    return Math.sqrt(dx * dx + dy * dy) < 32;
-  });
-
-  if (!target) return;
-
-  dragStone = { ...target };
-  dragStart = p;
-  dragCurrent = p;
-  e.preventDefault();
-}
-
-function algagiMove(e) {
-  if (!dragStone) return;
-  dragCurrent = canvasPoint(e);
-  drawAlgagi(currentRoomData.stones || []);
-  e.preventDefault();
-}
-
-async function algagiUp(e) {
-  if (!dragStone || !dragStart || !dragCurrent) return;
-
-  const dx = dragStart.x - dragCurrent.x;
-  const dy = dragStart.y - dragCurrent.y;
-
-  const power = Math.min(Math.sqrt(dx * dx + dy * dy), 150);
-  const angle = Math.atan2(dy, dx);
-
-  const stones = JSON.parse(JSON.stringify(currentRoomData.stones || []));
-  const stone = stones.find(s => s.id === dragStone.id);
-
-  if (!stone) return;
-
-  stone.vx = Math.cos(angle) * power * 0.11;
-  stone.vy = Math.sin(angle) * power * 0.11;
-
-  dragStone = null;
-  dragStart = null;
-  dragCurrent = null;
-
-  await simulateAlgagi(stones);
-}
-
-async function simulateAlgagi(stones) {
-  animating = true;
-
-  const FRICTION = 0.88;
-  const HIT_LOSS = 0.82;
-  const STOP_SPEED = 0.28;
-  const MAX_FRAMES = 90;
-
-  for (let frame = 0; frame < MAX_FRAMES; frame++) {
-    for (const s of stones) {
-      if (!s.alive) continue;
-
-      s.x += s.vx;
-      s.y += s.vy;
-
-      s.vx *= FRICTION;
-      s.vy *= FRICTION;
-
-      if (Math.abs(s.vx) + Math.abs(s.vy) < STOP_SPEED) {
-        s.vx = 0;
-        s.vy = 0;
+      <div class="game-grid">
+        <a class="game-card" href="./board.html">
+          <div class="emoji">⚫</div>
+          <h2>오목 / 알까기</h2>
+          <p>
+            방을 만들고 친구와 실시간으로 오목 또는 알까기를 즐길 수 있습니다.
+          </p>
+          <span class="badge">멀티플레이</span>
+        </a>
+
+        <a class="game-card" href="./fishing.html">
+          <div class="emoji">🎣</div>
+          <h2>낚시게임</h2>
+          <p>
+            물고기를 잡고 판매해서 돈을 벌고, 낚싯대와 미끼를 업그레이드합니다.
+          </p>
+          <span class="badge">싱글 성장형</span>
+        </a>
+      </div>
+    </section>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js";
+    import {
+      getDatabase,
+      ref,
+      set,
+      get,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDTsFoSmI1oOS5XLXhhgqyeDmwr8RxEegE",
+      authDomain: "ohmok-cd7bd.firebaseapp.com",
+      databaseURL: "https://ohmok-cd7bd-default-rtdb.firebaseio.com",
+      projectId: "ohmok-cd7bd",
+      storageBucket: "ohmok-cd7bd.firebasestorage.app",
+      messagingSenderId: "640930093452",
+      appId: "1:640930093452:web:0c67d9bb5c8dc3cdb35ea9"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    const authBox = document.getElementById("authBox");
+    const menuBox = document.getElementById("menuBox");
+
+    const emailInput = document.getElementById("emailInput");
+    const passwordInput = document.getElementById("passwordInput");
+    const nameInput = document.getElementById("nameInput");
+
+    const authStatus = document.getElementById("authStatus");
+    const userEmail = document.getElementById("userEmail");
+    const userName = document.getElementById("userName");
+
+    nameInput.value = localStorage.getItem("gameNickname") || "";
+
+    async function signup() {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value.trim();
+      const name = nameInput.value.trim();
+
+      if (!email || !password || !name) {
+        alert("이메일, 비밀번호, 닉네임을 모두 입력하세요.");
+        return;
       }
 
-      const dx = s.x - 380;
-      const dy = s.y - 380;
-      const dist = Math.sqrt(dx * dx + dy * dy);
+      try {
+        const result = await createUserWithEmailAndPassword(auth, email, password);
+        localStorage.setItem("gameNickname", name);
 
-      if (dist > 345) {
-        s.alive = false;
-        s.vx = 0;
-        s.vy = 0;
+        await set(ref(db, `users/${result.user.uid}`), {
+          email,
+          nickname: name,
+          wins: 0,
+          losses: 0,
+          draws: 0,
+          fishing: {
+            gold: 0,
+            rodLevel: 1,
+            bait: 5,
+            inventory: {},
+            totalCaught: 0,
+            totalEarned: 0
+          },
+          createdAt: serverTimestamp()
+        });
+
+        authStatus.textContent = "회원가입 완료";
+      } catch (err) {
+        alert("회원가입 실패: " + koreanAuthError(err.code));
       }
     }
 
-    for (let i = 0; i < stones.length; i++) {
-      for (let j = i + 1; j < stones.length; j++) {
-        collide(stones[i], stones[j], HIT_LOSS);
+    async function login() {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value.trim();
+
+      if (!email || !password) {
+        alert("이메일과 비밀번호를 입력하세요.");
+        return;
+      }
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+      } catch (err) {
+        alert("로그인 실패: " + koreanAuthError(err.code));
       }
     }
 
-    drawAlgagi(stones);
+    async function logout() {
+      await signOut(auth);
+      location.reload();
+    }
 
-    const moving = stones.some(s =>
-      s.alive && (Math.abs(s.vx) + Math.abs(s.vy) > STOP_SPEED)
-    );
+    onAuthStateChanged(auth, async user => {
+      if (!user) {
+        authBox.classList.remove("hidden");
+        menuBox.classList.add("hidden");
+        return;
+      }
 
-    if (!moving) break;
+      const userSnap = await get(ref(db, `users/${user.uid}`));
+      const userData = userSnap.val() || {};
 
-    await sleep(16);
-  }
+      const nickname =
+        userData.nickname ||
+        localStorage.getItem("gameNickname") ||
+        user.email.split("@")[0];
 
-  for (const s of stones) {
-    s.vx = 0;
-    s.vy = 0;
-  }
+      userEmail.textContent = user.email;
+      userName.textContent = nickname;
 
-  const blackAlive = stones.some(s => s.color === "black" && s.alive);
-  const whiteAlive = stones.some(s => s.color === "white" && s.alive);
+      authBox.classList.add("hidden");
+      menuBox.classList.remove("hidden");
+    });
 
-  let winner = "";
-  if (!blackAlive && !whiteAlive) winner = "draw";
-  else if (!blackAlive) winner = "white";
-  else if (!whiteAlive) winner = "black";
+    function koreanAuthError(code) {
+      const map = {
+        "auth/email-already-in-use": "이미 사용 중인 이메일입니다.",
+        "auth/invalid-email": "이메일 형식이 올바르지 않습니다.",
+        "auth/weak-password": "비밀번호는 6자리 이상이어야 합니다.",
+        "auth/user-not-found": "가입되지 않은 이메일입니다.",
+        "auth/wrong-password": "비밀번호가 틀렸습니다.",
+        "auth/invalid-credential": "이메일 또는 비밀번호가 올바르지 않습니다.",
+        "auth/network-request-failed": "네트워크 요청에 실패했습니다. 브라우저, 보안앱, 도메인 설정을 확인하세요."
+      };
 
-  await update(ref(db, `rooms/algagi/${roomId}`), {
-    stones,
-    winner,
-    turn: winner ? currentRoomData.turn : myColor === "black" ? "white" : "black",
-    updatedAtValue: Date.now()
-  });
+      return map[code] || code;
+    }
 
-  animating = false;
-}
-
-function collide(a, b, loss = 0.82) {
-  if (!a.alive || !b.alive) return;
-
-  const dx = b.x - a.x;
-  const dy = b.y - a.y;
-  const dist = Math.sqrt(dx * dx + dy * dy);
-  const minDist = 44;
-
-  if (dist <= 0 || dist >= minDist) return;
-
-  const nx = dx / dist;
-  const ny = dy / dist;
-
-  const overlap = minDist - dist;
-
-  a.x -= nx * overlap / 2;
-  a.y -= ny * overlap / 2;
-  b.x += nx * overlap / 2;
-  b.y += ny * overlap / 2;
-
-  const relativeVx = a.vx - b.vx;
-  const relativeVy = a.vy - b.vy;
-  const speed = relativeVx * nx + relativeVy * ny;
-
-  if (speed < 0) return;
-
-  const impulse = speed * loss;
-
-  a.vx -= impulse * nx;
-  a.vy -= impulse * ny;
-  b.vx += impulse * nx;
-  b.vy += impulse * ny;
-}
-
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-/* 공통 */
-function makeRoomCode() {
-  return Math.random().toString(36).substring(2, 8).toUpperCase();
-}
-
-function escapeHtml(text) {
-  return String(text)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-function koreanAuthError(code) {
-  const map = {
-    "auth/email-already-in-use": "이미 사용 중인 이메일입니다.",
-    "auth/invalid-email": "이메일 형식이 올바르지 않습니다.",
-    "auth/weak-password": "비밀번호는 6자리 이상이어야 합니다.",
-    "auth/user-not-found": "가입되지 않은 이메일입니다.",
-    "auth/wrong-password": "비밀번호가 틀렸습니다.",
-    "auth/invalid-credential": "이메일 또는 비밀번호가 올바르지 않습니다.",
-    "auth/network-request-failed": "네트워크 요청에 실패했습니다. 브라우저, 보안앱, 도메인 설정을 확인하세요."
-  };
-
-  return map[code] || code;
-}
-
-document.getElementById("signupBtn").onclick = signup;
-document.getElementById("loginBtn").onclick = login;
-document.getElementById("logoutBtn").onclick = logout;
-document.getElementById("createRoomBtn").onclick = createRoom;
-document.getElementById("resetBtn").onclick = resetGame;
-document.getElementById("deleteRoomBtn").onclick = deleteCurrentRoom;
-document.getElementById("omokConfirmBtn").onclick = confirmOmok;
-document.getElementById("omokCancelBtn").onclick = cancelOmok;
-
-document.getElementById("toggleEmptyBtn").onclick = () => {
-  emptyOnly = !emptyOnly;
-  document.getElementById("toggleEmptyBtn").textContent =
-    emptyOnly ? "빈 방만 보기 ON" : "빈 방만 보기 OFF";
-  renderLobby();
-};
-
-canvas.addEventListener("mousedown", algagiDown);
-canvas.addEventListener("mousemove", algagiMove);
-canvas.addEventListener("mouseup", algagiUp);
-canvas.addEventListener("mouseleave", algagiUp);
-canvas.addEventListener("touchstart", algagiDown, { passive:false });
-canvas.addEventListener("touchmove", algagiMove, { passive:false });
-canvas.addEventListener("touchend", algagiUp, { passive:false });
-</script>
+    document.getElementById("signupBtn").onclick = signup;
+    document.getElementById("loginBtn").onclick = login;
+    document.getElementById("logoutBtn").onclick = logout;
+  </script>
 </body>
 </html>
