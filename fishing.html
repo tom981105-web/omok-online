@@ -36,16 +36,10 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .location-card.active{background:#f59e0b;color:#111827;font-weight:bold}
 .location-card.locked{opacity:.42;filter:grayscale(1)}
 .location-card .lv{font-size:11px;color:inherit;opacity:.8}
-.location-thumb{width:100%;height:96px;object-fit:cover;border-radius:10px;margin-bottom:6px;image-rendering:pixelated;display:block}
+.location-thumb{width:100%;height:90px;object-fit:cover;border-radius:10px;margin-bottom:6px;image-rendering:pixelated}
 
-#pond{display:none;position:relative;height:190px;border-radius:22px;background-color:#020617;background-size:cover;background-position:center;background-repeat:no-repeat;overflow:hidden;border:4px solid rgba(255,255,255,.25);box-shadow:inset 0 0 0 2px rgba(255,255,255,.12)}
-#pond.active{display:block}
-#pond.night{filter:brightness(.82) saturate(1.05)}
-#pond::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(2,6,23,.08),rgba(2,6,23,.22));pointer-events:none;z-index:0}
-#pond .wave,#pond #floatBobber,#pond #fishShadow{z-index:1}
-.pond-badge{position:absolute;left:12px;top:10px;z-index:2;background:rgba(2,6,23,.72);border:1px solid rgba(255,255,255,.22);padding:5px 10px;border-radius:999px;font-size:13px;font-weight:bold;color:#fff}
-.time-badge{position:absolute;right:12px;top:10px;z-index:2;background:rgba(2,6,23,.72);border:1px solid rgba(255,255,255,.22);padding:5px 10px;border-radius:999px;font-size:13px;font-weight:bold;color:#facc15}
-.pond-guide{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;background:rgba(2,6,23,.72);border:1px solid rgba(255,255,255,.22);padding:8px 14px;border-radius:999px;color:#facc15;font-weight:bold;white-space:nowrap}
+#pond{position:relative;height:170px;border-radius:22px;overflow:hidden;border:4px solid rgba(255,255,255,.25);background-size:cover;background-position:center;background-repeat:no-repeat;display:none}
+#pond.active-scene{display:block}
 .wave{position:absolute;left:0;right:0;height:24px;background:rgba(255,255,255,.18);border-radius:50%;animation:wave 3s infinite linear}
 .wave:nth-child(1){top:28px}
 .wave:nth-child(2){top:84px;animation-duration:4s}
@@ -119,9 +113,9 @@ body.playing-mini #holdBtn{position:fixed;left:12px;right:12px;bottom:118px;z-in
   button{padding:9px 10px;font-size:13px}
   .fish-row{grid-template-columns:1fr}
   .sell-control{justify-content:flex-end}
-  #pond{height:165px}
-  .location-thumb{height:84px}
+  #pond{height:155px}
   .location-grid{grid-template-columns:repeat(3,1fr)}
+  .location-thumb{height:76px}
 }
 </style>
 </head>
@@ -164,9 +158,6 @@ body.playing-mini #holdBtn{position:fixed;left:12px;right:12px;bottom:118px;z-in
         <div class="wave"></div>
         <div id="floatBobber"></div>
         <div id="fishShadow"></div>
-        <div id="pondLocationBadge" class="pond-badge">🌱 초보 연못</div>
-        <div id="pondTimeBadge" class="time-badge">☀ 낮</div>
-        <div id="pondGuide" class="pond-guide">찌를 던졌습니다...</div>
       </div>
 
       <div id="normalControls">
@@ -287,11 +278,11 @@ const FISH_SIZES = {
 };
 
 const LOCATIONS = {
-  pond:{name:"초보 연못",emoji:"🌱",image:"./assets/locations/pond.png",requiredRod:1,fishes:["flounder","crucian","carp","sardine","mackerel","perch"]},
-  river:{name:"강",emoji:"🏞️",image:"./assets/locations/river.png",requiredRod:2,fishes:["trout","bass","grayMullet","rainbowTrout","pike","carp","perch"]},
-  lake:{name:"호수",emoji:"🌅",image:"./assets/locations/lake.png",requiredRod:3,fishes:["bass","tuna","puffer","sturgeon","tropicalFish","goldenCarp","mackerel"]},
-  lava:{name:"용암지대",emoji:"🌋",image:"./assets/locations/lava.png",requiredRod:5,fishes:["lavaEel","goldenCarp","ghostFish","puffer","sunfish"]},
-  deep:{name:"심해",emoji:"🌊",image:"./assets/locations/deep.png",requiredRod:6,fishes:["octopus","sunfish","ghostFish","sturgeon","tuna","tropicalFish"]}
+  pond:{name:"초보 연못",emoji:"🌱",card:"./assets/locations/cards/pond.png",scene:"./assets/locations/scenes/pond.png",requiredRod:1,fishes:["flounder","crucian","carp","sardine","mackerel","perch"]},
+  river:{name:"강",emoji:"🏞️",card:"./assets/locations/cards/river.png",scene:"./assets/locations/scenes/river.png",requiredRod:2,fishes:["trout","bass","grayMullet","rainbowTrout","pike","carp","perch"]},
+  lake:{name:"호수",emoji:"🌅",card:"./assets/locations/cards/lake.png",scene:"./assets/locations/scenes/lake.png",requiredRod:3,fishes:["bass","tuna","puffer","sturgeon","tropicalFish","goldenCarp","mackerel"]},
+  lava:{name:"용암지대",emoji:"🌋",card:"./assets/locations/cards/lava.png",scene:"./assets/locations/scenes/lava.png",requiredRod:5,fishes:["lavaEel","goldenCarp","ghostFish","puffer","sunfish"]},
+  deep:{name:"심해",emoji:"🌊",card:"./assets/locations/cards/deep.png",scene:"./assets/locations/scenes/deep.png",requiredRod:6,fishes:["octopus","sunfish","ghostFish","sturgeon","tuna","tropicalFish"]}
 };
 
 let uid="", userData=null, fishing=null;
@@ -309,7 +300,6 @@ const goldText=$("goldText"), rodText=$("rodText"), baitText=$("baitText"), caug
 const mainStatus=$("mainStatus"), catchResult=$("catchResult");
 const locationGrid=$("locationGrid"), normalControls=$("normalControls"), miniGameBox=$("miniGameBox");
 const miniStatus=$("miniStatus"), catchBar=$("catchBar"), fishSprite=$("fishSprite"), fishShadow=$("fishShadow");
-const pond=$("pond"), pondLocationBadge=$("pondLocationBadge"), pondTimeBadge=$("pondTimeBadge"), pondGuide=$("pondGuide");
 const floatBobber=$("floatBobber"), biteBtn=$("biteBtn"), progress=$("progress");
 const inventoryList=$("inventoryList"), fishBook=$("fishBook"), upgradeCostText=$("upgradeCostText"), bookProgress=$("bookProgress");
 
@@ -366,38 +356,6 @@ function render(){
   renderFishBook();
 }
 
-
-function getTimeInfo(){
-  const hour=new Date().getHours();
-  const isNight=hour<6||hour>=18;
-  return isNight?{label:"🌙 밤",isNight:true}:{label:"☀ 낮",isNight:false};
-}
-
-function updateLocationBackground(){
-  const loc=LOCATIONS[selectedLocation];
-  const time=getTimeInfo();
-  if(!loc||!pond)return;
-
-  pond.style.backgroundImage=`url("${loc.image}")`;
-  pond.classList.toggle("night",time.isNight);
-  if(pondLocationBadge) pondLocationBadge.textContent=`${loc.emoji} ${loc.name}`;
-  if(pondTimeBadge) pondTimeBadge.textContent=time.label;
-}
-
-function showFishingScene(message="찌를 던졌습니다..."){
-  updateLocationBackground();
-  pond.classList.add("active");
-  if(pondGuide){
-    pondGuide.textContent=message;
-    pondGuide.classList.remove("hidden");
-  }
-}
-
-function hideFishingScene(){
-  pond.classList.remove("active");
-  if(pondGuide) pondGuide.classList.add("hidden");
-}
-
 function renderLocations(){
   locationGrid.innerHTML="";
   for(const [key,loc] of Object.entries(LOCATIONS)){
@@ -405,14 +363,14 @@ function renderLocations(){
     const div=document.createElement("div");
     div.className=`location-card ${selectedLocation===key?"active":""} ${locked?"locked":""}`;
     div.innerHTML=`
-      <img class="location-thumb" src="${loc.image}" alt="${loc.name}">
+      <img class="location-thumb" src="${loc.card}" alt="${loc.name}">
       <b>${loc.name}</b>
-      <div class="lv">Lv.${loc.requiredRod}+ 필요</div>`;
+      <div class="lv">Lv.${loc.requiredRod}+ 필요</div>
+    `;
     div.onclick=()=>{
       if(locked){mainStatus.textContent=`${loc.name}은 낚싯대 Lv.${loc.requiredRod}부터 갈 수 있습니다.`;return;}
       selectedLocation=key;
       mainStatus.textContent=`${loc.emoji} ${loc.name}에서 낚시합니다.`;
-      updateLocationBackground();
       renderLocations();
     };
     locationGrid.appendChild(div);
@@ -480,6 +438,21 @@ function renderFishBook(){
   }
 }
 
+function setLocationScene(){
+  const loc=LOCATIONS[selectedLocation];
+  const pond=$("pond");
+  pond.style.backgroundImage=`url("${loc.scene}")`;
+}
+
+function showLocationScene(){
+  setLocationScene();
+  $("pond").classList.add("active-scene");
+}
+
+function hideLocationScene(){
+  $("pond").classList.remove("active-scene");
+}
+
 function castLine(){
   if(isCasting||miniRunning)return;
   if(fishing.bait<=0){mainStatus.textContent="미끼가 부족합니다.";return;}
@@ -495,7 +468,7 @@ function castLine(){
   biteBtn.classList.add("hidden");
   floatBobber.className="waiting";
   hideFishShadow();
-  showFishingScene("물고기를 기다리는 중...");
+  showLocationScene();
 
   mainStatus.textContent=`${loc.emoji} ${loc.name}에 찌를 던졌습니다...`;
   render();
@@ -510,7 +483,6 @@ function showBite(){
   floatBobber.className="biteReady";
   showFishShadow(targetFishKey);
   biteBtn.classList.remove("hidden");
-  if(pondGuide) pondGuide.textContent="입질! 지금 낚아채세요!";
   mainStatus.textContent="입질! 지금 낚아채세요!";
   const windowMs=Math.min(2600,1300+(fishing.rodLevel||1)*130);
   biteWindowTimer=setTimeout(()=>missBite(),windowMs);
@@ -521,7 +493,7 @@ async function missBite(){
   clearTimers();
   isCasting=false; biteReady=false;
   hideFishShadow();
-  hideFishingScene();
+  hideLocationScene();
   biteBtn.classList.add("hidden");
   floatBobber.className="";
   mainStatus.textContent="반응이 늦었습니다. 물고기가 도망갔습니다.";
@@ -536,7 +508,7 @@ function reactBite(){
   biteBtn.classList.add("hidden");
   floatBobber.className="";
   hideFishShadow();
-  hideFishingScene();
+  hideLocationScene();
   startMiniGameHiddenFish();
 }
 
@@ -596,11 +568,6 @@ function pickFishByLocation(locationKey){
     let weight=fish.rate;
     if(fish.rarity==="rare")weight+=rodBonus*1.25;
     if(fish.rarity==="legend")weight+=rodBonus*.25;
-
-    const time=getTimeInfo();
-    if(time.isNight && ["octopus","ghostFish","sunfish","puffer"].includes(key)) weight*=1.25;
-    if(!time.isNight && ["crucian","carp","trout","sardine"].includes(key)) weight*=1.15;
-
     return [key,weight];
   });
 
@@ -744,7 +711,7 @@ async function finishFishing(success){
   actualMiniStarted=false;
   holding=false;
   document.body.classList.remove("playing-mini");
-  hideFishingScene();
+  hideLocationScene();
 
   if(animationId)cancelAnimationFrame(animationId);
 
