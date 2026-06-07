@@ -121,7 +121,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js";
-import { getDatabase, ref, get, set, update, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-database.js";
+import { getDatabase, ref, get, update, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDTsFoSmI1oOS5XLXhhgqyeDmwr8RxEegE",
@@ -138,12 +138,12 @@ const auth = getAuth(app);
 const db = getDatabase(app);
 
 const FISHES = {
-  minnow: { name:"피라미", price:8, rarity:"common", rate:40, speed:1.4 },
-  carp: { name:"붕어", price:15, rarity:"common", rate:28, speed:1.7 },
-  bass: { name:"배스", price:28, rarity:"uncommon", rate:17, speed:2.1 },
-  eel: { name:"장어", price:55, rarity:"rare", rate:9, speed:2.6 },
-  salmon: { name:"연어", price:90, rarity:"rare", rate:5, speed:3.0 },
-  golden: { name:"황금잉어", price:250, rarity:"legend", rate:1, speed:3.8 }
+  minnow: { name:"피라미", price:8, rarity:"common", rate:40, speed:1.1 },
+  carp: { name:"붕어", price:15, rarity:"common", rate:28, speed:1.5 },
+  bass: { name:"배스", price:28, rarity:"uncommon", rate:17, speed:2.3 },
+  eel: { name:"장어", price:55, rarity:"rare", rate:9, speed:3.2 },
+  salmon: { name:"연어", price:90, rarity:"rare", rate:5, speed:4.1 },
+  golden: { name:"황금잉어", price:250, rarity:"legend", rate:1, speed:5.5 }
 };
 
 let uid = "";
@@ -158,6 +158,7 @@ let barY = 100;
 let progressValue = 0;
 let targetFishKey = "";
 let animationId = null;
+let miniStartTime = 0;
 
 const loadingBox = document.getElementById("loadingBox");
 const gameBox = document.getElementById("gameBox");
@@ -210,9 +211,7 @@ async function loadUser() {
   fishing = userData.fishing || defaultFishing;
 
   if (!userData.fishing) {
-    await update(ref(db, `users/${uid}`), {
-      fishing
-    });
+    await update(ref(db, `users/${uid}`), { fishing });
   }
 
   userEmail.textContent = userData.email || auth.currentUser.email;
@@ -240,6 +239,7 @@ function render() {
 
   const upgradeCost = getUpgradeCost();
   upgradeCostText.textContent = upgradeCost;
+
   document.getElementById("upgradeRodBtn").disabled = fishing.gold < upgradeCost;
   document.getElementById("buyBaitBtn").disabled = fishing.gold < 30;
   document.getElementById("fishBtn").disabled = fishing.bait <= 0;
@@ -304,23 +304,24 @@ function startFishing() {
   fishY = 120;
   fishV = 0;
   barY = 110;
-  progressValue = 12;
+  progressValue = 45;
+  miniStartTime = Date.now();
 
   normalControls.classList.add("hidden");
   miniGameBox.classList.remove("hidden");
 
+  mainStatus.textContent = "준비...";
   loopMiniGame();
   render();
 }
 
 function pickFish() {
   const rodBonus = Math.max(0, fishing.rodLevel - 1);
-  const baitBonus = fishing.bait > 0 ? 0.2 : 0;
 
   const table = Object.entries(FISHES).map(([key, fish]) => {
     let weight = fish.rate;
 
-    if (fish.rarity === "rare") weight += rodBonus * 1.5 + baitBonus;
+    if (fish.rarity === "rare") weight += rodBonus * 1.5;
     if (fish.rarity === "legend") weight += rodBonus * 0.35;
 
     return [key, weight];
@@ -340,13 +341,40 @@ function pickFish() {
 function loopMiniGame() {
   if (!miniRunning) return;
 
+  const elapsed = Date.now() - miniStartTime;
+
+  if (elapsed < 1500) {
+    catchBar.style.top = barY + "px";
+    fishEl.style.top = fishY + "px";
+    progress.style.width = progressValue + "%";
+    animationId = requestAnimationFrame(loopMiniGame);
+    return;
+  }
+
   const targetFish = FISHES[targetFishKey];
   const rodLevel = fishing.rodLevel || 1;
 
   const barHeight = Math.max(42, 78 + rodLevel * 8);
   const fishSpeed = targetFish.speed * Math.max(0.55, 1.1 - rodLevel * 0.06);
 
+  const jumpChance =
+    targetFish.price >= 80 ? 0.08 :
+    targetFish.price >= 50 ? 0.05 :
+    targetFish.price >= 28 ? 0.035 :
+    0.015;
+
+  const jumpPower =
+    targetFish.price >= 80 ? 7 :
+    targetFish.price >= 50 ? 5 :
+    targetFish.price >= 28 ? 3.5 :
+    2;
+
   fishV += (Math.random() - 0.45) * fishSpeed;
+
+  if (Math.random() < jumpChance) {
+    fishV += (Math.random() > 0.5 ? 1 : -1) * jumpPower;
+  }
+
   fishV *= 0.86;
   fishY += fishV;
 
@@ -372,9 +400,9 @@ function loopMiniGame() {
   const inBar = fishCenter >= barY && fishCenter <= barY + barHeight;
 
   if (inBar) {
-    progressValue += 0.75 + rodLevel * 0.08;
+    progressValue += 0.55 + rodLevel * 0.07;
   } else {
-    progressValue -= 0.55;
+    progressValue -= 0.22;
   }
 
   progressValue = Math.max(0, Math.min(100, progressValue));
