@@ -13,7 +13,6 @@ button{padding:10px 12px;border-radius:12px;border:none;font-size:14px;margin:4p
 button.secondary{background:#374151;color:white}
 button.sell{background:#22c55e;color:#052e16}
 button:disabled{opacity:.45;cursor:not-allowed}
-input{border:none;border-radius:10px;padding:7px;font-size:14px}
 .wrap{max-width:900px;margin:0 auto;padding:6px}
 .box{background:rgba(255,255,255,.1);border-radius:18px;padding:10px;margin:7px 0}
 .hidden{display:none!important}
@@ -33,15 +32,17 @@ input{border:none;border-radius:10px;padding:7px;font-size:14px}
 
 #fishGame{height:260px;background:#0f172a;border-radius:18px;position:relative;overflow:hidden;border:3px solid #64748b}
 #track{position:absolute;left:50%;top:12px;transform:translateX(-50%);width:84px;height:230px;background:#1e293b;border-radius:999px;border:2px solid #94a3b8}
-#catchBar{position:absolute;left:8px;width:64px;height:90px;background:rgba(34,197,94,.65);border:2px solid #bbf7d0;border-radius:12px}
-#fish{position:absolute;left:20px;width:44px;height:34px;font-size:28px;line-height:34px;background:none;border-radius:0;box-shadow:none;text-align:center}
+#catchBar{position:absolute;left:10px;width:60px;height:60px;background:rgba(34,197,94,.65);border:2px solid #bbf7d0;border-radius:12px}
+#fish{position:absolute;left:20px;width:44px;height:34px;font-size:28px;line-height:34px;background:none;text-align:center}
 #progressWrap{height:18px;background:#1e293b;border-radius:999px;overflow:hidden;margin-top:8px}
 #progress{height:100%;width:0%;background:#22c55e}
 
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .fish-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;background:rgba(255,255,255,.1);border-radius:12px;padding:9px;margin:5px 0;text-align:left}
-.sell-control{display:flex;align-items:center;gap:4px}
-.sell-control input{width:58px}
+.sell-control{display:flex;align-items:center;gap:6px;justify-content:flex-end}
+.qty-box{display:flex;align-items:center;gap:4px}
+.qty-btn{width:32px;height:32px;padding:0;border-radius:9px;background:#374151;color:white}
+.qty-num{min-width:34px;text-align:center;font-weight:bold}
 .compact-shop{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 
 @media(max-width:720px){
@@ -182,9 +183,9 @@ let waitingToStart = false;
 let actualMiniStarted = false;
 let holding = false;
 
-let fishY = 120;
+let fishY = 112;
 let fishV = 0;
-let barY = 95;
+let barY = 85;
 let progressValue = 0;
 let targetFishKey = "";
 let animationId = null;
@@ -303,7 +304,11 @@ function renderInventory() {
         <span class="small">1마리 ${fish.price} G / 전체 ${fish.price * count} G</span>
       </div>
       <div class="sell-control">
-        <input id="sell_${key}" type="number" min="1" max="${count}" value="1">
+        <div class="qty-box">
+          <button class="qty-btn" onclick="changeSellQty('${key}', -1)">-</button>
+          <span id="sell_${key}" class="qty-num">1</span>
+          <button class="qty-btn" onclick="changeSellQty('${key}', 1)">+</button>
+        </div>
         <button class="sell" onclick="sellFish('${key}')">판매</button>
       </div>
     `;
@@ -399,7 +404,7 @@ function loopMiniGame() {
 
   if (waitingToStart) {
     catchBar.style.top = barY + "px";
-    catchBar.style.height = "78px";
+    catchBar.style.height = "60px";
     fishEl.style.top = fishY + "px";
     progress.style.width = progressValue + "%";
     animationId = requestAnimationFrame(loopMiniGame);
@@ -409,7 +414,7 @@ function loopMiniGame() {
   const targetFish = FISHES[targetFishKey];
   const rodLevel = fishing.rodLevel || 1;
 
-  const barHeight = Math.max(38, 66 + rodLevel * 6);
+  const barHeight = Math.max(34, 54 + rodLevel * 5);
   const fishSpeed = targetFish.speed * Math.max(0.68, 1.22 - rodLevel * 0.045);
 
   fishPatternTime += 1;
@@ -499,32 +504,21 @@ function getFishMovement(fish, p, t) {
 
   const mode = p.type % 12;
 
-  if (mode === 0) {
-    m = waveA * 0.35 + waveB * 0.2;
-  } else if (mode === 1) {
-    m = waveA > 0 ? 0.48 : -0.28;
-  } else if (mode === 2) {
-    m = waveA * waveB * 0.7;
-  } else if (mode === 3) {
-    m = Math.sign(waveA) * 0.4 + waveB * 0.18;
-  } else if (mode === 4) {
-    m = waveA * 0.22 + Math.sin(t * 0.13 + p.phaseB) * 0.4;
-  } else if (mode === 5) {
-    m = waveC * 0.55 + p.drift;
-  } else if (mode === 6) {
-    m = Math.sin(t * p.speedA + Math.sin(t * 0.03)) * 0.62;
-  } else if (mode === 7) {
-    m = waveA * 0.18 + (Math.random() - 0.5) * 0.42;
-  } else if (mode === 8) {
+  if (mode === 0) m = waveA * 0.35 + waveB * 0.2;
+  else if (mode === 1) m = waveA > 0 ? 0.48 : -0.28;
+  else if (mode === 2) m = waveA * waveB * 0.7;
+  else if (mode === 3) m = Math.sign(waveA) * 0.4 + waveB * 0.18;
+  else if (mode === 4) m = waveA * 0.22 + Math.sin(t * 0.13 + p.phaseB) * 0.4;
+  else if (mode === 5) m = waveC * 0.55 + p.drift;
+  else if (mode === 6) m = Math.sin(t * p.speedA + Math.sin(t * 0.03)) * 0.62;
+  else if (mode === 7) m = waveA * 0.18 + (Math.random() - 0.5) * 0.42;
+  else if (mode === 8) {
     m = waveA * 0.6;
     if (Math.abs(waveA) > 0.85) m *= 1.9;
-  } else if (mode === 9) {
-    m = waveA * 0.3 + waveB * 0.27 + waveC * 0.25;
-  } else if (mode === 10) {
-    m = Math.sin(t * 0.02 + p.phaseA) * 0.86;
-  } else {
-    m = (Math.random() - 0.48) * 0.62;
   }
+  else if (mode === 9) m = waveA * 0.3 + waveB * 0.27 + waveC * 0.25;
+  else if (mode === 10) m = Math.sin(t * 0.02 + p.phaseA) * 0.86;
+  else m = (Math.random() - 0.48) * 0.62;
 
   if (Math.random() < p.twitchRate) {
     m += (Math.random() > 0.5 ? 1 : -1) * p.twitchPower;
@@ -591,13 +585,30 @@ async function sellAllFish() {
   await saveGame();
 }
 
+window.changeSellQty = function(key, delta) {
+  const el = document.getElementById(`sell_${key}`);
+  const have = fishing.inventory?.[key] || 0;
+
+  if (!el || have <= 0) return;
+
+  let value = Number(el.textContent || 1);
+  value += delta;
+
+  if (value < 1) value = 1;
+  if (value > have) value = have;
+
+  el.textContent = value;
+};
+
 window.sellFish = async function(key) {
   const input = document.getElementById(`sell_${key}`);
   const have = fishing.inventory?.[key] || 0;
-  let amount = Number(input.value || 1);
+  let amount = Number(input.textContent || 1);
 
   amount = Math.floor(amount);
+
   if (amount < 1) amount = 1;
+
   if (amount > have) {
     mainStatus.textContent = "보유 수량보다 많이 팔 수 없습니다.";
     return;
