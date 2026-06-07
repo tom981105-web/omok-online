@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<title>낚시게임</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#082f49;color:white;text-align:center}
+h1{margin:18px 0 8px;font-size:32px}
+button{padding:12px 14px;border-radius:12px;border:none;font-size:15px;margin:4px;background:#f59e0b;color:#111;font-weight:bold;cursor:pointer}
+button.secondary{background:#374151;color:white}
+button.sell{background:#22c55e;color:#052e16}
+button:disabled{opacity:.45;cursor:not-allowed}
+.wrap{max-width:900px;margin:0 auto;padding:10px}
+.box{background:rgba(255,255,255,.1);border-radius:18px;padding:14px;margin:10px 0}
+.hidden{display:none!important}
+.status{color:#facc15;font-weight:bold;line-height:1.5;margin:10px 0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:rgba(255,255,255,.1);border-radius:14px;padding:12px}
+#pond{position:relative;height:260px;border-radius:24px;background:linear-gradient(#38bdf8,#0369a1);overflow:hidden;border:4px solid rgba(255,255,255,.25)}
+.wave{position:absolute;left:0;right:0;height:30px;background:rgba(255,255,255,.18);border-radius:50%;animation:wave 3s infinite linear}
+.wave:nth-child(1){top:50px}
+.wave:nth-child(2){top:120px;animation-duration:4s}
+.wave:nth-child(3){top:190px;animation-duration:5s}
+@keyframes wave{from{transform:translateX(-60px)}to{transform:translateX(60px)}}
+#fishGame{height:300px;background:#0f172a;border-radius:18px;position:relative;overflow:hidden;border:3px solid #64748b}
+#track{position:absolute;left:50%;top:20px;transform:translateX(-50%);width:80px;height:250px;background:#1e293b;border-radius:999px;border:2px solid #94a3b8}
+#catchBar{position:absolute;left:8px;width:60px;height:60px;background:rgba(34,197,94,.65);border:2px solid #bbf7d0;border-radius:12px}
+#fish{position:absolute;left:20px;width:36px;height:24px;background:#f97316;border-radius:50%;box-shadow:0 0 0 3px rgba(255,255,255,.35)}
+#progressWrap{height:20px;background:#1e293b;border-radius:999px;overflow:hidden;margin-top:10px}
+#progress{height:100%;width:0%;background:#22c55e}
+.fish-row{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.1);border-radius:12px;padding:10px;margin:6px 0}
+.small{font-size:13px;color:#d1d5db;line-height:1.5}
+@media(max-width:720px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+<h1>🎣 낚시게임</h1>
+
+<section id="loadingBox" class="box">
+  <div class="status">로그인 확인 중...</div>
+</section>
+
+<section id="gameBox" class="hidden">
+  <div class="box">
+    <button onclick="location.href='./index.html'" class="secondary">메인으로</button>
+    <button id="saveBtn" class="secondary">저장</button>
+    <div class="small">
+      로그인: <span id="userEmail">-</span> /
+      닉네임: <span id="userName">-</span>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="stat">💰 골드<br><b id="goldText">0</b> G</div>
+    <div class="stat">🎣 낚싯대<br>Lv.<b id="rodText">1</b></div>
+    <div class="stat">🪱 미끼<br><b id="baitText">0</b> 개</div>
+    <div class="stat">🐟 총 포획<br><b id="caughtText">0</b> 마리</div>
+  </div>
+
+  <div class="box">
+    <div id="pond">
+      <div class="wave"></div>
+      <div class="wave"></div>
+      <div class="wave"></div>
+    </div>
+
+    <div id="normalControls">
+      <div id="mainStatus" class="status">낚시를 시작하세요.</div>
+      <button id="fishBtn">낚시하기</button>
+      <button id="sellAllBtn" class="sell">물고기 모두 판매</button>
+    </div>
+
+    <div id="miniGameBox" class="hidden">
+      <div class="status">
+        물고기를 초록 구간 안에 유지하세요.<br>
+        PC: 스페이스바 / 모바일: 아래 버튼 길게 누르기
+      </div>
+
+      <div id="fishGame">
+        <div id="track">
+          <div id="catchBar"></div>
+          <div id="fish"></div>
+        </div>
+      </div>
+
+      <button id="holdBtn">누르고 있기</button>
+
+      <div id="progressWrap">
+        <div id="progress"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="box">
+      <h2>상점</h2>
+      <button id="upgradeRodBtn">낚싯대 업그레이드</button>
+      <div class="small">필요 골드: <span id="upgradeCostText">100</span> G</div>
+      <hr>
+      <button id="buyBaitBtn">미끼 5개 구매</button>
+      <div class="small">가격: 30 G</div>
+    </div>
+
+    <div class="box">
+      <h2>인벤토리</h2>
+      <div id="inventoryList"></div>
+    </div>
+  </div>
+
+  <div class="box">
+    <h2>물고기 도감</h2>
+    <div id="fishBook"></div>
+  </div>
+</section>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js";
+import { getDatabase, ref, get, set, update, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDTsFoSmI1oOS5XLXhhgqyeDmwr8RxEegE",
+  authDomain: "ohmok-cd7bd.firebaseapp.com",
+  databaseURL: "https://ohmok-cd7bd-default-rtdb.firebaseio.com",
+  projectId: "ohmok-cd7bd",
+  storageBucket: "ohmok-cd7bd.firebasestorage.app",
+  messagingSenderId: "640930093452",
+  appId: "1:640930093452:web:0c67d9bb5c8dc3cdb35ea9"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+const FISHES = {
+  minnow: { name:"피라미", price:8, rarity:"common", rate:40, speed:1.4 },
+  carp: { name:"붕어", price:15, rarity:"common", rate:28, speed:1.7 },
+  bass: { name:"배스", price:28, rarity:"uncommon", rate:17, speed:2.1 },
+  eel: { name:"장어", price:55, rarity:"rare", rate:9, speed:2.6 },
+  salmon: { name:"연어", price:90, rarity:"rare", rate:5, speed:3.0 },
+  golden: { name:"황금잉어", price:250, rarity:"legend", rate:1, speed:3.8 }
+};
+
+let uid = "";
+let userData = null;
+let fishing = null;
+
+let miniRunning = false;
+let holding = false;
+let fishY = 120;
+let fishV = 0;
+let barY = 100;
+let progressValue = 0;
+let targetFishKey = "";
+let animationId = null;
+
+const loadingBox = document.getElementById("loadingBox");
+const gameBox = document.getElementById("gameBox");
+const userEmail = document.getElementById("userEmail");
+const userName = document.getElementById("userName");
+
+const goldText = document.getElementById("goldText");
+const rodText = document.getElementById("rodText");
+const baitText = document.getElementById("baitText");
+const caughtText = document.getElementById("caughtText");
+const mainStatus = document.getElementById("mainStatus");
+
+const normalControls = document.getElementById("normalControls");
+const miniGameBox = document.getElementById("miniGameBox");
+const catchBar = document.getElementById("catchBar");
+const fishEl = document.getElementById("fish");
+const progress = document.getElementById("progress");
+
+const inventoryList = document.getElementById("inventoryList");
+const fishBook = document.getElementById("fishBook");
+const upgradeCostText = document.getElementById("upgradeCostText");
+
+onAuthStateChanged(auth, async user => {
+  if (!user) {
+    location.href = "./index.html";
+    return;
+  }
+
+  uid = user.uid;
+  await loadUser();
+
+  loadingBox.classList.add("hidden");
+  gameBox.classList.remove("hidden");
+});
+
+async function loadUser() {
+  const snap = await get(ref(db, `users/${uid}`));
+  userData = snap.val() || {};
+
+  const defaultFishing = {
+    gold: 0,
+    rodLevel: 1,
+    bait: 5,
+    inventory: {},
+    totalCaught: 0,
+    totalEarned: 0,
+    updatedAt: Date.now()
+  };
+
+  fishing = userData.fishing || defaultFishing;
+
+  if (!userData.fishing) {
+    await update(ref(db, `users/${uid}`), {
+      fishing
+    });
+  }
+
+  userEmail.textContent = userData.email || auth.currentUser.email;
+  userName.textContent = userData.nickname || auth.currentUser.email.split("@")[0];
+
+  render();
+}
+
+async function saveGame() {
+  fishing.updatedAt = Date.now();
+
+  await update(ref(db, `users/${uid}`), {
+    fishing,
+    lastPlayedAt: serverTimestamp()
+  });
+
+  mainStatus.textContent = "저장 완료!";
+}
+
+function render() {
+  goldText.textContent = fishing.gold || 0;
+  rodText.textContent = fishing.rodLevel || 1;
+  baitText.textContent = fishing.bait || 0;
+  caughtText.textContent = fishing.totalCaught || 0;
+
+  const upgradeCost = getUpgradeCost();
+  upgradeCostText.textContent = upgradeCost;
+  document.getElementById("upgradeRodBtn").disabled = fishing.gold < upgradeCost;
+  document.getElementById("buyBaitBtn").disabled = fishing.gold < 30;
+  document.getElementById("fishBtn").disabled = fishing.bait <= 0;
+
+  renderInventory();
+  renderFishBook();
+}
+
+function renderInventory() {
+  inventoryList.innerHTML = "";
+
+  const inv = fishing.inventory || {};
+  const entries = Object.entries(inv).filter(([key, count]) => count > 0);
+
+  if (!entries.length) {
+    inventoryList.innerHTML = `<div class="small">보유한 물고기가 없습니다.</div>`;
+    return;
+  }
+
+  for (const [key, count] of entries) {
+    const fish = FISHES[key];
+
+    const row = document.createElement("div");
+    row.className = "fish-row";
+    row.innerHTML = `
+      <span>${fish.name} x ${count}</span>
+      <b>${fish.price * count} G</b>
+    `;
+    inventoryList.appendChild(row);
+  }
+}
+
+function renderFishBook() {
+  fishBook.innerHTML = "";
+
+  for (const [key, fish] of Object.entries(FISHES)) {
+    const owned = fishing.inventory?.[key] || 0;
+
+    const row = document.createElement("div");
+    row.className = "fish-row";
+    row.innerHTML = `
+      <span>${fish.name} <span class="small">(${fish.rarity})</span></span>
+      <span>${fish.price} G / 보유 ${owned}</span>
+    `;
+    fishBook.appendChild(row);
+  }
+}
+
+function startFishing() {
+  if (miniRunning) return;
+
+  if (fishing.bait <= 0) {
+    mainStatus.textContent = "미끼가 부족합니다.";
+    return;
+  }
+
+  fishing.bait -= 1;
+  targetFishKey = pickFish();
+
+  miniRunning = true;
+  holding = false;
+  fishY = 120;
+  fishV = 0;
+  barY = 110;
+  progressValue = 12;
+
+  normalControls.classList.add("hidden");
+  miniGameBox.classList.remove("hidden");
+
+  loopMiniGame();
+  render();
+}
+
+function pickFish() {
+  const rodBonus = Math.max(0, fishing.rodLevel - 1);
+  const baitBonus = fishing.bait > 0 ? 0.2 : 0;
+
+  const table = Object.entries(FISHES).map(([key, fish]) => {
+    let weight = fish.rate;
+
+    if (fish.rarity === "rare") weight += rodBonus * 1.5 + baitBonus;
+    if (fish.rarity === "legend") weight += rodBonus * 0.35;
+
+    return [key, weight];
+  });
+
+  const total = table.reduce((sum, item) => sum + item[1], 0);
+  let r = Math.random() * total;
+
+  for (const [key, weight] of table) {
+    r -= weight;
+    if (r <= 0) return key;
+  }
+
+  return "minnow";
+}
+
+function loopMiniGame() {
+  if (!miniRunning) return;
+
+  const targetFish = FISHES[targetFishKey];
+  const rodLevel = fishing.rodLevel || 1;
+
+  const barHeight = Math.max(42, 78 + rodLevel * 8);
+  const fishSpeed = targetFish.speed * Math.max(0.55, 1.1 - rodLevel * 0.06);
+
+  fishV += (Math.random() - 0.45) * fishSpeed;
+  fishV *= 0.86;
+  fishY += fishV;
+
+  if (fishY < 4) {
+    fishY = 4;
+    fishV *= -0.5;
+  }
+
+  if (fishY > 226) {
+    fishY = 226;
+    fishV *= -0.5;
+  }
+
+  if (holding) {
+    barY -= 4.2;
+  } else {
+    barY += 3.2;
+  }
+
+  barY = Math.max(0, Math.min(250 - barHeight, barY));
+
+  const fishCenter = fishY + 12;
+  const inBar = fishCenter >= barY && fishCenter <= barY + barHeight;
+
+  if (inBar) {
+    progressValue += 0.75 + rodLevel * 0.08;
+  } else {
+    progressValue -= 0.55;
+  }
+
+  progressValue = Math.max(0, Math.min(100, progressValue));
+
+  catchBar.style.top = barY + "px";
+  catchBar.style.height = barHeight + "px";
+  fishEl.style.top = fishY + "px";
+  progress.style.width = progressValue + "%";
+
+  if (progressValue >= 100) {
+    finishFishing(true);
+    return;
+  }
+
+  if (progressValue <= 0) {
+    finishFishing(false);
+    return;
+  }
+
+  animationId = requestAnimationFrame(loopMiniGame);
+}
+
+async function finishFishing(success) {
+  miniRunning = false;
+  holding = false;
+
+  if (animationId) cancelAnimationFrame(animationId);
+
+  normalControls.classList.remove("hidden");
+  miniGameBox.classList.add("hidden");
+
+  if (success) {
+    const fish = FISHES[targetFishKey];
+
+    fishing.inventory = fishing.inventory || {};
+    fishing.inventory[targetFishKey] = (fishing.inventory[targetFishKey] || 0) + 1;
+    fishing.totalCaught = (fishing.totalCaught || 0) + 1;
+
+    mainStatus.textContent = `${fish.name}을(를) 잡았습니다!`;
+  } else {
+    mainStatus.textContent = "물고기가 도망갔습니다.";
+  }
+
+  render();
+  await saveGame();
+}
+
+async function sellAllFish() {
+  const inv = fishing.inventory || {};
+  let earn = 0;
+
+  for (const [key, count] of Object.entries(inv)) {
+    if (!FISHES[key]) continue;
+    earn += FISHES[key].price * count;
+  }
+
+  if (earn <= 0) {
+    mainStatus.textContent = "판매할 물고기가 없습니다.";
+    return;
+  }
+
+  fishing.gold += earn;
+  fishing.totalEarned = (fishing.totalEarned || 0) + earn;
+  fishing.inventory = {};
+
+  mainStatus.textContent = `물고기를 모두 팔아 ${earn} G를 벌었습니다.`;
+
+  render();
+  await saveGame();
+}
+
+async function upgradeRod() {
+  const cost = getUpgradeCost();
+
+  if (fishing.gold < cost) {
+    mainStatus.textContent = "골드가 부족합니다.";
+    return;
+  }
+
+  fishing.gold -= cost;
+  fishing.rodLevel += 1;
+
+  mainStatus.textContent = `낚싯대가 Lv.${fishing.rodLevel}(으)로 업그레이드되었습니다.`;
+
+  render();
+  await saveGame();
+}
+
+async function buyBait() {
+  if (fishing.gold < 30) {
+    mainStatus.textContent = "골드가 부족합니다.";
+    return;
+  }
+
+  fishing.gold -= 30;
+  fishing.bait += 5;
+
+  mainStatus.textContent = "미끼 5개를 구매했습니다.";
+
+  render();
+  await saveGame();
+}
+
+function getUpgradeCost() {
+  return 100 + ((fishing.rodLevel || 1) - 1) * 120;
+}
+
+document.addEventListener("keydown", e => {
+  if (e.code === "Space") {
+    holding = true;
+    e.preventDefault();
+  }
+});
+
+document.addEventListener("keyup", e => {
+  if (e.code === "Space") {
+    holding = false;
+    e.preventDefault();
+  }
+});
+
+const holdBtn = document.getElementById("holdBtn");
+
+holdBtn.addEventListener("mousedown", () => holding = true);
+holdBtn.addEventListener("mouseup", () => holding = false);
+holdBtn.addEventListener("mouseleave", () => holding = false);
+holdBtn.addEventListener("touchstart", e => {
+  holding = true;
+  e.preventDefault();
+}, { passive:false });
+holdBtn.addEventListener("touchend", e => {
+  holding = false;
+  e.preventDefault();
+}, { passive:false });
+
+document.getElementById("fishBtn").onclick = startFishing;
+document.getElementById("sellAllBtn").onclick = sellAllFish;
+document.getElementById("upgradeRodBtn").onclick = upgradeRod;
+document.getElementById("buyBaitBtn").onclick = buyBait;
+document.getElementById("saveBtn").onclick = saveGame;
+</script>
+</body>
+</html>
