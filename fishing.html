@@ -54,18 +54,14 @@ button:disabled{opacity:.45;cursor:not-allowed}
 #catchBar{position:absolute;left:10px;width:60px;height:60px;background:rgba(34,197,94,.65);border:2px solid #bbf7d0;border-radius:12px}
 #fishSprite{
   position:absolute;
-  left:10px;
+  left:14px;
   top:112px;
-  width:80px;
-  height:60px;
-  background-image:url("./fish_sheet.png");
-  background-repeat:no-repeat;
-  background-size:1640px 820px;
+  width:56px;
+  height:auto;
+  object-fit:contain;
   image-rendering:pixelated;
-  transform:scale(.55);
-  transform-origin:top left;
+  pointer-events:none;
 }
-
 #progressWrap{height:18px;background:#1e293b;border-radius:999px;overflow:hidden;margin-top:8px}
 #progress{height:100%;width:0%;background:#22c55e}
 
@@ -76,18 +72,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .qty-btn{width:32px;height:32px;padding:0;border-radius:9px;background:#374151;color:white}
 .qty-num{min-width:34px;text-align:center;font-weight:bold}
 .compact-shop{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-
-.book-sprite{
-  display:inline-block;
-  background-image:url("./fish_sheet.png");
-  background-repeat:no-repeat;
-  background-size:1640px 820px;
-  image-rendering:pixelated;
-  transform:scale(.42);
-  transform-origin:left center;
-  vertical-align:middle;
-  margin-right:-24px;
-}
+.book-fish-img{width:42px;height:32px;object-fit:contain;image-rendering:pixelated;vertical-align:middle;margin-right:6px}
 
 .r-common{color:#e5e7eb}
 .r-uncommon{color:#86efac}
@@ -156,7 +141,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
       <div id="fishGame">
         <div id="track">
           <div id="catchBar"></div>
-          <div id="fishSprite"></div>
+          <img id="fishSprite" alt="물고기" />
         </div>
       </div>
 
@@ -216,46 +201,26 @@ const auth = getAuth(app);
 const db = getDatabase(app);
 
 const FISHES = {
-  minnow: {
-    name:"피라미", price:8, rarity:"common", rate:35, speed:1.15,
-    sprite:{x:0,y:0,w:90,h:70}
-  },
-  carp: {
-    name:"붕어", price:15, rarity:"common", rate:28, speed:1.55,
-    sprite:{x:90,y:0,w:90,h:70}
-  },
-  trout: {
-    name:"송어", price:28, rarity:"uncommon", rate:18, speed:2.35,
-    sprite:{x:180,y:0,w:90,h:70}
-  },
-  bass: {
-    name:"배스", price:38, rarity:"uncommon", rate:14, speed:2.65,
-    sprite:{x:360,y:0,w:90,h:70}
-  },
-  tuna: {
-    name:"참치", price:75, rarity:"rare", rate:8, speed:3.6,
-    sprite:{x:270,y:130,w:90,h:70}
-  },
-  puffer: {
-    name:"복어", price:95, rarity:"rare", rate:6, speed:4.05,
-    sprite:{x:900,y:130,w:90,h:70}
-  },
-  eel: {
-    name:"장어", price:120, rarity:"rare", rate:4, speed:4.55,
-    sprite:{x:720,y:260,w:120,h:70}
-  },
-  angler: {
-    name:"심해아귀", price:220, rarity:"legend", rate:1.5, speed:5.45,
-    sprite:{x:720,y:390,w:150,h:90}
-  },
-  lavaEel: {
-    name:"용암장어", price:280, rarity:"legend", rate:1, speed:6.1,
-    sprite:{x:900,y:520,w:150,h:80}
-  },
-  goldenFish: {
-    name:"황금잉어", price:350, rarity:"legend", rate:0.7, speed:6.55,
-    sprite:{x:0,y:390,w:150,h:90}
-  }
+  flounder: { name:"넙치", price:10, rarity:"common", rate:32, speed:1.1, img:"./assets/fish/fish01.png" },
+  octopus: { name:"문어", price:95, rarity:"rare", rate:5, speed:4.2, img:"./assets/fish/fish02.png" },
+  sunfish: { name:"개복치", price:180, rarity:"legend", rate:1.5, speed:5.2, img:"./assets/fish/fish03.png" },
+  tuna: { name:"참치", price:85, rarity:"rare", rate:6, speed:3.8, img:"./assets/fish/fish04.png" },
+  bass: { name:"배스", price:35, rarity:"uncommon", rate:14, speed:2.5, img:"./assets/fish/fish05.png" },
+  perch: { name:"농어", price:22, rarity:"common", rate:20, speed:1.9, img:"./assets/fish/fish06.png" },
+  lavaEel: { name:"용암장어", price:260, rarity:"legend", rate:0.8, speed:6.2, img:"./assets/fish/fish07.png" },
+  trout: { name:"송어", price:28, rarity:"uncommon", rate:16, speed:2.3, img:"./assets/fish/fish08.png" },
+  carp: { name:"잉어", price:15, rarity:"common", rate:26, speed:1.5, img:"./assets/fish/fish09.png" },
+  crucian: { name:"붕어", price:12, rarity:"common", rate:28, speed:1.35, img:"./assets/fish/fish10.png" },
+  goldenCarp: { name:"황금붕어", price:120, rarity:"rare", rate:3.5, speed:3.7, img:"./assets/fish/fish11.png" },
+  ghostFish: { name:"유령고기", price:150, rarity:"legend", rate:1.8, speed:4.8, img:"./assets/fish/fish12.png" },
+  grayMullet: { name:"숭어", price:26, rarity:"uncommon", rate:15, speed:2.1, img:"./assets/fish/fish13.png" },
+  rainbowTrout: { name:"무지개송어", price:45, rarity:"uncommon", rate:10, speed:2.8, img:"./assets/fish/fish14.png" },
+  puffer: { name:"복어", price:90, rarity:"rare", rate:5.5, speed:4.0, img:"./assets/fish/fish15.png" },
+  pike: { name:"강꼬치고기", price:60, rarity:"rare", rate:7, speed:3.4, img:"./assets/fish/fish16.png" },
+  sardine: { name:"정어리", price:9, rarity:"common", rate:30, speed:1.25, img:"./assets/fish/fish17.png" },
+  tropicalFish: { name:"열대어", price:70, rarity:"rare", rate:6.5, speed:3.6, img:"./assets/fish/fish18.png" },
+  sturgeon: { name:"철갑상어", price:110, rarity:"rare", rate:4, speed:3.9, img:"./assets/fish/fish19.png" },
+  mackerel: { name:"고등어", price:20, rarity:"common", rate:22, speed:1.8, img:"./assets/fish/fish20.png" }
 };
 
 let uid = "";
@@ -386,11 +351,7 @@ function renderInventory() {
     row.className = "fish-row";
     row.innerHTML = `
       <div>
-        <span class="book-sprite" style="
-          background-position:-${fish.sprite.x}px -${fish.sprite.y}px;
-          width:${fish.sprite.w}px;
-          height:${fish.sprite.h}px;
-        "></span>
+        <img class="book-fish-img" src="${fish.img}" alt="${fish.name}">
         <b class="r-${fish.rarity}">${fish.name}</b> x ${count}<br>
         <span class="small">1마리 ${fish.price} G / 전체 ${fish.price * count} G</span>
       </div>
@@ -417,11 +378,7 @@ function renderFishBook() {
     row.className = "fish-row";
     row.innerHTML = `
       <span>
-        <span class="book-sprite" style="
-          background-position:-${fish.sprite.x}px -${fish.sprite.y}px;
-          width:${fish.sprite.w}px;
-          height:${fish.sprite.h}px;
-        "></span>
+        <img class="book-fish-img" src="${fish.img}" alt="${fish.name}">
         <b class="r-${fish.rarity}">${fish.name}</b>
         <span class="small">(${fish.rarity})</span>
       </span>
@@ -469,20 +426,18 @@ function startFishing() {
 
 function setFishSprite(key) {
   const fish = FISHES[key];
-  const s = fish.sprite;
 
-  fishSprite.style.backgroundImage = `url("./fish_sheet.png")`;
-  fishSprite.style.backgroundPosition = `-${s.x}px -${s.y}px`;
-  fishSprite.style.width = s.w + "px";
-  fishSprite.style.height = s.h + "px";
+  fishSprite.src = fish.img;
 
-  const scale =
-    fish.rarity === "legend" ? 0.42 :
-    fish.rarity === "rare" ? 0.48 :
-    0.55;
-
-  fishSprite.style.transform = `scale(${scale})`;
-  fishSprite.style.transformOrigin = "top left";
+  if (fish.rarity === "legend") {
+    fishSprite.style.width = "72px";
+  } else if (fish.rarity === "rare") {
+    fishSprite.style.width = "64px";
+  } else if (fish.rarity === "uncommon") {
+    fishSprite.style.width = "58px";
+  } else {
+    fishSprite.style.width = "52px";
+  }
 }
 
 function showFishShadow(key) {
@@ -532,7 +487,7 @@ function pickFish() {
     if (r <= 0) return key;
   }
 
-  return "minnow";
+  return "flounder";
 }
 
 function loopMiniGame() {
