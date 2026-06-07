@@ -30,10 +30,42 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .wave:nth-child(3){top:125px;animation-duration:5s}
 @keyframes wave{from{transform:translateX(-60px)}to{transform:translateX(60px)}}
 
+#fishShadow{
+  position:absolute;
+  left:50%;
+  top:58%;
+  width:90px;
+  height:28px;
+  background:rgba(0,0,0,.35);
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+  filter:blur(2px);
+  display:none;
+  animation:shadowMove 2.4s infinite ease-in-out;
+}
+@keyframes shadowMove{
+  0%{transform:translate(-55%,-50%) scale(1)}
+  50%{transform:translate(-45%,-45%) scale(1.08)}
+  100%{transform:translate(-55%,-50%) scale(1)}
+}
+
 #fishGame{height:260px;background:#0f172a;border-radius:18px;position:relative;overflow:hidden;border:3px solid #64748b}
 #track{position:absolute;left:50%;top:12px;transform:translateX(-50%);width:84px;height:230px;background:#1e293b;border-radius:999px;border:2px solid #94a3b8}
 #catchBar{position:absolute;left:10px;width:60px;height:60px;background:rgba(34,197,94,.65);border:2px solid #bbf7d0;border-radius:12px}
-#fish{position:absolute;left:20px;width:44px;height:34px;font-size:28px;line-height:34px;background:none;text-align:center}
+#fishSprite{
+  position:absolute;
+  left:10px;
+  top:112px;
+  width:80px;
+  height:60px;
+  background-image:url("./fish_sheet.png");
+  background-repeat:no-repeat;
+  background-size:1640px 820px;
+  image-rendering:pixelated;
+  transform:scale(.55);
+  transform-origin:top left;
+}
+
 #progressWrap{height:18px;background:#1e293b;border-radius:999px;overflow:hidden;margin-top:8px}
 #progress{height:100%;width:0%;background:#22c55e}
 
@@ -44,6 +76,23 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .qty-btn{width:32px;height:32px;padding:0;border-radius:9px;background:#374151;color:white}
 .qty-num{min-width:34px;text-align:center;font-weight:bold}
 .compact-shop{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+.book-sprite{
+  display:inline-block;
+  background-image:url("./fish_sheet.png");
+  background-repeat:no-repeat;
+  background-size:1640px 820px;
+  image-rendering:pixelated;
+  transform:scale(.42);
+  transform-origin:left center;
+  vertical-align:middle;
+  margin-right:-24px;
+}
+
+.r-common{color:#e5e7eb}
+.r-uncommon{color:#86efac}
+.r-rare{color:#93c5fd}
+.r-legend{color:#facc15}
 
 @media(max-width:720px){
   h1{font-size:24px}
@@ -90,6 +139,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
       <div class="wave"></div>
       <div class="wave"></div>
       <div class="wave"></div>
+      <div id="fishShadow"></div>
     </div>
 
     <div id="normalControls">
@@ -106,7 +156,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
       <div id="fishGame">
         <div id="track">
           <div id="catchBar"></div>
-          <div id="fish">🐟</div>
+          <div id="fishSprite"></div>
         </div>
       </div>
 
@@ -166,12 +216,46 @@ const auth = getAuth(app);
 const db = getDatabase(app);
 
 const FISHES = {
-  minnow: { name:"피라미", emoji:"🐟", price:8, rarity:"common", rate:40, speed:1.15 },
-  carp: { name:"붕어", emoji:"🐠", price:15, rarity:"common", rate:28, speed:1.55 },
-  bass: { name:"배스", emoji:"🐟", price:28, rarity:"uncommon", rate:17, speed:2.45 },
-  eel: { name:"장어", emoji:"🐍", price:55, rarity:"rare", rate:9, speed:3.35 },
-  salmon: { name:"연어", emoji:"🐡", price:90, rarity:"rare", rate:5, speed:4.35 },
-  golden: { name:"황금잉어", emoji:"🐠", price:250, rarity:"legend", rate:1, speed:5.85 }
+  minnow: {
+    name:"피라미", price:8, rarity:"common", rate:35, speed:1.15,
+    sprite:{x:0,y:0,w:90,h:70}
+  },
+  carp: {
+    name:"붕어", price:15, rarity:"common", rate:28, speed:1.55,
+    sprite:{x:90,y:0,w:90,h:70}
+  },
+  trout: {
+    name:"송어", price:28, rarity:"uncommon", rate:18, speed:2.35,
+    sprite:{x:180,y:0,w:90,h:70}
+  },
+  bass: {
+    name:"배스", price:38, rarity:"uncommon", rate:14, speed:2.65,
+    sprite:{x:360,y:0,w:90,h:70}
+  },
+  tuna: {
+    name:"참치", price:75, rarity:"rare", rate:8, speed:3.6,
+    sprite:{x:270,y:130,w:90,h:70}
+  },
+  puffer: {
+    name:"복어", price:95, rarity:"rare", rate:6, speed:4.05,
+    sprite:{x:900,y:130,w:90,h:70}
+  },
+  eel: {
+    name:"장어", price:120, rarity:"rare", rate:4, speed:4.55,
+    sprite:{x:720,y:260,w:120,h:70}
+  },
+  angler: {
+    name:"심해아귀", price:220, rarity:"legend", rate:1.5, speed:5.45,
+    sprite:{x:720,y:390,w:150,h:90}
+  },
+  lavaEel: {
+    name:"용암장어", price:280, rarity:"legend", rate:1, speed:6.1,
+    sprite:{x:900,y:520,w:150,h:80}
+  },
+  goldenFish: {
+    name:"황금잉어", price:350, rarity:"legend", rate:0.7, speed:6.55,
+    sprite:{x:0,y:390,w:150,h:90}
+  }
 };
 
 let uid = "";
@@ -208,7 +292,8 @@ const normalControls = document.getElementById("normalControls");
 const miniGameBox = document.getElementById("miniGameBox");
 const miniStatus = document.getElementById("miniStatus");
 const catchBar = document.getElementById("catchBar");
-const fishEl = document.getElementById("fish");
+const fishSprite = document.getElementById("fishSprite");
+const fishShadow = document.getElementById("fishShadow");
 const progress = document.getElementById("progress");
 
 const inventoryList = document.getElementById("inventoryList");
@@ -295,12 +380,18 @@ function renderInventory() {
 
   for (const [key, count] of entries) {
     const fish = FISHES[key];
+    if (!fish) continue;
 
     const row = document.createElement("div");
     row.className = "fish-row";
     row.innerHTML = `
       <div>
-        <b>${fish.emoji} ${fish.name}</b> x ${count}<br>
+        <span class="book-sprite" style="
+          background-position:-${fish.sprite.x}px -${fish.sprite.y}px;
+          width:${fish.sprite.w}px;
+          height:${fish.sprite.h}px;
+        "></span>
+        <b class="r-${fish.rarity}">${fish.name}</b> x ${count}<br>
         <span class="small">1마리 ${fish.price} G / 전체 ${fish.price * count} G</span>
       </div>
       <div class="sell-control">
@@ -325,7 +416,15 @@ function renderFishBook() {
     const row = document.createElement("div");
     row.className = "fish-row";
     row.innerHTML = `
-      <span>${fish.emoji} ${fish.name} <span class="small">(${fish.rarity})</span></span>
+      <span>
+        <span class="book-sprite" style="
+          background-position:-${fish.sprite.x}px -${fish.sprite.y}px;
+          width:${fish.sprite.w}px;
+          height:${fish.sprite.h}px;
+        "></span>
+        <b class="r-${fish.rarity}">${fish.name}</b>
+        <span class="small">(${fish.rarity})</span>
+      </span>
       <span>${fish.price} G / 보유 ${owned}</span>
     `;
     fishBook.appendChild(row);
@@ -356,7 +455,8 @@ function startFishing() {
   fishPattern = createFishPattern(FISHES[targetFishKey]);
   fishPatternTime = 0;
 
-  fishEl.textContent = FISHES[targetFishKey].emoji || "🐟";
+  setFishSprite(targetFishKey);
+  showFishShadow(targetFishKey);
 
   normalControls.classList.add("hidden");
   miniGameBox.classList.remove("hidden");
@@ -367,11 +467,47 @@ function startFishing() {
   render();
 }
 
+function setFishSprite(key) {
+  const fish = FISHES[key];
+  const s = fish.sprite;
+
+  fishSprite.style.backgroundImage = `url("./fish_sheet.png")`;
+  fishSprite.style.backgroundPosition = `-${s.x}px -${s.y}px`;
+  fishSprite.style.width = s.w + "px";
+  fishSprite.style.height = s.h + "px";
+
+  const scale =
+    fish.rarity === "legend" ? 0.42 :
+    fish.rarity === "rare" ? 0.48 :
+    0.55;
+
+  fishSprite.style.transform = `scale(${scale})`;
+  fishSprite.style.transformOrigin = "top left";
+}
+
+function showFishShadow(key) {
+  const fish = FISHES[key];
+
+  let size = 70;
+  if (fish.rarity === "uncommon") size = 95;
+  if (fish.rarity === "rare") size = 125;
+  if (fish.rarity === "legend") size = 165;
+
+  fishShadow.style.display = "block";
+  fishShadow.style.width = size + "px";
+  fishShadow.style.height = Math.round(size * 0.32) + "px";
+}
+
+function hideFishShadow() {
+  fishShadow.style.display = "none";
+}
+
 function forceStartMiniGame() {
   if (!miniRunning || actualMiniStarted) return;
 
   waitingToStart = false;
   actualMiniStarted = true;
+  hideFishShadow();
 
   miniStatus.textContent = "물고기를 초록 구간 안에 유지하세요.";
 }
@@ -405,7 +541,7 @@ function loopMiniGame() {
   if (waitingToStart) {
     catchBar.style.top = barY + "px";
     catchBar.style.height = "60px";
-    fishEl.style.top = fishY + "px";
+    fishSprite.style.top = fishY + "px";
     progress.style.width = progressValue + "%";
     animationId = requestAnimationFrame(loopMiniGame);
     return;
@@ -456,7 +592,7 @@ function loopMiniGame() {
 
   catchBar.style.top = barY + "px";
   catchBar.style.height = barHeight + "px";
-  fishEl.style.top = fishY + "px";
+  fishSprite.style.top = fishY + "px";
   progress.style.width = progressValue + "%";
 
   if (progressValue >= 100) {
@@ -539,6 +675,7 @@ async function finishFishing(success) {
   waitingToStart = false;
   actualMiniStarted = false;
   holding = false;
+  hideFishShadow();
 
   if (animationId) cancelAnimationFrame(animationId);
 
@@ -552,7 +689,7 @@ async function finishFishing(success) {
     fishing.inventory[targetFishKey] = (fishing.inventory[targetFishKey] || 0) + 1;
     fishing.totalCaught = (fishing.totalCaught || 0) + 1;
 
-    mainStatus.textContent = `${fish.emoji} ${fish.name}을(를) 잡았습니다!`;
+    mainStatus.textContent = `${fish.name}을(를) 잡았습니다!`;
   } else {
     mainStatus.textContent = "물고기가 도망갔습니다.";
   }
