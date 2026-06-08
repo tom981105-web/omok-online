@@ -1334,6 +1334,19 @@ html,body{
 .auction11-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:10px}.multi11-auction-card .auction-price{font-size:22px;color:#facc15;font-weight:1000;margin:7px 0}.auction-meta{font-size:12px;color:#cbd5e1;line-height:1.45}.auction-badge{display:inline-block;border-radius:999px;padding:4px 8px;background:rgba(59,130,246,.14);border:1px solid rgba(59,130,246,.25);color:#bfdbfe;font-size:11px;font-weight:900;margin-bottom:6px}.auction11-form{display:grid;grid-template-columns:1fr 120px auto;gap:8px;background:rgba(2,6,23,.52);border:1px solid rgba(148,163,184,.18);border-radius:16px;padding:10px}.auction11-form select,.auction11-form input{background:#020617;color:white;border:1px solid rgba(148,163,184,.35);border-radius:11px;padding:10px;min-width:0}.auction11-form button{margin:0;border-radius:11px}
 @media(max-width:720px){.multi10-tabs{grid-template-columns:repeat(2,1fr)!important}.boss11-top{grid-template-columns:1fr}.boss11-img-wrap{height:180px}.boss11-actions{grid-template-columns:1fr}.boss11-stats{grid-template-columns:1fr 1fr}.auction11-form{grid-template-columns:1fr}.multi11-score{font-size:23px}}
 
+
+
+/* Multiplayer 1.2 Boss Rush Timing Battle */
+.boss11-card.boss12-card{padding:20px!important;border-color:rgba(250,204,21,.42)!important;background:radial-gradient(circle at 50% 0%,rgba(251,191,36,.08),transparent 38%),linear-gradient(180deg,rgba(10,20,38,.98),rgba(2,6,23,.99))!important}
+.boss12-hero{display:grid;grid-template-columns:360px 1fr;gap:24px;align-items:center}
+.boss12-stage{position:relative;min-height:360px;border-radius:26px;background:radial-gradient(circle at center,rgba(250,204,21,.16),rgba(59,130,246,.12) 42%,rgba(2,6,23,.82) 72%);border:1px solid rgba(250,204,21,.22);display:grid;place-items:center;overflow:hidden;box-shadow:inset 0 0 40px rgba(250,204,21,.05),0 18px 42px rgba(0,0,0,.32)}
+.boss12-stage::before{content:"";position:absolute;inset:-28%;background:conic-gradient(from 0deg,transparent,rgba(250,204,21,.18),transparent,rgba(59,130,246,.18),transparent);animation:bossAura 6s linear infinite;opacity:.8}
+.boss12-stage::after{content:"";position:absolute;inset:0;background:radial-gradient(circle,rgba(255,255,255,.38) 0 1px,transparent 2px) 12% 88%/90px 120px,radial-gradient(circle,rgba(250,204,21,.25) 0 1.5px,transparent 3px) 82% 78%/120px 150px;opacity:.42;animation:bubbleFloat 7s linear infinite;pointer-events:none}
+.boss12-img{position:relative;z-index:2;max-width:330px;max-height:330px;width:86%;height:86%;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 26px 38px rgba(0,0,0,.8)) drop-shadow(0 0 20px rgba(250,204,21,.28))}
+.boss12-name{font-size:36px!important;margin:8px 0!important}.boss12-desc{font-size:14px;color:#cbd5e1;line-height:1.6;margin-bottom:12px}.boss12-damage-pop{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);font-size:42px;font-weight:1000;color:#fecaca;text-shadow:0 4px 9px #000,0 0 24px #ef4444;opacity:0;pointer-events:none;z-index:6}.boss12-damage-pop.show{animation:bossDamagePop 1s ease-out both}.boss12-actions{display:grid;grid-template-columns:1.3fr 1fr;gap:10px;margin-top:14px}.boss12-actions button{height:58px!important;border-radius:16px!important;font-size:18px!important}.boss12-attack{background:linear-gradient(180deg,#fbbf24,#f59e0b)!important;color:#111827!important;box-shadow:0 14px 26px rgba(245,158,11,.22)!important}.boss12-sync{background:#334155!important;color:#e2e8f0!important}.boss12-log{margin-top:14px;background:rgba(2,6,23,.45);border:1px solid rgba(148,163,184,.16);border-radius:16px;padding:12px}
+.boss-rush-backdrop{position:fixed;inset:0;z-index:700;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.76);padding:16px}.boss-rush-backdrop.show{display:flex}.boss-rush-card{width:min(860px,100%);background:radial-gradient(circle at 50% 0%,rgba(250,204,21,.13),transparent 36%),linear-gradient(180deg,#10223b,#020617);border:1px solid rgba(250,204,21,.45);border-radius:26px;padding:22px;box-shadow:0 28px 100px rgba(0,0,0,.68);text-align:center;position:relative;overflow:hidden}.boss-rush-card::before{content:"";position:absolute;inset:-40%;background:conic-gradient(from 0deg,transparent,rgba(250,204,21,.14),transparent,rgba(239,68,68,.16),transparent);animation:bossAura 5s linear infinite;pointer-events:none}.boss-rush-inner{position:relative;z-index:2}.boss-rush-title{font-size:28px;font-weight:1000;margin:4px 0;color:#fff;text-shadow:0 3px 6px #000}.boss-rush-sub{color:#facc15;font-weight:900;margin-bottom:16px}.boss-rush-preview{height:180px;display:grid;place-items:center;margin-bottom:12px}.boss-rush-preview img{max-width:210px;max-height:170px;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 20px 32px rgba(0,0,0,.75))}.boss-rush-meter{position:relative;width:min(720px,96%);height:54px;margin:14px auto;border-radius:999px;background:linear-gradient(180deg,rgba(15,23,42,.96),rgba(2,6,23,.96));border:2px solid rgba(148,163,184,.42);box-shadow:inset 0 0 22px rgba(0,0,0,.64),0 14px 28px rgba(0,0,0,.28);overflow:hidden}.boss-rush-zone{position:absolute;top:6px;bottom:6px;left:42%;width:18%;border-radius:999px;background:linear-gradient(180deg,#86efac,#22c55e);box-shadow:0 0 20px rgba(34,197,94,.75);z-index:2}.boss-rush-crit{position:absolute;top:9px;bottom:9px;left:49%;width:4%;border-radius:999px;background:linear-gradient(180deg,#fde68a,#f59e0b);box-shadow:0 0 22px rgba(250,204,21,.95);z-index:3}.boss-rush-pointer{position:absolute;top:50%;left:0%;width:26px;height:66px;transform:translate(-50%,-50%);border-radius:999px;background:linear-gradient(180deg,#fecaca,#ef4444);border:2px solid rgba(255,255,255,.78);box-shadow:0 0 24px rgba(239,68,68,.9);z-index:4}.boss-rush-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:min(720px,96%);margin:12px auto}.boss-rush-stat{background:rgba(2,6,23,.62);border:1px solid rgba(148,163,184,.2);border-radius:14px;padding:10px}.boss-rush-stat b{display:block;font-size:22px;color:#fff}.boss-rush-stat span{font-size:12px;color:#cbd5e1}.boss-rush-btns{display:grid;grid-template-columns:1.4fr .7fr;gap:10px;width:min(720px,96%);margin:14px auto 0}.boss-rush-btns button{height:54px;border-radius:15px;font-size:18px;margin:0}.boss-rush-hit{background:linear-gradient(180deg,#fbbf24,#f59e0b)!important;color:#111827!important}.boss-rush-end{background:#334155!important;color:#e2e8f0!important}.boss-rush-message{min-height:24px;font-weight:1000;color:#facc15;text-shadow:0 2px 4px #000}.boss-rush-card.critical{animation:bossRushCrit .28s ease-out both}@keyframes bossRushCrit{0%,100%{transform:scale(1)}50%{transform:scale(1.018)}}
+@media(max-width:900px){.boss12-hero{grid-template-columns:1fr}.boss12-stage{min-height:260px}.boss12-img{max-width:250px;max-height:250px}.boss12-name{font-size:28px!important}.boss12-actions{grid-template-columns:1fr}.boss-rush-preview{height:130px}.boss-rush-preview img{max-height:125px}.boss-rush-stats{grid-template-columns:repeat(2,1fr)}.boss-rush-btns{grid-template-columns:1fr}.boss-rush-card{padding:16px}.boss-rush-title{font-size:23px}}
+
 </style>
 </head>
 
@@ -2819,6 +2832,9 @@ const BOSS11_LIST=[
   {id:'leviathan',name:'고대 리바이어던',title:'바다의 포식자',img:'./assets/boss/boss_leviathan.png',maxHp:7200000,element:'폭풍'},
   {id:'phoenixfish',name:'피닉스 피쉬',title:'불꽃의 전설어',img:'./assets/boss/boss_phoenixfish.png',maxHp:6300000,element:'화염'}
 ];
+let currentBossCache=null;
+let bossRush=null;
+
 function getBoss11Today(){const day=Math.floor(Date.now()/86400000);return BOSS11_LIST[day%BOSS11_LIST.length]}
 function getBoss11EndTime(){const d=new Date();d.setHours(23,59,59,999);return d.getTime()}
 function getBoss11RemainText(endsAt){const ms=Math.max(0,(endsAt||getBoss11EndTime())-Date.now());const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000);return `${h}시간 ${m}분`}
@@ -2859,23 +2875,24 @@ async function dbGet(path){const snap=await get(ref(db,path));return snap.exists
     boss=getDefaultBoss();
     await dbPatch({'multiplayer/worldBoss/current':boss});
   }
+  currentBossCache=boss;
   const localHp=getBoss11LocalHp(boss);
   const pct=Math.max(0,Math.round(localHp/(boss.maxHp||1)*100));
   const logs=(fishing.bossLogs||[]).map(l=>`<div class="boss11-log-item"><span>${l.text}</span><b>-${formatNumber(l.damage)}</b></div>`).join('')||'<div class="small">아직 공격 기록이 없습니다.</div>';
-  box.innerHTML=`<div id="boss11Card" class="boss11-card">
-    <div class="boss11-top">
-      <div class="boss11-img-wrap"><img class="boss11-img" src="${boss.img||today.img}" alt="${boss.name}"><div id="boss11DamagePop" class="boss11-damage-pop"></div></div>
+  box.innerHTML=`<div id="boss11Card" class="boss11-card boss12-card">
+    <div class="boss12-hero">
+      <div class="boss12-stage"><img class="boss12-img" src="${boss.img||today.img}" alt="${boss.name}"><div id="boss11DamagePop" class="boss12-damage-pop"></div></div>
       <div class="boss11-info">
         <span class="boss11-tag">🔥 ${boss.element||today.element} 월드보스</span>
-        <h3>${boss.name||today.name}</h3>
-        <div class="small">${boss.title||today.title} · 보스 낚시로 피해를 누적한 뒤 한 번에 반영합니다.</div>
+        <h3 class="boss12-name">${boss.name||today.name}</h3>
+        <div class="boss12-desc">${boss.title||today.title} · 보스 러시 타이밍 게임으로 콤보를 쌓아 피해를 누적합니다. 실패하면 러시가 종료됩니다.</div>
         <div class="boss11-hp-line"><span>HP</span><b>${formatNumber(localHp)} / ${formatNumber(boss.maxHp)}</b></div>
         <div class="boss11-bar"><div class="boss11-fill" style="width:${pct}%"></div></div>
-        <div class="boss11-stats"><div class="boss11-stat"><b>${pct}%</b><span>남은 체력</span></div><div class="boss11-stat"><b>${formatNumber(pendingBossDamage)}</b><span>내 누적 피해</span></div><div class="boss11-stat"><b>${getBoss11RemainText(boss.endsAt)}</b><span>남은 시간</span></div></div>
-        <div class="boss11-actions"><button class="boss11-attack" onclick="boss11Attack()">🎣 보스 낚시 공격</button><button class="boss11-sync" onclick="syncMultiplayer().then(loadMulti)">누적 피해 반영</button></div>
+        <div class="boss11-stats"><div class="boss11-stat"><b>${pct}%</b><span>남은 체력</span></div><div class="boss11-stat"><b>${formatNumber(pendingBossDamage)}</b><span>미반영 피해</span></div><div class="boss11-stat"><b>${getBoss11RemainText(boss.endsAt)}</b><span>남은 시간</span></div></div>
+        <div class="boss12-actions"><button class="boss12-attack" onclick="startBossRush()">🎣 보스 러시 시작</button><button class="boss12-sync" onclick="syncMultiplayer().then(loadMulti)">누적 피해 반영</button></div>
       </div>
     </div>
-    <div class="boss11-log"><div class="boss11-log-title">최근 공격</div>${logs}</div>
+    <div class="boss12-log"><div class="boss11-log-title">최근 공격</div>${logs}</div>
   </div>`
 }async function renderMultiAuction(box){
   const now=Date.now();
@@ -2885,19 +2902,153 @@ async function dbGet(path){const snap=await get(ref(db,path));return snap.exists
   const cards=list.map(a=>`<div class="multi11-auction-card"><span class="auction-badge">${getRarityName(a.rarity||'common')}</span><div class="multi11-name">${a.fishName}</div><div class="auction-price">${formatNumber(a.price)}G</div><div class="auction-meta">판매자 ${a.sellerName}<br>남은시간 ${Math.max(0,Math.floor((a.expiresAt-now)/3600000))}시간</div><button onclick="buyAuctionItem('${a.id}')">구매</button></div>`).join('');
   box.innerHTML=`<div class="multi10-card">${multi10Title("auction","경매장")}<div class="small">1인 하루 2개까지 등록, 48시간 후 자동 만료됩니다.</div><div class="auction11-form"><select id="auctionFishSelect">${options}</select><input id="auctionPriceInput" type="number" placeholder="가격"><button onclick="createAuctionItem()">등록</button></div><div class="auction11-grid">${cards||'<div class="small">등록된 경매 없음</div>'}</div></div>`
 }
-window.boss11Attack=function(){
+function ensureBossRushModal(){
+  let modal=$('bossRushModal');
+  if(modal)return modal;
+  modal=document.createElement('div');
+  modal.id='bossRushModal';
+  modal.className='boss-rush-backdrop';
+  modal.innerHTML=`<div id="bossRushCard" class="boss-rush-card"><div class="boss-rush-inner">
+    <div class="boss-rush-title" id="bossRushTitle">보스 러시</div>
+    <div class="boss-rush-sub" id="bossRushSub">초록 구간을 맞추세요. 중앙 금색 구간은 치명타입니다.</div>
+    <div class="boss-rush-preview"><img id="bossRushImg" src="" alt="보스"></div>
+    <div id="bossRushMessage" class="boss-rush-message">준비 완료</div>
+    <div class="boss-rush-meter"><div id="bossRushZone" class="boss-rush-zone"></div><div id="bossRushCrit" class="boss-rush-crit"></div><div id="bossRushPointer" class="boss-rush-pointer"></div></div>
+    <div class="boss-rush-stats"><div class="boss-rush-stat"><b id="bossRushCombo">0</b><span>콤보</span></div><div class="boss-rush-stat"><b id="bossRushCritCount">0</b><span>치명타</span></div><div class="boss-rush-stat"><b id="bossRushDamage">0</b><span>총 피해</span></div><div class="boss-rush-stat"><b id="bossRushLevel">1</b><span>난이도</span></div></div>
+    <div class="boss-rush-btns"><button id="bossRushHitBtn" class="boss-rush-hit">타이밍 맞춰 공격</button><button id="bossRushEndBtn" class="boss-rush-end">그만하기</button></div>
+  </div></div>`;
+  document.body.appendChild(modal);
+  $('bossRushHitBtn').addEventListener('pointerdown',e=>{e.preventDefault();bossRushHit();});
+  $('bossRushEndBtn').onclick=()=>finishBossRush(false);
+  return modal;
+}
+
+function getBossRushDifficulty(combo){
+  const rod=getEquippedRod?getEquippedRod():{id:'rod_wood'};
+  const bait=getEquippedBait?getEquippedBait():{id:'basic'};
+  const baitZone=bait.id==='legend'?4:bait.id==='rare'?2:0;
+  const rodSpeedBonus=rod.id==='rod_dragon'?.18:rod.id==='rod_gold'?.1:0;
+  const speed=Math.min(5.4,1.25+combo*.18-rodSpeedBonus);
+  const zone=Math.max(7,24-combo*.72+baitZone);
+  const crit=Math.max(1.8,zone*.22);
+  return {speed,zone,crit};
+}
+
+function updateBossRushUI(){
+  if(!bossRush)return;
+  const diff=getBossRushDifficulty(bossRush.combo);
+  bossRush.zoneWidth=diff.zone;
+  bossRush.critWidth=diff.crit;
+  const zone=$('bossRushZone'),crit=$('bossRushCrit'),ptr=$('bossRushPointer');
+  if(zone){zone.style.left=bossRush.zoneLeft+'%';zone.style.width=bossRush.zoneWidth+'%'}
+  const critLeft=bossRush.zoneLeft+(bossRush.zoneWidth-bossRush.critWidth)/2;
+  if(crit){crit.style.left=critLeft+'%';crit.style.width=bossRush.critWidth+'%'}
+  if(ptr)ptr.style.left=bossRush.pointer+'%';
+  if($('bossRushCombo'))$('bossRushCombo').textContent=bossRush.combo;
+  if($('bossRushCritCount'))$('bossRushCritCount').textContent=bossRush.crits;
+  if($('bossRushDamage'))$('bossRushDamage').textContent=formatNumber(bossRush.damage);
+  if($('bossRushLevel'))$('bossRushLevel').textContent=Math.max(1,Math.floor(bossRush.combo/3)+1);
+}
+
+function loopBossRush(){
+  if(!bossRush||!bossRush.running)return;
+  const diff=getBossRushDifficulty(bossRush.combo);
+  bossRush.pointer+=bossRush.dir*diff.speed;
+  if(bossRush.pointer>=100){bossRush.pointer=100;bossRush.dir=-1;}
+  if(bossRush.pointer<=0){bossRush.pointer=0;bossRush.dir=1;}
+  updateBossRushUI();
+  bossRush.raf=requestAnimationFrame(loopBossRush);
+}
+
+function randomizeBossRushZone(){
+  if(!bossRush)return;
+  const diff=getBossRushDifficulty(bossRush.combo);
+  bossRush.zoneWidth=diff.zone;
+  bossRush.zoneLeft=6+Math.random()*(88-bossRush.zoneWidth);
+}
+
+function calcBossRushHitDamage(isCrit){
+  const rod=getEquippedRod?getEquippedRod():{id:'rod_wood',sellMul:1};
+  const bait=getEquippedBait?getEquippedBait():{id:'basic'};
+  const rodMul=rod.id==='rod_dragon'?1.5:rod.id==='rod_gold'?1.25:rod.id==='rod_iron'?1.1:1;
+  const baitMul=bait.id==='legend'?1.35:bait.id==='rare'?1.15:1;
+  const base=90+(fishing?.level||1)*15+(fishing?.rodLevel||1)*28;
+  const comboMul=1+Math.pow(Math.max(0,bossRush.combo),1.22)*.16;
+  const variance=.88+Math.random()*.24;
+  const critMul=isCrit?(bait.id==='legend'?3.3:2.55):1;
+  return Math.round(base*rodMul*baitMul*comboMul*variance*critMul);
+}
+
+function bossRushHit(){
+  if(!bossRush||!bossRush.running)return;
+  const p=bossRush.pointer;
+  const zL=bossRush.zoneLeft, zR=zL+bossRush.zoneWidth;
+  const cL=zL+(bossRush.zoneWidth-bossRush.critWidth)/2, cR=cL+bossRush.critWidth;
+  if(p<zL||p>zR){
+    $('bossRushMessage').textContent='실패! 보스가 저항을 끊어냈습니다.';
+    finishBossRush(true);
+    return;
+  }
+  const isCrit=p>=cL&&p<=cR;
+  bossRush.combo+=isCrit?2:1;
+  if(isCrit)bossRush.crits+=1;
+  const dmg=calcBossRushHitDamage(isCrit);
+  bossRush.damage+=dmg;
+  const card=$('bossRushCard');
+  if(card&&isCrit){card.classList.remove('critical');void card.offsetWidth;card.classList.add('critical')}
+  $('bossRushMessage').textContent=isCrit?`치명타! -${formatNumber(dmg)} 피해`:`명중! -${formatNumber(dmg)} 피해`;
+  randomizeBossRushZone();
+  updateBossRushUI();
+}
+
+window.startBossRush=function(){
   if(!fishing)return;
-  if(!hasAnyBait || !hasAnyBait()){shop20Toast('미끼가 부족합니다.','보스 공격에도 미끼가 필요합니다.');return;}
+  if(!hasAnyBait || !hasAnyBait()){shop20Toast('미끼가 부족합니다.','보스 러시에도 미끼가 필요합니다.');return;}
   if(!consumeEquippedBait()){shop20Toast('미끼가 부족합니다.');return;}
-  const result=calcBoss11Damage();
-  pendingBossDamage+=result.damage;
-  addBoss11LocalLog(result.crit?'치명타 명중!':'보스 낚시 성공!',result.damage);
-  const card=$('boss11Card'),pop=$('boss11DamagePop');
-  if(card){card.classList.remove('shake');void card.offsetWidth;card.classList.add('shake')}
-  if(pop){pop.textContent=`-${formatNumber(result.damage)}${result.crit?' CRIT!':''}`;pop.classList.remove('show');void pop.offsetWidth;pop.classList.add('show')}
+  const boss=currentBossCache||getDefaultBoss();
+  const modal=ensureBossRushModal();
+  bossRush={running:true,pointer:Math.random()*100,dir:Math.random()>.5?1:-1,zoneLeft:40,zoneWidth:20,critWidth:4,combo:0,crits:0,damage:0,raf:null,boss};
+  randomizeBossRushZone();
+  $('bossRushTitle').textContent=`${boss.name||'월드보스'} 러시`;
+  $('bossRushSub').textContent='성공은 무제한입니다. 콤보가 오를수록 빨라지고 성공 구간이 좁아집니다.';
+  $('bossRushImg').src=boss.img||getBoss11Today().img;
+  $('bossRushMessage').textContent='초록 구간을 맞추세요. 중앙 금색 구간은 치명타!';
+  modal.classList.add('show');
+  updateBossRushUI();
+  loopBossRush();
   render();
-  setTimeout(()=>{if(currentMultiTab==='boss')loadMulti()},620);
 };
+
+function finishBossRush(byFail){
+  if(!bossRush)return;
+  bossRush.running=false;
+  if(bossRush.raf)cancelAnimationFrame(bossRush.raf);
+  const total=bossRush.damage;
+  const combo=bossRush.combo;
+  const crits=bossRush.crits;
+  if(total>0){
+    pendingBossDamage+=total;
+    addBoss11LocalLog(`${byFail?'러시 종료':'러시 중단'} · ${combo}콤보 / 치명타 ${crits}회`,total);
+    const card=$('boss11Card'),pop=$('boss11DamagePop');
+    if(card){card.classList.remove('shake');void card.offsetWidth;card.classList.add('shake')}
+    if(pop){pop.textContent=`-${formatNumber(total)}`;pop.classList.remove('show');void pop.offsetWidth;pop.classList.add('show')}
+    shop20Toast('보스 러시 종료',`${combo}콤보 · ${formatNumber(total)} 피해 누적`);
+  }else if(byFail){
+    shop20Toast('보스 러시 실패','피해를 주지 못했습니다.');
+  }
+  const modal=$('bossRushModal');
+  if(modal)modal.classList.remove('show');
+  bossRush=null;
+  render();
+  if(currentMultiTab==='boss')loadMulti();
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.code==='Space'&&bossRush?.running){bossRushHit();e.preventDefault();}
+});
+
+window.boss11Attack=function(){startBossRush();};
+
 window.createAuctionItem=async function(){const today=new Date().toISOString().slice(0,10),count=await dbGet(`multiplayer/auctionDaily/${today}/${uid}`)||0;if(count>=2){shop20Toast('오늘 등록 한도 초과','1인 하루 2개까지 가능합니다.');return}const invKey=$('auctionFishSelect')?.value,price=Number($('auctionPriceInput')?.value||0);if(!invKey||price<=0)return;const p=parseInventoryKey(invKey),f=FISHES[p.fishKey];if(!f||!fishing.inventory[invKey])return;fishing.inventory[invKey]-=1;if(fishing.inventory[invKey]<=0)delete fishing.inventory[invKey];const id=`${uid}_${Date.now()}`;await dbPatch({[`multiplayer/auctions/${id}`]:{sellerUid:uid,sellerName:getPlayerName(),fishKey:p.fishKey,sizeKey:p.sizeKey,fishName:getSizedFishName(p.fishKey,p.sizeKey),rarity:f.rarity,price,createdAt:Date.now(),expiresAt:Date.now()+48*3600000,status:'active'},[`multiplayer/auctionDaily/${today}/${uid}`]:count+1});await saveGame();loadMulti()};window.buyAuctionItem=async function(id){const a=await dbGet(`multiplayer/auctions/${id}`);if(!a||a.status!=='active'||a.expiresAt<Date.now())return;if((fishing.gold||0)<a.price){shop20Toast('골드가 부족합니다.');return}fishing.gold-=a.price;const ik=getInventoryKey(a.fishKey,a.sizeKey);fishing.inventory[ik]=(fishing.inventory[ik]||0)+1;fishing.discovered[a.fishKey]=true;await dbPatch({[`multiplayer/auctions/${id}/status`]:'sold'});await saveGame();loadMulti()};async function renderMultiFriends(box){const friends=await dbGet(`multiplayer/friends/${uid}`)||{};box.innerHTML=`<div class="multi10-card">${multi10Title("friends","친구")}<div class="multi10-form"><input id="friendUidInput" placeholder="친구 UID"><button onclick="addFriendMulti()">추가</button></div>${Object.entries(friends).map(([id,f])=>`<div class="multi10-row"><span>${f.name||id}</span><b>${id.slice(0,6)}</b></div>`).join('')||'<div class="small">친구 없음</div>'}</div>`}window.addFriendMulti=async function(){const fid=$('friendUidInput')?.value?.trim();if(!fid)return;await dbPatch({[`multiplayer/friends/${uid}/${fid}`]:{name:fid,addedAt:Date.now()}});loadMulti()};
 
 $("fishBtn").onclick=castLine;
