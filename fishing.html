@@ -1355,6 +1355,38 @@ html,body{
 .shop20-equipped{position:absolute;right:12px;top:12px;background:rgba(250,204,21,.18);border:1px solid rgba(250,204,21,.5);color:#fde68a;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:900}
 @media(max-width:720px){.equip-panel{grid-template-columns:1fr}.equip-options{grid-template-columns:repeat(3,minmax(0,1fr))}.equip-option{min-height:68px;font-size:10px}.equip-card{padding:10px}}
 
+
+
+/* Decoration system 1.0 - visible cosmetic apply */
+.hud-profile.cosmetic-profile-gold{
+  border-color:rgba(250,204,21,.72)!important;
+  box-shadow:0 0 26px rgba(250,204,21,.22),inset 0 1px 0 rgba(255,255,255,.16)!important;
+}
+.hud-profile.cosmetic-profile-gold::after{
+  content:"";position:absolute;inset:3px;border:2px solid rgba(250,204,21,.6);border-radius:12px;pointer-events:none;box-shadow:inset 0 0 18px rgba(250,204,21,.18);
+}
+.hud-profile.cosmetic-profile-gold .hud-avatar{
+  border:3px solid #facc15!important;box-shadow:0 0 18px rgba(250,204,21,.75)!important;
+}
+.hud-profile.cosmetic-title-star .hud-name::before{content:"⭐ ";}
+.hud-profile.cosmetic-title-star .hud-title{
+  color:#fde68a!important;text-shadow:0 0 10px rgba(250,204,21,.55);
+}
+.cosmetic-panel{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0 12px}
+.cosmetic-card{background:rgba(2,6,23,.5);border:1px solid rgba(148,163,184,.2);border-radius:14px;padding:10px;text-align:left}
+.cosmetic-card h3{margin:0 0 8px;font-size:14px;color:#facc15;display:flex;align-items:center;gap:6px}
+.cosmetic-current{display:flex;align-items:center;gap:9px;background:rgba(15,23,42,.68);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px;min-height:58px}
+.cosmetic-current img{width:38px;height:38px;object-fit:contain;image-rendering:pixelated}
+.cosmetic-name{font-weight:900;color:#fff;font-size:13px}.cosmetic-effect{font-size:11px;color:#cbd5e1;line-height:1.35}
+.cosmetic-options{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:8px}
+.cosmetic-option{margin:0;height:36px;border-radius:10px;background:rgba(15,23,42,.76);color:#cbd5e1;border:1px solid rgba(148,163,184,.2);font-size:12px;display:flex;align-items:center;justify-content:center;gap:5px;padding:4px 6px}
+.cosmetic-option.active{background:linear-gradient(180deg,#fbbf24,#f59e0b);color:#111827;box-shadow:0 0 14px rgba(245,158,11,.24)}
+.cosmetic-option img{width:18px;height:18px;object-fit:contain;image-rendering:pixelated}
+.shop20-card .cosmetic-inline{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.shop20-card .cosmetic-inline button{width:100%;min-width:0;height:34px;font-size:12px}
+.shop20-card .cosmetic-preview{position:absolute;left:12px;top:12px;background:rgba(2,6,23,.7);border:1px solid rgba(250,204,21,.32);border-radius:999px;padding:4px 8px;font-size:11px;font-weight:900;color:#fde68a}
+@media(max-width:720px){.cosmetic-panel{grid-template-columns:1fr}.cosmetic-options{grid-template-columns:1fr 1fr}}
+
 </style>
 </head>
 
@@ -1531,6 +1563,19 @@ html,body{
           <h3><img class="icon-img" src="./assets/icons/rod.png" alt=""> 현재 낚싯대</h3>
           <div id="currentRodBox" class="equip-current"></div>
           <div id="rodEquipOptions" class="equip-options"></div>
+        </div>
+      </div>
+
+      <div class="cosmetic-panel">
+        <div class="cosmetic-card">
+          <h3><img class="icon-img" src="./assets/icons/crown.png" alt=""> 프로필 장식</h3>
+          <div id="currentProfileDecorBox" class="cosmetic-current"></div>
+          <div id="profileDecorOptions" class="cosmetic-options"></div>
+        </div>
+        <div class="cosmetic-card">
+          <h3><img class="icon-img" src="./assets/icons/star.png" alt=""> 칭호 장식</h3>
+          <div id="currentTitleDecorBox" class="cosmetic-current"></div>
+          <div id="titleDecorOptions" class="cosmetic-options"></div>
         </div>
       </div>
 
@@ -1817,6 +1862,13 @@ const EQUIP_RODS = {
   rod_dragon:{id:"rod_dragon",name:"드래곤 낚싯대",icon:SHOP20_ASSETS.rodDragon,level:7,effect:"판매가 +50% / 전설 확률 증가",sellMul:1.5,legendBonus:2}
 };
 
+const COSMETIC_ITEMS = {
+  profile_none:{id:"profile_none",type:"profile",name:"기본 프로필",icon:SHOP20_ASSETS.crown,effect:"기본 테두리"},
+  profile_gold:{id:"profile_gold",type:"profile",name:"골드 프로필",icon:SHOP20_ASSETS.crown,effect:"아바타 황금 테두리"},
+  title_none:{id:"title_none",type:"title",name:"기본 칭호",icon:SHOP20_ASSETS.star,effect:"기본 칭호"},
+  name_star:{id:"name_star",type:"title",name:"별빛 칭호",icon:SHOP20_ASSETS.star,effect:"닉네임 별빛 효과"}
+};
+
 let currentShopTab="bait";
 
 
@@ -1861,6 +1913,11 @@ async function loadUser(){
   fishing.premiumBait=fishing.premiumBait||{rare:0,legend:0};
   fishing.ownedShopItems=fishing.ownedShopItems||{};
   fishing.cosmetics=fishing.cosmetics||{};
+  fishing.cosmetics.owned=fishing.cosmetics.owned||{};
+  if(fishing.cosmetics.profileGold)fishing.cosmetics.owned.profile_gold=true;
+  if(fishing.title==='별빛 낚시꾼')fishing.cosmetics.owned.name_star=true;
+  fishing.cosmetics.equippedProfile=fishing.cosmetics.equippedProfile|| (fishing.cosmetics.owned.profile_gold?'profile_gold':'profile_none');
+  fishing.cosmetics.equippedTitle=fishing.cosmetics.equippedTitle|| (fishing.cosmetics.owned.name_star?'name_star':'title_none');
   fishing.profile=fishing.profile||{avatar:"male",nickname:(userData.nickname||auth.currentUser.email.split("@")[0])};
   fishing.equipment=fishing.equipment||{bait:"basic",rod:getBestOwnedRodId()};
   if(!EQUIP_BAITS[fishing.equipment.bait])fishing.equipment.bait="basic";
@@ -1904,6 +1961,14 @@ function applyProfileUI(){
   if(avatarImg) avatarImg.src=getAvatarPath(avatarType);
   userName.textContent=nickname;
   userEmail.textContent=userData.email||auth.currentUser.email;
+
+  const profileCard=$('profileCard');
+  if(profileCard){
+    profileCard.classList.remove('cosmetic-profile-gold','cosmetic-title-star');
+    const cosmetics=fishing?.cosmetics||{};
+    if(cosmetics.equippedProfile==='profile_gold')profileCard.classList.add('cosmetic-profile-gold');
+    if(cosmetics.equippedTitle==='name_star')profileCard.classList.add('cosmetic-title-star');
+  }
   updateProfileProgress();
 }
 
@@ -1920,6 +1985,8 @@ function render(){
   if($("fishBtn")) $("fishBtn").disabled=!hasAnyBait()||isCasting||miniRunning;
   renderShop20();
   renderEquipmentPanel();
+  renderCosmeticPanel();
+  applyProfileUI();
 
   renderLocations();
   renderInventory();
@@ -1942,7 +2009,7 @@ function renderLocations(){
     const totalCount=loc.fishes.length;
     const dangerClass=loc.requiredRod<=2?'safe':loc.requiredRod<=4?'warn':'danger';
     const dangerLabel=loc.requiredRod<=2?'안전':loc.requiredRod<=4?'주의':'위험';
-    const sampleFish=loc.fishes.slice(0,3).map(f=>FISHES[f]?.name||'???').join(' · ');
+    const sampleFish=getTopLocationFishes(key,3).map(f=>FISHES[f]?.name||'???').join(' · ');
     div.innerHTML=`
       <img class="location-thumb" src="${loc.card}" alt="${loc.name}">
       <div class="location-info">
@@ -2074,6 +2141,21 @@ function getRarityRank(rarity){
   return {common:1,uncommon:2,rare:3,epic:4,legend:5}[rarity]||0;
 }
 
+
+function getTopLocationFishes(locationKey, limit=5){
+  const loc=LOCATIONS[locationKey]||LOCATIONS.pond;
+  return [...(loc.fishes||[])]
+    .filter(key=>FISHES[key])
+    .sort((a,b)=>{
+      const fa=FISHES[a];
+      const fb=FISHES[b];
+      const rarityDiff=getRarityRank(fb.rarity)-getRarityRank(fa.rarity);
+      if(rarityDiff!==0)return rarityDiff;
+      return (fb.price||0)-(fa.price||0);
+    })
+    .slice(0,limit);
+}
+
 function getSortedInventoryEntries(){
   const entries=Object.entries(fishing.inventory||{}).filter(([key,count])=>count>0);
   const mode=$('bagSortSelect')?.value||'recent';
@@ -2186,7 +2268,7 @@ function renderAvailableFishes(){
   if(!availableFishes)return;
   availableFishes.innerHTML='';
   const loc=LOCATIONS[selectedLocation]||LOCATIONS.pond;
-  const list=loc.fishes.slice(0,5);
+  const list=getTopLocationFishes(selectedLocation,5);
   for(const key of list){
     const fish=FISHES[key];
     if(!fish)continue;
@@ -2835,6 +2917,11 @@ function ensureShop20State(){
   fishing.premiumBait=fishing.premiumBait||{rare:0,legend:0};
   fishing.ownedShopItems=fishing.ownedShopItems||{};
   fishing.cosmetics=fishing.cosmetics||{};
+  fishing.cosmetics.owned=fishing.cosmetics.owned||{};
+  if(fishing.cosmetics.profileGold)fishing.cosmetics.owned.profile_gold=true;
+  if(fishing.title==='별빛 낚시꾼')fishing.cosmetics.owned.name_star=true;
+  fishing.cosmetics.equippedProfile=fishing.cosmetics.equippedProfile|| (fishing.cosmetics.owned.profile_gold?'profile_gold':'profile_none');
+  fishing.cosmetics.equippedTitle=fishing.cosmetics.equippedTitle|| (fishing.cosmetics.owned.name_star?'name_star':'title_none');
 }
 
 function shop20Toast(title,sub=''){
@@ -2992,6 +3079,75 @@ window.equipRod=function(id){
   render();
 };
 
+
+function hasCosmeticOwned(id){
+  if(id==='profile_none'||id==='title_none')return true;
+  return !!fishing?.cosmetics?.owned?.[id] || !!fishing?.ownedShopItems?.[id];
+}
+
+function getEquippedCosmetic(type){
+  fishing.cosmetics=fishing.cosmetics||{};
+  if(type==='profile')return COSMETIC_ITEMS[fishing.cosmetics.equippedProfile||'profile_none']||COSMETIC_ITEMS.profile_none;
+  return COSMETIC_ITEMS[fishing.cosmetics.equippedTitle||'title_none']||COSMETIC_ITEMS.title_none;
+}
+
+function renderCosmeticPanel(){
+  if(!fishing)return;
+  ensureShop20State();
+  const profileDecor=getEquippedCosmetic('profile');
+  const titleDecor=getEquippedCosmetic('title');
+  const profileBox=$('currentProfileDecorBox');
+  const titleBox=$('currentTitleDecorBox');
+  if(profileBox)profileBox.innerHTML=`<img src="${profileDecor.icon}" alt=""><div><div class="cosmetic-name">${profileDecor.name}</div><div class="cosmetic-effect">${profileDecor.effect}</div></div>`;
+  if(titleBox)titleBox.innerHTML=`<img src="${titleDecor.icon}" alt=""><div><div class="cosmetic-name">${titleDecor.name}</div><div class="cosmetic-effect">${titleDecor.effect}</div></div>`;
+
+  const profileTarget=$('profileDecorOptions');
+  if(profileTarget){
+    profileTarget.innerHTML='';
+    for(const item of [COSMETIC_ITEMS.profile_none,COSMETIC_ITEMS.profile_gold]){
+      const owned=hasCosmeticOwned(item.id);
+      const active=(profileDecor.id===item.id);
+      const btn=document.createElement('button');
+      btn.className=`cosmetic-option ${active?'active':''}`;
+      btn.disabled=!owned;
+      btn.innerHTML=`<img src="${item.icon}" alt=""><span>${item.id==='profile_none'?'기본':'골드'}</span>`;
+      btn.onclick=()=>equipCosmetic(item.id);
+      profileTarget.appendChild(btn);
+    }
+  }
+  const titleTarget=$('titleDecorOptions');
+  if(titleTarget){
+    titleTarget.innerHTML='';
+    for(const item of [COSMETIC_ITEMS.title_none,COSMETIC_ITEMS.name_star]){
+      const owned=hasCosmeticOwned(item.id);
+      const active=(titleDecor.id===item.id);
+      const btn=document.createElement('button');
+      btn.className=`cosmetic-option ${active?'active':''}`;
+      btn.disabled=!owned;
+      btn.innerHTML=`<img src="${item.icon}" alt=""><span>${item.id==='title_none'?'기본':'별빛'}</span>`;
+      btn.onclick=()=>equipCosmetic(item.id);
+      titleTarget.appendChild(btn);
+    }
+  }
+}
+
+window.equipCosmetic=function(id){
+  ensureShop20State();
+  const item=COSMETIC_ITEMS[id];
+  if(!item)return;
+  if(!hasCosmeticOwned(id)){shop20Toast('보유하지 않은 장식입니다.',item.name);return;}
+  if(item.type==='profile')fishing.cosmetics.equippedProfile=id;
+  if(item.type==='title'){
+    fishing.cosmetics.equippedTitle=id;
+    fishing.title=id==='name_star'?'별빛 낚시꾼':getPlayerTitle();
+  }
+  applyProfileUI();
+  renderCosmeticPanel();
+  renderShop20();
+  shop20Toast('장식 장착 완료!',item.name);
+  saveGame();
+};
+
 function renderShop20(){
   if(!$('shopGrid')||!fishing)return;
   ensureShop20State();
@@ -3036,12 +3192,19 @@ function createShop20Card(item){
   else if(!item.level && fishing.ownedShopItems?.[item.id]) badge='<div class="shop20-owned">구매됨</div>';
   else if(item.id===getShop20TodayDeal().id) badge='<div class="shop20-ready">특가</div>';
   const btnText=item.level ? (owned?'보유중':'구매') : (currentShopTab==='chest'?'열기':'구매');
+  const cosmeticItem=COSMETIC_ITEMS[item.id];
+  const cosmeticOwned=cosmeticItem?hasCosmeticOwned(item.id):false;
+  const cosmeticEquipped=cosmeticItem && ((cosmeticItem.type==='profile'&&fishing.cosmetics?.equippedProfile===item.id)||(cosmeticItem.type==='title'&&fishing.cosmetics?.equippedTitle===item.id));
+  if(cosmeticEquipped) badge='<div class="shop20-equipped">장착중</div>';
+  else if(cosmeticOwned && cosmeticItem) badge='<div class="shop20-owned">보유</div>';
   let equipInline='';
   if(item.id.startsWith('bait_')){
     const count=baitEquipId?getBaitCount(baitEquipId):0;
     equipInline=`<div class="equip-inline"><button ${!affordable?'disabled':''} onclick="buyShop20Item('${item.id}')">구매</button><button ${count<=0?'disabled':''} onclick="equipBait('${baitEquipId}')">${equippedBait?'장착중':'장착'}</button></div>`;
   }else if(item.id.startsWith('rod_')){
     equipInline=`<div class="equip-inline"><button ${owned||!affordable?'disabled':''} onclick="buyShop20Item('${item.id}')">${owned?'보유중':'구매'}</button><button ${!owned?'disabled':''} onclick="equipRod('${item.id}')">${equippedRod?'장착중':'장착'}</button></div>`;
+  }else if(cosmeticItem){
+    equipInline=`<div class="cosmetic-inline"><button ${cosmeticOwned||!affordable?'disabled':''} onclick="buyShop20Item('${item.id}')">${cosmeticOwned?'보유중':'구매'}</button><button ${!cosmeticOwned?'disabled':''} onclick="equipCosmetic('${item.id}')">${cosmeticEquipped?'장착중':'장착'}</button></div>`;
   }
   card.innerHTML=`
     ${badge}
@@ -3051,7 +3214,7 @@ function createShop20Card(item){
     <div class="shop20-effect">${item.effect||''}</div>
     <div class="shop20-bottom">
       <div class="shop20-price"><img src="${currencyIcon}" alt=""> ${formatNumber(price)}</div>
-      ${equipInline?`<span class="small">${item.id.startsWith('bait_')?'보유 '+(baitEquipId?getBaitCount(baitEquipId):0)+'개':''}</span>`:`<button ${owned||!affordable?'disabled':''} onclick="buyShop20Item('${item.id}')">${owned?'보유중':btnText}</button>`}
+      ${equipInline?`<span class="small">${item.id.startsWith('bait_')?'보유 '+(baitEquipId?getBaitCount(baitEquipId):0)+'개':cosmeticItem?(cosmeticOwned?'보유중':'미보유'):''}</span>`:`<button ${owned||!affordable?'disabled':''} onclick="buyShop20Item('${item.id}')">${owned?'보유중':btnText}</button>`}
     </div>
     ${equipInline}
   `;
@@ -3086,9 +3249,20 @@ window.buyShop20Item=async function(id){
     openShop20Chest(item);
   }else{
     fishing.ownedShopItems[id]=true;
-    if(id==='name_star')fishing.title='별빛 낚시꾼';
-    if(id==='profile_gold')fishing.cosmetics.profileGold=true;
-    shop20Toast('장식 구매 완료!',item.name);
+    fishing.cosmetics=fishing.cosmetics||{};
+    fishing.cosmetics.owned=fishing.cosmetics.owned||{};
+    fishing.cosmetics.owned[id]=true;
+    const cosmetic=COSMETIC_ITEMS[id];
+    if(cosmetic){
+      if(cosmetic.type==='profile')fishing.cosmetics.equippedProfile=id;
+      if(cosmetic.type==='title'){
+        fishing.cosmetics.equippedTitle=id;
+        fishing.title=id==='name_star'?'별빛 낚시꾼':getPlayerTitle();
+      }
+      shop20Toast('장식 구매 및 장착 완료!',item.name);
+    }else{
+      shop20Toast('장식 구매 완료!',item.name);
+    }
   }
   render();
   await saveGame();
