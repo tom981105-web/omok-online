@@ -629,6 +629,112 @@ body{padding-bottom:112px;}
   body.playing-mini #holdBtn{left:50%;right:auto;transform:translateX(-50%);width:min(760px,calc(100vw - 560px));bottom:78px;height:48px}
 }
 
+
+
+/* UI 3.1 mini-game cleanup patch */
+@media(min-width:1100px){
+  body.playing-mini{
+    overflow:hidden;
+    padding-bottom:70px;
+  }
+
+  /* 낚시 중에는 빈 좌측 패널/하단 도감 제거 */
+  body.playing-mini .location-panel,
+  body.playing-mini .codex-strip{
+    display:none !important;
+  }
+
+  /* 중앙 미니게임 + 우측 가방만 깔끔하게 배치 */
+  body.playing-mini .fishing-layout{
+    display:grid !important;
+    grid-template-columns:minmax(720px,920px) 430px !important;
+    gap:12px !important;
+    justify-content:center !important;
+    align-items:stretch !important;
+    min-height:auto !important;
+  }
+
+  body.playing-mini .center-panel{
+    min-height:auto !important;
+    padding:12px 14px 14px !important;
+  }
+
+  body.playing-mini .center-title{
+    font-size:23px !important;
+    margin:0 0 8px !important;
+  }
+
+  body.playing-mini #miniGameBox{
+    display:block !important;
+    margin:0 !important;
+  }
+
+  body.playing-mini #miniStatus{
+    display:inline-block !important;
+    max-width:92%;
+    margin:0 auto 10px !important;
+    padding:8px 16px !important;
+    font-size:14px !important;
+    background:rgba(2,6,23,.78) !important;
+    border:1px solid rgba(250,204,21,.32) !important;
+    color:#facc15 !important;
+  }
+
+  body.playing-mini #fishGame{
+    height:calc(100vh - 240px) !important;
+    min-height:500px !important;
+    max-height:660px !important;
+    border-radius:18px !important;
+    margin:0 auto !important;
+    width:100% !important;
+  }
+
+  body.playing-mini #track{
+    height:calc(100vh - 285px) !important;
+    min-height:455px !important;
+    max-height:615px !important;
+  }
+
+  /* 버튼을 화면 전체 고정이 아니라 미니게임 카드 안쪽으로 정리 */
+  body.playing-mini #holdBtn{
+    position:static !important;
+    left:auto !important;
+    right:auto !important;
+    bottom:auto !important;
+    transform:none !important;
+    width:100% !important;
+    height:48px !important;
+    margin:10px auto 0 !important;
+    border-radius:12px !important;
+    z-index:auto !important;
+    box-shadow:0 10px 22px rgba(245,158,11,.22) !important;
+  }
+
+  body.playing-mini .bag-panel{
+    display:block !important;
+    min-height:auto !important;
+    max-height:calc(100vh - 170px) !important;
+    overflow:auto !important;
+  }
+
+  body.playing-mini .preview-grid{
+    max-height:calc(100vh - 330px) !important;
+  }
+
+  body.playing-mini .bottom-tabs{
+    height:58px !important;
+  }
+}
+
+@media(max-width:1099px){
+  body.playing-mini #holdBtn{
+    left:12px !important;
+    right:12px !important;
+    width:auto !important;
+    transform:none !important;
+  }
+}
+
 </style>
 </head>
 
