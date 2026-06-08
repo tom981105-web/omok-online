@@ -1404,6 +1404,19 @@ html,body{
 .auction-market-box{background:rgba(15,23,42,.68);border:1px solid rgba(250,204,21,.18);border-radius:14px;padding:9px;margin:8px 0;text-align:left}.auction-market-box b{color:#facc15}.auction-market-box .small{font-size:12px}.auction11-form{grid-template-columns:1fr 130px auto!important}@media(max-width:720px){.boss-chest-grid{grid-template-columns:1fr}.auction11-form{grid-template-columns:1fr!important}}
 
 
+
+/* UI 3.6 ranking profile frame display patch */
+.rank-profile{position:relative;width:58px;height:58px;flex:0 0 58px;display:grid;place-items:center;overflow:visible}
+.rank-profile .rank-avatar{position:relative;z-index:2;width:42px;height:42px;border-radius:50%;object-fit:cover;image-rendering:pixelated;background:#020617;border:2px solid rgba(255,255,255,.34);box-shadow:0 0 8px rgba(0,0,0,.55)}
+.rank-profile .rank-frame{position:absolute;left:50%;top:50%;width:82px;height:82px;transform:translate(-50%,-50%);object-fit:contain;image-rendering:pixelated;z-index:4;pointer-events:none;filter:drop-shadow(0 4px 8px rgba(0,0,0,.6))}
+.rank-profile.no-frame .rank-frame{display:none}
+.rank-user-line{display:flex;align-items:center;gap:10px;min-width:0}
+.rank-user-text{min-width:0}.rank-user-text .multi11-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.multi11-rank-card.with-profile,.multi11-record-card.with-profile{display:flex;align-items:center;gap:12px}
+.multi11-rank-card.with-profile .multi11-medal{position:static;flex:0 0 auto}
+.multi11-rank-main{min-width:0;flex:1}.boss11-log-item.with-profile{align-items:center;gap:8px}.boss11-log-item.with-profile span{display:flex;align-items:center;gap:8px;min-width:0}.boss11-log-item.with-profile .rank-profile{width:42px;height:42px;flex-basis:42px}.boss11-log-item.with-profile .rank-avatar{width:30px;height:30px}.boss11-log-item.with-profile .rank-frame{width:60px;height:60px}.boss-broadcast-row.with-profile{display:flex;gap:9px;align-items:center}.boss-broadcast-row.with-profile .rank-profile{width:42px;height:42px;flex-basis:42px}.boss-broadcast-row.with-profile .rank-avatar{width:30px;height:30px}.boss-broadcast-row.with-profile .rank-frame{width:60px;height:60px}.boss-broadcast-text{min-width:0;line-height:1.35}
+@media(max-width:720px){.multi11-rank-card.with-profile,.multi11-record-card.with-profile{gap:8px}.rank-profile{width:50px;height:50px;flex-basis:50px}.rank-profile .rank-avatar{width:36px;height:36px}.rank-profile .rank-frame{width:72px;height:72px}}
+
 /* UI 3.5 boss profile frame display patch */
 .hud-avatar-slot{position:relative;flex:0 0 54px;width:54px;height:54px;display:grid;place-items:center;overflow:visible}
 .hud-profile-frame{display:none;position:absolute;left:50%;top:50%;width:88px;height:88px;transform:translate(-50%,-50%);object-fit:contain;image-rendering:pixelated;z-index:4;pointer-events:none;filter:drop-shadow(0 4px 8px rgba(0,0,0,.55))}
@@ -1937,6 +1950,33 @@ function applyProfileUI(){
     if(fishing?.cosmetics?.equippedTitle==="name_star")profileCard.classList.add("cosmetic-title-star");
   }
   updateProfileProgress();
+}
+
+
+
+function getPlayerProfileSnapshot(){
+  const profile=fishing?.profile||{};
+  const cosmetics=fishing?.cosmetics||{};
+  return {
+    avatar:profile.avatar||'male',
+    equippedProfile:cosmetics.equippedProfile||'profile_none',
+    equippedTitle:cosmetics.equippedTitle||'title_none',
+    title:fishing?.title||getPlayerTitle?.()||'낚시꾼'
+  };
+}
+function getMiniProfileAvatar(row){return getAvatarPath(row?.avatar||row?.profile?.avatar||'male')}
+function getMiniProfileFrame(row){
+  const ep=row?.equippedProfile||row?.profileFrame||row?.frame||row?.profile?.equippedProfile||'profile_none';
+  if(ep==='frame_kraken'||ep==='frame_leviathan'||ep==='frame_phoenix')return COSMETIC_ITEMS?.[ep]?.icon||'';
+  return '';
+}
+function renderMiniProfile(row,alt='프로필'){
+  const frame=getMiniProfileFrame(row);
+  return `<div class="rank-profile ${frame?'':'no-frame'}"><img class="rank-avatar" src="${getMiniProfileAvatar(row)}" alt="${alt}">${frame?`<img class="rank-frame" src="${frame}" alt="프레임">`:''}</div>`;
+}
+function profileFieldsForMulti(){
+  const snap=getPlayerProfileSnapshot();
+  return {avatar:snap.avatar,equippedProfile:snap.equippedProfile,equippedTitle:snap.equippedTitle,title:snap.title};
 }
 
 function render(){
@@ -3111,13 +3151,13 @@ async function publishBossRareDrop(reward,type,enhanced){
   if(!db||!uid)return;
   const id=`${Date.now()}_${uid}`;
   const info=BOSS_CHEST_INFO[type]||BOSS_CHEST_INFO.kraken;
-  const payload={id,uid,name:getPlayerName(),type,boxName:info.name,grade:reward.kind,text:reward.text,enhanced:!!enhanced,createdAt:Date.now()};
+  const payload={id,uid,name:getPlayerName(),...profileFieldsForMulti(),type,boxName:info.name,grade:reward.kind,text:reward.text,enhanced:!!enhanced,createdAt:Date.now()};
   try{await dbPatch({[`multiplayer/bossRareDrops/${id}`]:payload});}catch(e){console.warn('희귀 획득 방송 실패',e)}
 }
 async function renderBossRareDropLog(){
   try{
     const data=await dbGet('multiplayer/bossRareDrops')||{};
-    const rows=Object.values(data).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,8).map(x=>`<div class="boss-broadcast-row">📢 <b>${x.name||'낚시꾼'}</b> · ${x.grade==='mythic'?'🌈 신화':'⭐⭐⭐⭐⭐ 전설'} · ${x.text||''}<br><span class="small">${x.boxName||'보스 상자'} · ${x.createdAt?new Date(x.createdAt).toLocaleString():'-'}</span></div>`).join('');
+    const rows=Object.values(data).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,8).map(x=>`<div class="boss-broadcast-row with-profile">${renderMiniProfile(x,x.name||'프로필')}<div class="boss-broadcast-text">📢 <b>${x.name||'낚시꾼'}</b> · ${x.grade==='mythic'?'🌈 신화':'⭐⭐⭐⭐⭐ 전설'} · ${x.text||''}<br><span class="small">${x.title||'낚시꾼'} · ${x.boxName||'보스 상자'} · ${x.createdAt?new Date(x.createdAt).toLocaleString():'-'}</span></div></div>`).join('');
     return `<div class="boss-broadcast-box"><h4>최근 전설/신화 획득</h4>${rows||'<div class="small">아직 전설/신화 획득 기록이 없습니다.</div>'}</div>`;
   }catch(e){return `<div class="boss-broadcast-box"><h4>최근 전설/신화 획득</h4><div class="small">방송 로그를 불러오지 못했습니다.</div></div>`}
 }
@@ -3150,8 +3190,8 @@ async function syncMultiplayer(){
   if(!uid||!fishing)return;
   const week=getWeekKey(),score=calcMultiScore();
   const updates={};
-  updates[`multiplayer/ranking/${uid}`]={uid,name:getPlayerName(),score,totalCaught:fishing.totalCaught||0,updatedAt:Date.now()};
-  updates[`multiplayer/weeklyTournament/${week}/${uid}`]={uid,name:getPlayerName(),score,totalCaught:fishing.totalCaught||0,updatedAt:Date.now()};
+  updates[`multiplayer/ranking/${uid}`]={uid,name:getPlayerName(),...profileFieldsForMulti(),score,totalCaught:fishing.totalCaught||0,updatedAt:Date.now()};
+  updates[`multiplayer/weeklyTournament/${week}/${uid}`]={uid,name:getPlayerName(),...profileFieldsForMulti(),score,totalCaught:fishing.totalCaught||0,updatedAt:Date.now()};
   for(const key of Object.keys(fishing.discovered||{}))updates[`multiplayer/worldDex/${key}`]=FISHES[key]?.name||key;
 
   if(pendingBossDamage>0){
@@ -3164,12 +3204,12 @@ async function syncMultiplayer(){
     const totalUserDamage=oldUserDamage+damageToApply;
     const newHp=Math.max(0,(old.hp||old.maxHp||100000)-damageToApply);
 
-    updates[`multiplayer/bossParticipants/${bossKey}/${uid}`]={uid,name:getPlayerName(),damage:totalUserDamage,updatedAt:Date.now()};
-    updates[`multiplayer/bossDamage/${bossKey}/${uid}`]={uid,name:getPlayerName(),damage:totalUserDamage,updatedAt:Date.now()};
+    updates[`multiplayer/bossParticipants/${bossKey}/${uid}`]={uid,name:getPlayerName(),...profileFieldsForMulti(),damage:totalUserDamage,updatedAt:Date.now()};
+    updates[`multiplayer/bossDamage/${bossKey}/${uid}`]={uid,name:getPlayerName(),...profileFieldsForMulti(),damage:totalUserDamage,updatedAt:Date.now()};
 
     if(newHp<=0){
       const participants=await dbGet(`multiplayer/bossParticipants/${bossKey}`)||{};
-      participants[uid]={uid,name:getPlayerName(),damage:totalUserDamage,updatedAt:Date.now()};
+      participants[uid]={uid,name:getPlayerName(),...profileFieldsForMulti(),damage:totalUserDamage,updatedAt:Date.now()};
       let topUid=uid,topDamage=totalUserDamage;
       for(const [pid,row] of Object.entries(participants)){
         if((row.damage||0)>topDamage){topUid=pid;topDamage=row.damage||0;}
@@ -3202,7 +3242,7 @@ async function loadMulti(){if(!$('multiContent'))return;const box=$('multiConten
   const data=await dbGet('multiplayer/ranking');
   const list=sortTop(data).slice(0,12);
   const medals=['🥇','🥈','🥉'];
-  const cards=list.map((r,i)=>`<div class="multi11-rank-card ${i===0?'top1':''}"><div class="multi11-medal">${medals[i]||'🏅'}</div><div class="multi11-name">${i+1}. ${r.name||'낚시꾼'}</div><div class="multi11-score">${formatNumber(r.score||0)}점</div><div class="multi11-sub">포획 ${formatNumber(r.totalCaught||0)}마리<br>최근 갱신 ${r.updatedAt?new Date(r.updatedAt).toLocaleDateString():'-'}</div></div>`).join('');
+  const cards=list.map((r,i)=>`<div class="multi11-rank-card with-profile ${i===0?'top1':''}"><div class="multi11-medal">${medals[i]||'🏅'}</div>${renderMiniProfile(r,r.name||'프로필')}<div class="multi11-rank-main"><div class="multi11-name">${i+1}. ${r.name||'낚시꾼'}</div><div class="multi11-score">${formatNumber(r.score||0)}점</div><div class="multi11-sub">${r.title||'낚시꾼'}<br>포획 ${formatNumber(r.totalCaught||0)}마리 · 최근 ${r.updatedAt?new Date(r.updatedAt).toLocaleDateString():'-'}</div></div></div>`).join('');
   box.innerHTML=`<div class="multi10-card">${multi10Title("ranking","글로벌 랭킹")}<div class="multi11-board">${cards||'<div class="small">기록 없음</div>'}</div></div>`
 }
 
@@ -3216,6 +3256,7 @@ function updatePersonalBiggestRecord(fishKey,sizeKey,sizeCm){
       const payload={
         ownerUid:uid,
         ownerName:getPlayerName(),
+        ...profileFieldsForMulti(),
         fishKey,
         fishName:fish.name||fishKey,
         sizeKey:sizeKey||'normal',
@@ -3233,10 +3274,10 @@ async function renderMultiRecords(box){
   const rows=Object.values(data).sort((a,b)=>(b.size||0)-(a.size||0)).slice(0,24).map((r,i)=>{
     const f=FISHES[r.fishKey]||{};
     const sizeLabel=FISH_SIZES?.[r.sizeKey]?.label?` · ${FISH_SIZES[r.sizeKey].label}`:'';
-    return `<div class="multi11-record-card"><div class="multi11-record-fish"><img src="${f.img||'./assets/icons/fish_shadow.png'}" alt=""><div><div class="multi11-name">${i+1}. ${r.ownerName||'낚시꾼'}</div><div class="multi11-sub">${f.name||r.fishName||r.fishKey||'물고기'}${sizeLabel}</div></div></div><div class="multi11-score">${r.size||0}cm</div></div>`
+    return `<div class="multi11-record-card with-profile">${renderMiniProfile(r,r.ownerName||'프로필')}<div class="multi11-rank-main"><div class="multi11-record-fish"><img src="${f.img||'./assets/icons/fish_shadow.png'}" alt=""><div><div class="multi11-name">${i+1}. ${r.ownerName||'낚시꾼'}</div><div class="multi11-sub">${r.title||'낚시꾼'} · ${f.name||r.fishName||r.fishKey||'물고기'}${sizeLabel}</div></div></div><div class="multi11-score">${r.size||0}cm</div></div></div>`
   }).join('');
   box.innerHTML=`<div class="multi10-card">${multi10Title("records","최대어 기록")}<div class="small" style="margin-bottom:8px">1인당 최고 기록 1개만 표시됩니다. 더 큰 물고기를 잡으면 본인 기록이 교체됩니다.</div><div class="multi11-board">${rows||'<div class="small">아직 기록 없음</div>'}</div></div>`
-}async function renderMultiDex(box){const data=await dbGet('multiplayer/worldDex')||{};const total=Object.keys(FISHES).length,found=Object.keys(data).length;box.innerHTML=`<div class="multi10-card">${multi10Title("worldDex","월드도감")}<div class="status">${found} / ${total}종 발견</div><div class="small">발견률 ${Math.round(found/total*100)}%</div></div>`}async function renderMultiTournament(box){const data=await dbGet(`multiplayer/weeklyTournament/${getWeekKey()}`);const rows=sortTop(data).map((r,i)=>`<div class="multi10-row"><span>${i+1}. ${r.name||'낚시꾼'}</span><b>${formatNumber(r.score||0)}점</b></div>`).join('');box.innerHTML=`<div class="multi10-card">${multi10Title("tournament","주간 낚시대회")}${rows||'<div class="small">이번 주 기록 없음</div>'}</div>`}
+}async function renderMultiDex(box){const data=await dbGet('multiplayer/worldDex')||{};const total=Object.keys(FISHES).length,found=Object.keys(data).length;box.innerHTML=`<div class="multi10-card">${multi10Title("worldDex","월드도감")}<div class="status">${found} / ${total}종 발견</div><div class="small">발견률 ${Math.round(found/total*100)}%</div></div>`}async function renderMultiTournament(box){const data=await dbGet(`multiplayer/weeklyTournament/${getWeekKey()}`);const rows=sortTop(data).map((r,i)=>`<div class="multi10-row"><span class="rank-user-line">${renderMiniProfile(r,r.name||'프로필')}<span>${i+1}. ${r.name||'낚시꾼'}<br><small>${r.title||'낚시꾼'}</small></span></span><b>${formatNumber(r.score||0)}점</b></div>`).join('');box.innerHTML=`<div class="multi10-card">${multi10Title("tournament","주간 낚시대회")}${rows||'<div class="small">이번 주 기록 없음</div>'}</div>`}
 window.syncBossDamageAndReload=async function(){
   const dmg=Number(pendingBossDamage||0);
   if(dmg<=0){
@@ -3272,7 +3313,7 @@ async function renderMultiBoss(box){
     const rankData=await dbGet(`multiplayer/bossParticipants/${bossKey}`)||{};
     const rankList=Object.values(rankData).sort((a,b)=>(b.damage||0)-(a.damage||0)).slice(0,10);
     if(rankList.length){
-      damageRankHtml=rankList.map((r,i)=>`<div class="boss11-log-item"><span>${i+1}위 · ${r.name||'낚시꾼'}</span><b>${formatNumber(r.damage||0)}</b></div>`).join('');
+      damageRankHtml=rankList.map((r,i)=>`<div class="boss11-log-item with-profile"><span>${renderMiniProfile(r,r.name||'프로필')}<span>${i+1}위 · ${r.name||'낚시꾼'}<br><small>${r.title||'낚시꾼'}</small></span></span><b>${formatNumber(r.damage||0)}</b></div>`).join('');
     }
   }catch(e){
     console.error('보스 딜 순위 로딩 실패',e);
@@ -3468,7 +3509,7 @@ window.createAuctionItem=async function(){try{const today=new Date().toISOString
 시장가: ${formatNumber(marketPrice)}G
 그래도 등록할까요?`))return}const p=parseInventoryKey(invKey),f=FISHES[p.fishKey];if(!f||!fishing.inventory[invKey]){shop20Toast('등록 실패','해당 물고기가 없습니다.');return}fishing.inventory[invKey]-=1;if(fishing.inventory[invKey]<=0)delete fishing.inventory[invKey];const id=`${uid}_${Date.now()}`;await dbPatch({[`multiplayer/auctions/${id}`]:{sellerUid:uid,sellerName:getPlayerName(),fishKey:p.fishKey,sizeKey:p.sizeKey,fishName:getSizedFishName(p.fishKey,p.sizeKey),rarity:f.rarity,price,marketPrice,createdAt:Date.now(),expiresAt:Date.now()+48*3600000,status:'active'},[`multiplayer/auctionDaily/${today}/${uid}`]:count+1});fishing.updatedAt=Date.now();await update(ref(db,`users/${uid}`),{fishing,lastPlayedAt:serverTimestamp()});shop20Toast('경매 등록 완료!',`${getSizedFishName(p.fishKey,p.sizeKey)} · ${formatNumber(price)}G`);render();await loadMulti()}catch(e){console.error('경매 등록 실패',e);shop20Toast('경매 등록 실패',`${e.dbPath||'multiplayer/auctions'} · ${getFirebaseErrorMessage(e)}`)}};
 window.buyAuctionItem=async function(id){try{const a=await dbGet(`multiplayer/auctions/${id}`);if(!a||a.status!=='active'||a.expiresAt<Date.now()){shop20Toast('구매 불가','이미 판매되었거나 만료된 경매입니다.');return}if((fishing.gold||0)<a.price){shop20Toast('골드가 부족합니다.');return}fishing.gold-=a.price;const ik=getInventoryKey(a.fishKey,a.sizeKey);fishing.inventory[ik]=(fishing.inventory[ik]||0)+1;fishing.discovered[a.fishKey]=true;await dbPatch({[`multiplayer/auctions/${id}/status`]:'sold',[`multiplayer/auctions/${id}/buyerUid`]:uid,[`multiplayer/auctions/${id}/soldAt`]:Date.now()});fishing.updatedAt=Date.now();await update(ref(db,`users/${uid}`),{fishing,lastPlayedAt:serverTimestamp()});shop20Toast('경매 구매 완료!',`${a.fishName} 획득`);render();await loadMulti()}catch(e){console.error('경매 구매 실패',e);shop20Toast('경매 구매 실패',`${e.dbPath||'multiplayer/auctions'} · ${getFirebaseErrorMessage(e)}`)}};
-async function renderMultiFriends(box){const friends=await dbGet(`multiplayer/friends/${uid}`)||{};box.innerHTML=`<div class="multi10-card">${multi10Title("friends","친구")}<div class="multi10-form"><input id="friendUidInput" placeholder="친구 UID"><button onclick="addFriendMulti()">추가</button></div>${Object.entries(friends).map(([id,f])=>`<div class="multi10-row"><span>${f.name||id}</span><b>${id.slice(0,6)}</b></div>`).join('')||'<div class="small">친구 없음</div>'}</div>`}window.addFriendMulti=async function(){const fid=$('friendUidInput')?.value?.trim();if(!fid)return;await dbPatch({[`multiplayer/friends/${uid}/${fid}`]:{name:fid,addedAt:Date.now()}});loadMulti()};
+async function renderMultiFriends(box){const friends=await dbGet(`multiplayer/friends/${uid}`)||{};box.innerHTML=`<div class="multi10-card">${multi10Title("friends","친구")}<div class="multi10-form"><input id="friendUidInput" placeholder="친구 UID"><button onclick="addFriendMulti()">추가</button></div>${Object.entries(friends).map(([id,f])=>`<div class="multi10-row"><span class="rank-user-line">${renderMiniProfile(f,f.name||id)}<span>${f.name||id}<br><small>${f.title||'낚시꾼'}</small></span></span><b>${id.slice(0,6)}</b></div>`).join('')||'<div class="small">친구 없음</div>'}</div>`}window.addFriendMulti=async function(){const fid=$('friendUidInput')?.value?.trim();if(!fid)return;await dbPatch({[`multiplayer/friends/${uid}/${fid}`]:{name:fid,addedAt:Date.now()}});loadMulti()};
 
 $("fishBtn").onclick=castLine;
 $("biteBtn").onclick=reactBite;
