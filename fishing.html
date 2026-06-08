@@ -1129,6 +1129,166 @@ html,body{
   #pond{height:300px!important;}
 }
 
+
+
+/* UI 3.5 mobile compact location cards patch */
+html,body{
+  width:100%;
+  max-width:100%;
+  overflow-x:hidden!important;
+}
+@media(max-width:1099px){
+  .wrap,
+  #gameBox,
+  .fishing-shell,
+  .fishing-layout,
+  .location-panel{
+    width:100%!important;
+    max-width:100%!important;
+    overflow-x:hidden!important;
+  }
+
+  .location-panel{
+    padding:10px!important;
+    border-radius:18px!important;
+  }
+  .location-panel h2{
+    font-size:24px!important;
+    margin:6px 0 12px!important;
+  }
+
+  /* 모바일에서는 무조건 2열 카드로 압축 */
+  .location-grid{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:8px!important;
+    width:100%!important;
+    max-width:100%!important;
+  }
+
+  .location-card{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    padding:8px 7px!important;
+    border-radius:14px!important;
+    text-align:center!important;
+    overflow:hidden!important;
+  }
+
+  .location-card .location-thumb{
+    width:100%!important;
+    height:72px!important;
+    max-width:100%!important;
+    margin:0 0 6px!important;
+    border-radius:10px!important;
+    object-fit:cover!important;
+  }
+
+  .location-info{
+    width:100%!important;
+    min-width:0!important;
+  }
+
+  .location-card b{
+    display:block!important;
+    width:100%!important;
+    font-size:14px!important;
+    line-height:1.15!important;
+    margin:0 0 3px!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+
+  .location-card .lv{
+    font-size:11px!important;
+    line-height:1.15!important;
+    margin:0 0 3px!important;
+  }
+
+  .location-fish-hint{
+    display:block!important;
+    width:100%!important;
+    font-size:10px!important;
+    line-height:1.15!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    margin:0 0 4px!important;
+  }
+
+  .location-progress-mini{
+    width:100%!important;
+    height:4px!important;
+    margin:2px 0 5px!important;
+  }
+
+  .location-meta{
+    width:100%!important;
+    display:flex!important;
+    justify-content:center!important;
+    align-items:center!important;
+    gap:4px!important;
+    flex-wrap:nowrap!important;
+  }
+
+  .location-pill,
+  .location-count{
+    font-size:10px!important;
+    line-height:1!important;
+    padding:4px 5px!important;
+    white-space:nowrap!important;
+  }
+}
+
+@media(max-width:430px){
+  /* 기존 1열 강제 규칙 덮어쓰기 */
+  .location-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:7px!important;
+  }
+  .location-card{
+    padding:7px 6px!important;
+    border-radius:13px!important;
+  }
+  .location-card .location-thumb{
+    height:62px!important;
+    border-radius:9px!important;
+    margin-bottom:5px!important;
+  }
+  .location-card b{
+    font-size:13px!important;
+  }
+  .location-card .lv{
+    font-size:10px!important;
+  }
+  /* 아주 작은 화면에서는 추천 어종 줄을 숨겨 높이 절약 */
+  .location-fish-hint{
+    display:none!important;
+  }
+  .location-progress-mini{
+    margin:3px 0 5px!important;
+  }
+  .location-pill,
+  .location-count{
+    font-size:9px!important;
+    padding:4px 5px!important;
+  }
+}
+
+@media(min-width:520px) and (max-width:1099px){
+  /* 폭이 조금 넓은 모바일/태블릿은 3열 */
+  .location-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+}
+
 </style>
 </head>
 
