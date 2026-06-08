@@ -904,6 +904,231 @@ body.playing-mini .location-panel,body.playing-mini .codex-strip{display:none!im
   .timing-meter{width:94%;height:40px}.timing-pointer{height:52px}.timing-stats{width:94%;font-size:13px}.timing-help{font-size:12px}.timing-fish-card{min-height:100px}
 }
 
+
+
+/* ===============================
+   UI 3.4 Mobile no-horizontal-scroll patch
+   - 모바일 가로 스크롤 제거
+   - HUD/낚시터/가방/도감 폭 강제 정리
+================================ */
+html,body{
+  width:100%;
+  max-width:100%;
+  overflow-x:hidden!important;
+}
+
+@media(max-width:1099px){
+  html,body{overflow-x:hidden!important;}
+  body{padding-bottom:86px!important;}
+  .wrap{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+    padding:8px!important;
+    overflow-x:hidden!important;
+  }
+  #gameBox,.fishing-shell,.tab-page,.box{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    overflow-x:hidden!important;
+  }
+
+  h1{
+    display:block!important;
+    font-size:34px!important;
+    margin:18px 0 14px!important;
+    text-align:center!important;
+  }
+
+  .game-hud{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    width:100%!important;
+    max-width:100%!important;
+    gap:10px!important;
+    margin:0 0 12px!important;
+    overflow:hidden!important;
+  }
+  .hud-card{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    border-radius:18px!important;
+  }
+  .hud-profile{
+    min-height:96px!important;
+    padding:12px 14px 22px!important;
+  }
+  .hud-avatar{width:62px!important;height:62px!important;border-radius:16px!important;flex:0 0 auto!important;}
+  .hud-info{min-width:0!important;max-width:calc(100% - 120px)!important;}
+  .hud-name{font-size:22px!important;line-height:1.1!important;}
+  .hud-sub{font-size:15px!important;max-width:100%!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+  .hud-title{font-size:13px!important;}
+  .hud-level{font-size:18px!important;flex:0 0 auto!important;}
+  .hud-exp{left:86px!important;right:24px!important;bottom:12px!important;height:9px!important;}
+  .hud-exp-text{right:24px!important;bottom:23px!important;font-size:11px!important;}
+
+  .hud-resources{
+    display:grid!important;
+    grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    gap:0!important;
+    padding:8px!important;
+    min-height:76px!important;
+  }
+  .resource-chip{
+    min-width:0!important;
+    width:auto!important;
+    padding:4px 2px!important;
+    font-size:15px!important;
+    line-height:1.15!important;
+    justify-content:center!important;
+    flex-direction:column!important;
+    gap:3px!important;
+    border-right:1px solid rgba(255,255,255,.1)!important;
+    white-space:normal!important;
+    word-break:keep-all!important;
+    overflow:hidden!important;
+  }
+  .resource-chip span{max-width:100%;overflow:hidden;text-overflow:ellipsis;}
+  .resource-chip .icon-img,.resource-chip img{width:24px!important;height:24px!important;}
+
+  .hud-actions{
+    display:flex!important;
+    justify-content:center!important;
+    gap:12px!important;
+    min-height:86px!important;
+  }
+  .hud-actions .icon-btn{
+    min-width:78px!important;
+    height:58px!important;
+    border-radius:16px!important;
+    font-size:17px!important;
+  }
+
+  .fishing-layout{
+    display:block!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    overflow-x:hidden!important;
+  }
+  .ui2-panel,.location-panel,.center-panel,.bag-panel,.codex-strip{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    margin-left:0!important;
+    margin-right:0!important;
+    overflow-x:hidden!important;
+  }
+  .location-panel{padding:14px!important;border-radius:22px!important;}
+  .location-grid{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:10px!important;
+    width:100%!important;
+    max-width:100%!important;
+  }
+  .location-card{
+    display:block!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    padding:10px!important;
+    text-align:center!important;
+    border-radius:16px!important;
+    overflow:hidden!important;
+  }
+  .location-card .location-thumb{
+    width:100%!important;
+    height:96px!important;
+    max-width:100%!important;
+    object-fit:cover!important;
+    border-radius:12px!important;
+    margin:0 0 8px!important;
+  }
+  .location-card b{font-size:17px!important;white-space:normal!important;}
+  .location-card .lv,.location-fish-hint,.location-count{font-size:13px!important;}
+  .location-meta{justify-content:center!important;}
+
+  #pond{
+    width:100%!important;
+    max-width:100%!important;
+    height:330px!important;
+    border-radius:18px!important;
+  }
+  .available-panel{
+    position:static!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin:10px 0 0!important;
+  }
+  .available-fishes{justify-content:center!important;}
+
+  .preview-grid,.codex-preview-grid,.fish-card-grid{
+    display:grid!important;
+    grid-template-columns:repeat(auto-fill,minmax(82px,1fr))!important;
+    gap:8px!important;
+    justify-items:center!important;
+    width:100%!important;
+    max-width:100%!important;
+    overflow-x:hidden!important;
+  }
+  .fish-card{width:82px!important;height:82px!important;}
+  .fish-card .fish-img{width:50px!important;height:38px!important;}
+  .fish-card .fish-name{font-size:11px!important;left:5px!important;right:5px!important;bottom:9px!important;}
+  .fish-card .fish-price,.fish-card .fish-count{font-size:10px!important;}
+
+  .bottom-tabs{
+    left:8px!important;
+    right:8px!important;
+    transform:none!important;
+    width:auto!important;
+    max-width:none!important;
+    border-radius:16px 16px 0 0!important;
+    overflow:hidden!important;
+  }
+
+  body.playing-mini .game-hud,
+  body.playing-mini .location-panel,
+  body.playing-mini .bag-panel,
+  body.playing-mini .codex-strip,
+  body.playing-mini #pond,
+  body.playing-mini #normalControls{
+    display:none!important;
+  }
+  body.playing-mini .center-panel{
+    padding:10px!important;
+  }
+  body.playing-mini #miniGameBox{
+    width:100%!important;
+    max-width:100%!important;
+  }
+  body.playing-mini #fishGame.timing-game,
+  body.playing-mini #fishGame{
+    width:100%!important;
+    max-width:100%!important;
+    height:auto!important;
+    min-height:360px!important;
+    max-height:none!important;
+    padding:18px 10px!important;
+  }
+  .timing-meter,.timing-stats,.timing-help,.timing-fish-card{
+    width:100%!important;
+    max-width:100%!important;
+  }
+}
+
+@media(max-width:430px){
+  .location-grid{grid-template-columns:1fr!important;}
+  .hud-resources{grid-template-columns:repeat(5,minmax(0,1fr))!important;}
+  .resource-chip{font-size:13px!important;}
+  .hud-actions .icon-btn{min-width:68px!important;font-size:15px!important;}
+  #pond{height:300px!important;}
+}
+
 </style>
 </head>
 
