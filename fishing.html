@@ -2828,9 +2828,9 @@ $('saveProfileBtn').onclick=async()=>{
 const MULTI10_ICONS={ranking:"./assets/icons/ranking.png",records:"./assets/icons/record.png",worldDex:"./assets/icons/worlddex.png",tournament:"./assets/icons/tournament.png",boss:"./assets/icons/worldboss.png",auction:"./assets/icons/auction.png",friends:"./assets/icons/friends.png"};
 function multi10Title(iconKey,title){return `<h3><img src="${MULTI10_ICONS[iconKey]}" alt="">${title}</h3>`;}
 const BOSS11_LIST=[
-  {id:'kraken',name:'심연의 크라켄',title:'촉수의 지배자',img:'./assets/boss/boss_kraken.png',maxHp:5000000,element:'심해'},
-  {id:'leviathan',name:'고대 리바이어던',title:'바다의 포식자',img:'./assets/boss/boss_leviathan.png',maxHp:7200000,element:'폭풍'},
-  {id:'phoenixfish',name:'피닉스 피쉬',title:'불꽃의 전설어',img:'./assets/boss/boss_phoenixfish.png',maxHp:6300000,element:'화염'}
+  {id:'kraken',name:'심연의 크라켄',title:'촉수의 지배자',img:'./assets/boss/boss_kraken.png',maxHp:500000,element:'심해'},
+  {id:'leviathan',name:'고대 리바이어던',title:'바다의 포식자',img:'./assets/boss/boss_leviathan.png',maxHp:720000,element:'폭풍'},
+  {id:'phoenixfish',name:'피닉스 피쉬',title:'불꽃의 전설어',img:'./assets/boss/boss_phoenixfish.png',maxHp:630000,element:'화염'}
 ];
 let currentBossCache=null;
 let bossRush=null;
@@ -2868,10 +2868,26 @@ async function dbGet(path){const snap=await get(ref(db,path));return snap.exists
     return `<div class="multi11-record-card"><div class="multi11-record-fish"><img src="${f?.img||'./assets/icons/fish_shadow.png'}" alt=""><div><div class="multi11-name">${i+1}. ${f?.name||k}</div><div class="multi11-sub">기록 보유자 ${r.ownerName||'-'}</div></div></div><div class="multi11-score">${r.size||0}cm</div></div>`
   }).join('');
   box.innerHTML=`<div class="multi10-card">${multi10Title("records","최대어 기록")}<div class="multi11-board">${rows||'<div class="small">아직 기록 없음</div>'}</div></div>`
-}async function renderMultiDex(box){const data=await dbGet('multiplayer/worldDex')||{};const total=Object.keys(FISHES).length,found=Object.keys(data).length;box.innerHTML=`<div class="multi10-card">${multi10Title("worldDex","월드도감")}<div class="status">${found} / ${total}종 발견</div><div class="small">발견률 ${Math.round(found/total*100)}%</div></div>`}async function renderMultiTournament(box){const data=await dbGet(`multiplayer/weeklyTournament/${getWeekKey()}`);const rows=sortTop(data).map((r,i)=>`<div class="multi10-row"><span>${i+1}. ${r.name||'낚시꾼'}</span><b>${formatNumber(r.score||0)}점</b></div>`).join('');box.innerHTML=`<div class="multi10-card">${multi10Title("tournament","주간 낚시대회")}${rows||'<div class="small">이번 주 기록 없음</div>'}</div>`}async function renderMultiBoss(box){
+}async function renderMultiDex(box){const data=await dbGet('multiplayer/worldDex')||{};const total=Object.keys(FISHES).length,found=Object.keys(data).length;box.innerHTML=`<div class="multi10-card">${multi10Title("worldDex","월드도감")}<div class="status">${found} / ${total}종 발견</div><div class="small">발견률 ${Math.round(found/total*100)}%</div></div>`}async function renderMultiTournament(box){const data=await dbGet(`multiplayer/weeklyTournament/${getWeekKey()}`);const rows=sortTop(data).map((r,i)=>`<div class="multi10-row"><span>${i+1}. ${r.name||'낚시꾼'}</span><b>${formatNumber(r.score||0)}점</b></div>`).join('');box.innerHTML=`<div class="multi10-card">${multi10Title("tournament","주간 낚시대회")}${rows||'<div class="small">이번 주 기록 없음</div>'}</div>`}
+window.syncBossDamageAndReload=async function(){
+  const dmg=Number(pendingBossDamage||0);
+  if(dmg<=0){
+    shop20Toast('반영할 피해가 없습니다.','보스 러시로 피해를 먼저 누적하세요.');
+    return;
+  }
+  try{
+    await syncMultiplayer();
+    shop20Toast('누적 피해 반영 완료!',`월드보스에게 -${formatNumber(dmg)} HP 반영`);
+    await loadMulti();
+  }catch(e){
+    console.error(e);
+    shop20Toast('피해 반영 실패','Firebase 연결 또는 규칙을 확인해주세요.');
+  }
+};
+async function renderMultiBoss(box){
   let boss=await dbGet('multiplayer/worldBoss/current');
   const today=getBoss11Today();
-  if(!boss||boss.id!==today.id||boss.endsAt<Date.now()){
+  if(!boss||boss.id!==today.id||boss.endsAt<Date.now()||boss.maxHp!==today.maxHp){
     boss=getDefaultBoss();
     await dbPatch({'multiplayer/worldBoss/current':boss});
   }
@@ -2885,11 +2901,11 @@ async function dbGet(path){const snap=await get(ref(db,path));return snap.exists
       <div class="boss11-info">
         <span class="boss11-tag">🔥 ${boss.element||today.element} 월드보스</span>
         <h3 class="boss12-name">${boss.name||today.name}</h3>
-        <div class="boss12-desc">${boss.title||today.title} · 보스 러시 타이밍 게임으로 콤보를 쌓아 피해를 누적합니다. 실패하면 러시가 종료됩니다.</div>
+        <div class="boss12-desc">${boss.title||today.title} · 3~4명이 잡을 수 있도록 체력이 조정된 월드보스입니다. 러시 콤보로 피해를 누적하세요.</div>
         <div class="boss11-hp-line"><span>HP</span><b>${formatNumber(localHp)} / ${formatNumber(boss.maxHp)}</b></div>
         <div class="boss11-bar"><div class="boss11-fill" style="width:${pct}%"></div></div>
         <div class="boss11-stats"><div class="boss11-stat"><b>${pct}%</b><span>남은 체력</span></div><div class="boss11-stat"><b>${formatNumber(pendingBossDamage)}</b><span>미반영 피해</span></div><div class="boss11-stat"><b>${getBoss11RemainText(boss.endsAt)}</b><span>남은 시간</span></div></div>
-        <div class="boss12-actions"><button class="boss12-attack" onclick="startBossRush()">🎣 보스 러시 시작</button><button class="boss12-sync" onclick="syncMultiplayer().then(loadMulti)">누적 피해 반영</button></div>
+        <div class="boss12-actions"><button class="boss12-attack" onclick="startBossRush()">🎣 보스 러시 시작</button><button class="boss12-sync" onclick="syncBossDamageAndReload()">누적 피해 반영</button></div>
       </div>
     </div>
     <div class="boss12-log"><div class="boss11-log-title">최근 공격</div>${logs}</div>
