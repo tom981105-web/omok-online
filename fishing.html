@@ -1330,6 +1330,31 @@ html,body{
 @keyframes shopToastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
 @media(max-width:720px){.shop20-header{display:block;text-align:center}.shop20-header h2{justify-content:center}.shop20-wallet{justify-content:center;margin-top:10px}.shop20-tabs{grid-template-columns:repeat(2,1fr)}.shop20-grid{grid-template-columns:1fr}.shop20-card{min-height:220px}.shop20-deal{display:block;text-align:center}.shop20-deal button{margin-top:8px;width:100%}}
 
+
+
+/* ===============================
+   Equipment System 1.0
+   - 미끼/낚싯대 장착
+   - 장착 효과 표시
+================================ */
+.equip-panel{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0 12px}
+.equip-card{background:linear-gradient(180deg,rgba(15,23,42,.82),rgba(2,6,23,.9));border:1px solid rgba(148,163,184,.24);border-radius:16px;padding:12px;text-align:left;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 10px 26px rgba(0,0,0,.18)}
+.equip-card h3{margin:0 0 8px;font-size:15px;color:#facc15;display:flex;align-items:center;gap:6px}
+.equip-current{display:grid;grid-template-columns:52px 1fr;gap:10px;align-items:center;margin-bottom:10px}
+.equip-current img{width:52px;height:52px;object-fit:contain;image-rendering:pixelated;background:rgba(2,6,23,.42);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:5px}
+.equip-name{font-size:16px;font-weight:900;color:#fff}
+.equip-effect{font-size:12px;color:#cbd5e1;line-height:1.35;margin-top:2px}
+.equip-options{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.equip-option{position:relative;margin:0;padding:7px 4px;border-radius:11px;background:rgba(2,6,23,.66);border:1px solid rgba(148,163,184,.22);color:#dbeafe;min-height:74px;font-size:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.equip-option img{width:30px;height:30px;object-fit:contain;image-rendering:pixelated}
+.equip-option.active{background:linear-gradient(180deg,#fbbf24,#f59e0b);color:#111827;border-color:#fde68a;box-shadow:0 0 18px rgba(245,158,11,.24)}
+.equip-option:disabled{opacity:.38;filter:grayscale(1);cursor:not-allowed}
+.equip-count{font-size:10px;font-weight:900;color:#facc15}.equip-option.active .equip-count{color:#111827}
+.shop20-card .equip-inline{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.shop20-card .equip-inline button{width:100%;min-width:0;height:34px;font-size:12px}
+.shop20-equipped{position:absolute;right:12px;top:12px;background:rgba(250,204,21,.18);border:1px solid rgba(250,204,21,.5);color:#fde68a;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:900}
+@media(max-width:720px){.equip-panel{grid-template-columns:1fr}.equip-options{grid-template-columns:repeat(3,minmax(0,1fr))}.equip-option{min-height:68px;font-size:10px}.equip-card{padding:10px}}
+
 </style>
 </head>
 
@@ -1496,6 +1521,19 @@ html,body{
 
       <div id="shopDealBox" class="shop20-deal"></div>
 
+      <div class="equip-panel">
+        <div class="equip-card">
+          <h3><img class="icon-img" src="./assets/icons/bait.png" alt=""> 현재 미끼</h3>
+          <div id="currentBaitBox" class="equip-current"></div>
+          <div id="baitEquipOptions" class="equip-options"></div>
+        </div>
+        <div class="equip-card">
+          <h3><img class="icon-img" src="./assets/icons/rod.png" alt=""> 현재 낚싯대</h3>
+          <div id="currentRodBox" class="equip-current"></div>
+          <div id="rodEquipOptions" class="equip-options"></div>
+        </div>
+      </div>
+
       <div class="shop20-tabs">
         <button class="shop20-tab active" data-shop="bait">미끼</button>
         <button class="shop20-tab" data-shop="rod">낚싯대</button>
@@ -1646,14 +1684,14 @@ const SHOP20_ASSETS = {
 const SHOP20_ITEMS = {
   bait:[
     {id:"bait_basic",name:"일반 미끼",icon:SHOP20_ASSETS.baitBasic,price:30,currency:"gold",qty:5,rarity:"common",desc:"기본 미끼 5개를 획득합니다.",effect:"낚시 5회 가능"},
-    {id:"bait_rare",name:"고급 미끼",icon:SHOP20_ASSETS.baitRare,price:120,currency:"gold",qty:10,rarity:"rare",desc:"고급 미끼 10개를 획득합니다.",effect:"추후 희귀 확률 보너스용"},
-    {id:"bait_legend",name:"전설 미끼",icon:SHOP20_ASSETS.baitLegend,price:650,currency:"gold",qty:20,rarity:"legend",desc:"전설 미끼 20개를 획득합니다.",effect:"추후 전설 확률 보너스용"}
+    {id:"bait_rare",name:"고급 미끼",icon:SHOP20_ASSETS.baitRare,price:120,currency:"gold",qty:10,rarity:"rare",desc:"고급 미끼 10개를 획득합니다.",effect:"희귀 +10% / 영웅 +4%"},
+    {id:"bait_legend",name:"전설 미끼",icon:SHOP20_ASSETS.baitLegend,price:650,currency:"gold",qty:20,rarity:"legend",desc:"전설 미끼 20개를 획득합니다.",effect:"희귀 +25% / 전설 +5%"}
   ],
   rod:[
     {id:"rod_wood",name:"나무 낚싯대",icon:SHOP20_ASSETS.rodWood,price:0,level:1,rarity:"common",desc:"초보 낚시꾼의 기본 장비입니다.",effect:"Lv.1 기본 지급"},
-    {id:"rod_iron",name:"강철 낚싯대",icon:SHOP20_ASSETS.rodIron,price:450,level:3,rarity:"uncommon",desc:"강과 호수 낚시에 안정적입니다.",effect:"낚싯대 Lv.3 달성"},
-    {id:"rod_gold",name:"황금 낚싯대",icon:SHOP20_ASSETS.rodGold,price:1800,level:5,rarity:"rare",desc:"고급 낚시터 진입에 유리합니다.",effect:"낚싯대 Lv.5 달성"},
-    {id:"rod_dragon",name:"드래곤 낚싯대",icon:SHOP20_ASSETS.rodDragon,price:6500,level:7,rarity:"legend",desc:"전설 낚시꾼을 위한 장비입니다.",effect:"낚싯대 Lv.7 달성"}
+    {id:"rod_iron",name:"강철 낚싯대",icon:SHOP20_ASSETS.rodIron,price:450,level:3,rarity:"uncommon",desc:"강과 호수 낚시에 안정적입니다.",effect:"판매가 +10%"},
+    {id:"rod_gold",name:"황금 낚싯대",icon:SHOP20_ASSETS.rodGold,price:1800,level:5,rarity:"rare",desc:"고급 낚시터 진입에 유리합니다.",effect:"판매가 +25%"},
+    {id:"rod_dragon",name:"드래곤 낚싯대",icon:SHOP20_ASSETS.rodDragon,price:6500,level:7,rarity:"legend",desc:"전설 낚시꾼을 위한 장비입니다.",effect:"판매가 +50% / 전설 확률 증가"}
   ],
   chest:[
     {id:"chest_wood",name:"나무 상자",icon:SHOP20_ASSETS.chestWood,price:100,rarity:"common",desc:"작은 보상이 들어있는 상자입니다.",effect:"골드/미끼/일반 물고기"},
@@ -1665,6 +1703,21 @@ const SHOP20_ITEMS = {
     {id:"profile_gold",name:"골드 프로필",icon:SHOP20_ASSETS.crown,price:3000,rarity:"rare",desc:"프로필에 황금 장식 효과를 추가합니다.",effect:"장식 보유"},
     {id:"name_star",name:"별빛 칭호",icon:SHOP20_ASSETS.star,price:1200,rarity:"uncommon",desc:"상단 프로필에 별빛 칭호를 등록합니다.",effect:"칭호: 별빛 낚시꾼"}
   ]
+};
+
+
+
+const EQUIP_BAITS = {
+  basic:{id:"basic",name:"일반 미끼",icon:SHOP20_ASSETS.baitBasic,countKey:"bait",effect:"기본 확률",rareBonus:0,epicBonus:0,legendBonus:0},
+  rare:{id:"rare",name:"고급 미끼",icon:SHOP20_ASSETS.baitRare,countKey:"rare",effect:"희귀 +10% / 영웅 +4%",rareBonus:8,epicBonus:4,legendBonus:0.8},
+  legend:{id:"legend",name:"전설 미끼",icon:SHOP20_ASSETS.baitLegend,countKey:"legend",effect:"희귀 +25% / 전설 +5%",rareBonus:18,epicBonus:8,legendBonus:3.5}
+};
+
+const EQUIP_RODS = {
+  rod_wood:{id:"rod_wood",name:"나무 낚싯대",icon:SHOP20_ASSETS.rodWood,level:1,effect:"기본 장비",sellMul:1,legendBonus:0},
+  rod_iron:{id:"rod_iron",name:"강철 낚싯대",icon:SHOP20_ASSETS.rodIron,level:3,effect:"판매가 +10%",sellMul:1.1,legendBonus:.3},
+  rod_gold:{id:"rod_gold",name:"황금 낚싯대",icon:SHOP20_ASSETS.rodGold,level:5,effect:"판매가 +25%",sellMul:1.25,legendBonus:.8},
+  rod_dragon:{id:"rod_dragon",name:"드래곤 낚싯대",icon:SHOP20_ASSETS.rodDragon,level:7,effect:"판매가 +50% / 전설 확률 증가",sellMul:1.5,legendBonus:2}
 };
 
 let currentShopTab="bait";
@@ -1712,6 +1765,9 @@ async function loadUser(){
   fishing.ownedShopItems=fishing.ownedShopItems||{};
   fishing.cosmetics=fishing.cosmetics||{};
   fishing.profile=fishing.profile||{avatar:"male",nickname:(userData.nickname||auth.currentUser.email.split("@")[0])};
+  fishing.equipment=fishing.equipment||{bait:"basic",rod:getBestOwnedRodId()};
+  if(!EQUIP_BAITS[fishing.equipment.bait])fishing.equipment.bait="basic";
+  if(!EQUIP_RODS[fishing.equipment.rod])fishing.equipment.rod=getBestOwnedRodId();
 
   for(const key of Object.keys(fishing.inventory)){
     const parsed=parseInventoryKey(key);
@@ -1757,15 +1813,16 @@ function applyProfileUI(){
 function render(){
   goldText.textContent=formatNumber(fishing.gold||0);
   rodText.textContent=fishing.rodLevel||1;
-  baitText.textContent=fishing.bait||0;
+  baitText.textContent=getEquippedBaitCount();
   caughtText.textContent=fishing.totalCaught||0;
 
   const upgradeCost=getUpgradeCost();
   if(upgradeCostText) upgradeCostText.textContent=upgradeCost;
   if($("upgradeRodBtn")) $("upgradeRodBtn").disabled=fishing.gold<upgradeCost;
   if($("buyBaitBtn")) $("buyBaitBtn").disabled=fishing.gold<30;
-  if($("fishBtn")) $("fishBtn").disabled=fishing.bait<=0||isCasting||miniRunning;
+  if($("fishBtn")) $("fishBtn").disabled=!hasAnyBait()||isCasting||miniRunning;
   renderShop20();
+  renderEquipmentPanel();
 
   renderLocations();
   renderInventory();
@@ -2177,12 +2234,12 @@ function hideLocationScene(){
 
 function castLine(){
   if(isCasting||miniRunning)return;
-  if(fishing.bait<=0){mainStatus.textContent="미끼가 부족합니다.";return;}
+  if(!hasAnyBait()){mainStatus.textContent="미끼가 부족합니다.";return;}
 
   const loc=LOCATIONS[selectedLocation];
   if((fishing.rodLevel||1)<loc.requiredRod){mainStatus.textContent=`이 낚시터는 낚싯대 Lv.${loc.requiredRod}부터 가능합니다.`;return;}
 
-  fishing.bait-=1;
+  if(!consumeEquippedBait()){mainStatus.textContent="미끼가 부족합니다.";return;}
   targetFishKey=pickFishByLocation(selectedLocation);
 
   isCasting=true; biteReady=false; waitingToStart=false; actualMiniStarted=false; holding=false;
@@ -2193,7 +2250,7 @@ function castLine(){
   hideFishShadow();
   showLocationScene();
 
-  mainStatus.textContent=`${loc.emoji} ${loc.name}에 찌를 던졌습니다...`;
+  mainStatus.textContent=`${loc.emoji} ${loc.name}에 찌를 던졌습니다... (${getEquippedBait().name} 사용)`;
   render();
 
   const wait=1800+Math.random()*4200;
@@ -2365,13 +2422,15 @@ function evaluateTimingAction(){
 function pickFishByLocation(locationKey){
   const loc=LOCATIONS[locationKey];
   const rodBonus=Math.max(0,(fishing.rodLevel||1)-1);
+  const baitBonus=getEquippedBait();
+  const rodEquip=getEquippedRod();
   const table=loc.fishes.map(key=>{
     const fish=FISHES[key];
     let weight=fish.rate;
-    if(fish.rarity==="rare")weight+=rodBonus*1.25;
-    if(fish.rarity==="epic")weight+=rodBonus*.7;
-    if(fish.rarity==="legend")weight+=rodBonus*.25;
-    return [key,weight];
+    if(fish.rarity==="rare")weight+=rodBonus*1.25+(baitBonus.rareBonus||0);
+    if(fish.rarity==="epic")weight+=rodBonus*.7+(baitBonus.epicBonus||0);
+    if(fish.rarity==="legend")weight+=rodBonus*.25+(baitBonus.legendBonus||0)+(rodEquip.legendBonus||0);
+    return [key,Math.max(.1,weight)];
   });
 
   const total=table.reduce((sum,item)=>sum+item[1],0);
@@ -2401,7 +2460,7 @@ function parseInventoryKey(invKey){
 function getFishSellPrice(fishKey,sizeKey){
   const fish=FISHES[fishKey];
   const size=FISH_SIZES[sizeKey]||FISH_SIZES.normal;
-  return Math.round(fish.price*size.priceMul);
+  return Math.round(fish.price*size.priceMul*getRodSellMultiplier());
 }
 
 function getSizedFishName(fishKey,sizeKey){
@@ -2712,6 +2771,129 @@ function getShop20Price(item){
   return item.price;
 }
 
+
+function getPremiumBaitCount(type){
+  fishing.premiumBait=fishing.premiumBait||{rare:0,legend:0};
+  return Number(fishing.premiumBait[type]||0);
+}
+
+function getBaitCount(type){
+  if(type==='basic')return Number(fishing.bait||0);
+  return getPremiumBaitCount(type);
+}
+
+function getEquippedBait(){
+  const id=fishing?.equipment?.bait||'basic';
+  return EQUIP_BAITS[id]||EQUIP_BAITS.basic;
+}
+
+function getEquippedBaitCount(){
+  return getBaitCount(getEquippedBait().id);
+}
+
+function hasAnyBait(){
+  return Number(fishing.bait||0)>0 || getPremiumBaitCount('rare')>0 || getPremiumBaitCount('legend')>0;
+}
+
+function consumeEquippedBait(){
+  fishing.equipment=fishing.equipment||{bait:'basic',rod:getBestOwnedRodId()};
+  let baitId=fishing.equipment.bait||'basic';
+  if(getBaitCount(baitId)<=0){
+    if(Number(fishing.bait||0)>0)baitId='basic';
+    else if(getPremiumBaitCount('rare')>0)baitId='rare';
+    else if(getPremiumBaitCount('legend')>0)baitId='legend';
+    else return false;
+    fishing.equipment.bait=baitId;
+  }
+  if(baitId==='basic')fishing.bait=Math.max(0,Number(fishing.bait||0)-1);
+  else{
+    fishing.premiumBait=fishing.premiumBait||{rare:0,legend:0};
+    fishing.premiumBait[baitId]=Math.max(0,Number(fishing.premiumBait[baitId]||0)-1);
+  }
+  if(getBaitCount(baitId)<=0 && baitId!=='basic'){
+    if(Number(fishing.bait||0)>0)fishing.equipment.bait='basic';
+  }
+  return true;
+}
+
+function hasRodOwned(id){
+  const rod=EQUIP_RODS[id];
+  if(!rod)return false;
+  if(id==='rod_wood')return true;
+  return !!fishing.ownedShopItems?.[id] || (fishing.rodLevel||1)>=rod.level;
+}
+
+function getBestOwnedRodId(){
+  if(!fishing)return 'rod_wood';
+  const order=['rod_dragon','rod_gold','rod_iron','rod_wood'];
+  return order.find(id=>hasRodOwned(id))||'rod_wood';
+}
+
+function getEquippedRod(){
+  const id=fishing?.equipment?.rod||getBestOwnedRodId();
+  if(!hasRodOwned(id))return EQUIP_RODS[getBestOwnedRodId()];
+  return EQUIP_RODS[id]||EQUIP_RODS.rod_wood;
+}
+
+function getRodSellMultiplier(){
+  return getEquippedRod().sellMul||1;
+}
+
+function renderEquipmentPanel(){
+  if(!fishing)return;
+  fishing.equipment=fishing.equipment||{bait:'basic',rod:getBestOwnedRodId()};
+  const bait=getEquippedBait();
+  const rod=getEquippedRod();
+  const baitBox=$('currentBaitBox');
+  const rodBox=$('currentRodBox');
+  if(baitBox)baitBox.innerHTML=`<img src="${bait.icon}" alt="${bait.name}"><div><div class="equip-name">${bait.name}</div><div class="equip-effect">${bait.effect}<br>보유 ${getBaitCount(bait.id)}개</div></div>`;
+  if(rodBox)rodBox.innerHTML=`<img src="${rod.icon}" alt="${rod.name}"><div><div class="equip-name">${rod.name}</div><div class="equip-effect">${rod.effect}<br>현재 판매가 x${getRodSellMultiplier()}</div></div>`;
+  const baitTarget=$('baitEquipOptions');
+  if(baitTarget){
+    baitTarget.innerHTML='';
+    for(const b of Object.values(EQUIP_BAITS)){
+      const count=getBaitCount(b.id);
+      const btn=document.createElement('button');
+      btn.className=`equip-option ${bait.id===b.id?'active':''}`;
+      btn.disabled=count<=0;
+      btn.innerHTML=`<img src="${b.icon}" alt=""><span>${b.name.replace(' 미끼','')}</span><span class="equip-count">x${count}</span>`;
+      btn.onclick=()=>equipBait(b.id);
+      baitTarget.appendChild(btn);
+    }
+  }
+  const rodTarget=$('rodEquipOptions');
+  if(rodTarget){
+    rodTarget.innerHTML='';
+    for(const r of Object.values(EQUIP_RODS)){
+      const owned=hasRodOwned(r.id);
+      const btn=document.createElement('button');
+      btn.className=`equip-option ${rod.id===r.id?'active':''}`;
+      btn.disabled=!owned;
+      btn.innerHTML=`<img src="${r.icon}" alt=""><span>${r.name.replace(' 낚싯대','')}</span><span class="equip-count">Lv.${r.level}</span>`;
+      btn.onclick=()=>equipRod(r.id);
+      rodTarget.appendChild(btn);
+    }
+  }
+}
+
+window.equipBait=function(id){
+  if(!EQUIP_BAITS[id])return;
+  if(getBaitCount(id)<=0){shop20Toast('미끼가 없습니다.',EQUIP_BAITS[id].name);return;}
+  fishing.equipment=fishing.equipment||{};
+  fishing.equipment.bait=id;
+  shop20Toast('미끼 장착 완료!',EQUIP_BAITS[id].name);
+  render();
+};
+
+window.equipRod=function(id){
+  if(!EQUIP_RODS[id])return;
+  if(!hasRodOwned(id)){shop20Toast('보유하지 않은 낚싯대입니다.',EQUIP_RODS[id].name);return;}
+  fishing.equipment=fishing.equipment||{};
+  fishing.equipment.rod=id;
+  shop20Toast('낚싯대 장착 완료!',EQUIP_RODS[id].name);
+  render();
+};
+
 function renderShop20(){
   if(!$('shopGrid')||!fishing)return;
   ensureShop20State();
@@ -2748,10 +2930,21 @@ function createShop20Card(item){
   const owned=item.level ? (fishing.rodLevel||1)>=item.level : !!fishing.ownedShopItems?.[item.id];
   const currencyIcon=item.currency==='gem'?SHOP20_ASSETS.gem:SHOP20_ASSETS.coin;
   let badge='';
-  if(item.level && owned) badge='<div class="shop20-owned">보유</div>';
+  const equippedRod=fishing.equipment?.rod===item.id;
+  const baitEquipId=item.id==='bait_basic'?'basic':item.id==='bait_rare'?'rare':item.id==='bait_legend'?'legend':null;
+  const equippedBait=baitEquipId && fishing.equipment?.bait===baitEquipId;
+  if(equippedRod||equippedBait) badge='<div class="shop20-equipped">장착중</div>';
+  else if(item.level && owned) badge='<div class="shop20-owned">보유</div>';
   else if(!item.level && fishing.ownedShopItems?.[item.id]) badge='<div class="shop20-owned">구매됨</div>';
   else if(item.id===getShop20TodayDeal().id) badge='<div class="shop20-ready">특가</div>';
   const btnText=item.level ? (owned?'보유중':'구매') : (currentShopTab==='chest'?'열기':'구매');
+  let equipInline='';
+  if(item.id.startsWith('bait_')){
+    const count=baitEquipId?getBaitCount(baitEquipId):0;
+    equipInline=`<div class="equip-inline"><button ${!affordable?'disabled':''} onclick="buyShop20Item('${item.id}')">구매</button><button ${count<=0?'disabled':''} onclick="equipBait('${baitEquipId}')">${equippedBait?'장착중':'장착'}</button></div>`;
+  }else if(item.id.startsWith('rod_')){
+    equipInline=`<div class="equip-inline"><button ${owned||!affordable?'disabled':''} onclick="buyShop20Item('${item.id}')">${owned?'보유중':'구매'}</button><button ${!owned?'disabled':''} onclick="equipRod('${item.id}')">${equippedRod?'장착중':'장착'}</button></div>`;
+  }
   card.innerHTML=`
     ${badge}
     <div class="shop20-icon"><img src="${item.icon}" alt="${item.name}"></div>
@@ -2760,8 +2953,9 @@ function createShop20Card(item){
     <div class="shop20-effect">${item.effect||''}</div>
     <div class="shop20-bottom">
       <div class="shop20-price"><img src="${currencyIcon}" alt=""> ${formatNumber(price)}</div>
-      <button ${owned||!affordable?'disabled':''} onclick="buyShop20Item('${item.id}')">${owned?'보유중':btnText}</button>
+      ${equipInline?`<span class="small">${item.id.startsWith('bait_')?'보유 '+(baitEquipId?getBaitCount(baitEquipId):0)+'개':''}</span>`:`<button ${owned||!affordable?'disabled':''} onclick="buyShop20Item('${item.id}')">${owned?'보유중':btnText}</button>`}
     </div>
+    ${equipInline}
   `;
   return card;
 }
@@ -2777,14 +2971,19 @@ window.buyShop20Item=async function(id){
   fishing.gold-=price;
 
   if(id.startsWith('bait_')){
-    fishing.bait=(fishing.bait||0)+(item.qty||0);
+    if(id==='bait_basic')fishing.bait=(fishing.bait||0)+(item.qty||0);
     if(id==='bait_rare')fishing.premiumBait.rare=(fishing.premiumBait.rare||0)+(item.qty||0);
     if(id==='bait_legend')fishing.premiumBait.legend=(fishing.premiumBait.legend||0)+(item.qty||0);
-    shop20Toast('구매 완료!',`${item.name} x${item.qty} 획득`);
+    const equipId=id==='bait_basic'?'basic':id==='bait_rare'?'rare':'legend';
+    fishing.equipment=fishing.equipment||{};
+    fishing.equipment.bait=equipId;
+    shop20Toast('구매 및 장착 완료!',`${item.name} x${item.qty} 획득`);
   }else if(id.startsWith('rod_')){
     fishing.rodLevel=Math.max(fishing.rodLevel||1,item.level||1);
     fishing.ownedShopItems[id]=true;
-    shop20Toast('장비 구매 완료!',`${item.name} 장착 가능`);
+    fishing.equipment=fishing.equipment||{};
+    fishing.equipment.rod=id;
+    shop20Toast('구매 및 장착 완료!',`${item.name}`);
   }else if(id.startsWith('chest_')){
     openShop20Chest(item);
   }else{
