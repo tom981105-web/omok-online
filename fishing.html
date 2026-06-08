@@ -859,155 +859,49 @@ body{padding-bottom:112px;}
 
 
 
-/* UI 3.2 - 미니게임 모달 전환 최종 패치 */
-body.playing-mini{
-  overflow:hidden !important;
-  padding-bottom:0 !important;
+/* UI 3.3 horizontal timing minigame patch */
+#fishGame.timing-game{
+  height:auto!important;
+  min-height:360px!important;
+  max-height:none!important;
+  padding:28px 28px 26px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  align-items:center!important;
+  gap:16px!important;
 }
-
-body.playing-mini .bottom-tabs{
-  display:none !important;
+#fishGame.timing-game #track,
+#fishGame.timing-game #catchBar,
+#fishGame.timing-game #verticalProgress{display:none!important}
+.timing-fish-card{position:relative;z-index:3;width:min(220px,55vw);min-height:116px;padding:16px 18px 12px;border-radius:20px;background:rgba(2,6,23,.58);border:1px solid rgba(148,163,184,.28);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 14px 34px rgba(0,0,0,.24);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+#fishGame.timing-game #fishSprite{position:static!important;left:auto!important;top:auto!important;width:84px!important;max-height:58px!important;object-fit:contain;image-rendering:pixelated;z-index:4;filter:drop-shadow(0 8px 10px rgba(0,0,0,.45))}
+#fishGame.timing-game #fishSprite.unknown{filter:brightness(0) drop-shadow(0 8px 10px rgba(0,0,0,.7));opacity:.72}
+.timing-fish-label{font-size:14px;font-weight:900;color:#dbeafe;text-shadow:0 2px 4px #000}
+.timing-help{position:relative;z-index:3;font-size:14px;font-weight:900;color:#facc15;background:rgba(2,6,23,.62);border:1px solid rgba(250,204,21,.24);border-radius:999px;padding:8px 14px;max-width:100%}
+.timing-meter{position:relative;z-index:3;width:min(720px,92%);height:44px;border-radius:999px;background:linear-gradient(180deg,rgba(15,23,42,.92),rgba(2,6,23,.92));border:2px solid rgba(148,163,184,.38);box-shadow:inset 0 0 18px rgba(0,0,0,.6),0 10px 28px rgba(0,0,0,.28);overflow:hidden}
+.timing-meter::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,.08) 0 1px,transparent 1px 9.8%);opacity:.4;pointer-events:none}
+.timing-success-zone{position:absolute;top:5px;bottom:5px;left:40%;width:16%;border-radius:999px;background:linear-gradient(180deg,#86efac,#22c55e);box-shadow:0 0 18px rgba(34,197,94,.72);z-index:2}
+.timing-pointer{position:absolute;left:0%;top:50%;width:24px;height:56px;transform:translate(-50%,-50%);border-radius:999px;background:linear-gradient(180deg,#fde047,#f59e0b);border:2px solid rgba(255,255,255,.75);box-shadow:0 0 20px rgba(245,158,11,.9);z-index:4}
+.timing-stats{position:relative;z-index:3;width:min(720px,92%);display:flex;justify-content:space-between;gap:12px;font-size:15px;font-weight:900;color:#cbd5e1}
+.timing-stats span{flex:1;background:rgba(2,6,23,.58);border:1px solid rgba(148,163,184,.18);border-radius:12px;padding:8px 10px}
+#holdBtn.timing-action-btn,#miniGameBox #holdBtn{width:min(720px,92%)!important;height:54px!important;margin:4px auto 0!important;border-radius:14px!important;font-size:18px!important;background:linear-gradient(180deg,#fbbf24,#f59e0b)!important;color:#111827!important;box-shadow:0 12px 30px rgba(245,158,11,.26)!important}
+body.playing-mini .location-panel,body.playing-mini .codex-strip{display:none!important}
+@media(min-width:1100px){
+  body.playing-mini{overflow:hidden!important;padding-bottom:70px!important}
+  body.playing-mini .fishing-layout{display:grid!important;grid-template-columns:minmax(720px,980px) 430px!important;gap:12px!important;justify-content:center!important;align-items:start!important;min-height:auto!important}
+  body.playing-mini .center-panel{padding:12px 14px!important;min-height:auto!important}
+  body.playing-mini #miniGameBox{display:block!important;margin:0!important}
+  body.playing-mini #fishGame.timing-game{height:calc(100vh - 250px)!important;min-height:360px!important;max-height:560px!important;width:100%!important;margin:0 auto!important}
+  body.playing-mini #holdBtn{position:static!important;left:auto!important;right:auto!important;bottom:auto!important;transform:none!important;z-index:auto!important}
+  body.playing-mini .bag-panel{display:block!important;min-height:auto!important;max-height:calc(100vh - 170px)!important;overflow:auto!important}
+  body.playing-mini .bottom-tabs{display:none!important}
 }
-
-body.playing-mini .location-panel,
-body.playing-mini .bag-panel,
-body.playing-mini .codex-strip,
-body.playing-mini #pond,
-body.playing-mini #normalControls,
-body.playing-mini .available-panel{
-  display:none !important;
-}
-
-body.playing-mini .fishing-layout{
-  display:block !important;
-  min-height:0 !important;
-}
-
-body.playing-mini .center-panel{
-  background:transparent !important;
-  border:0 !important;
-  box-shadow:none !important;
-  padding:0 !important;
-  overflow:visible !important;
-}
-
-body.playing-mini .center-title{
-  position:fixed !important;
-  top:86px !important;
-  left:50% !important;
-  transform:translateX(-50%) !important;
-  z-index:361 !important;
-  margin:0 !important;
-  padding:8px 16px !important;
-  border-radius:999px !important;
-  background:rgba(2,6,23,.78) !important;
-  border:1px solid rgba(148,163,184,.28) !important;
-  box-shadow:0 12px 28px rgba(0,0,0,.32) !important;
-  font-size:18px !important;
-  white-space:nowrap !important;
-}
-
-body.playing-mini #miniGameBox{
-  position:fixed !important;
-  inset:0 !important;
-  z-index:350 !important;
-  display:flex !important;
-  flex-direction:column !important;
-  align-items:center !important;
-  justify-content:center !important;
-  gap:10px !important;
-  margin:0 !important;
-  padding:142px 18px 26px !important;
-  background:rgba(0,0,0,.68) !important;
-  backdrop-filter:blur(8px) !important;
-}
-
-body.playing-mini #miniStatus{
-  order:1 !important;
-  display:block !important;
-  width:min(720px,calc(100vw - 36px)) !important;
-  margin:0 !important;
-  padding:10px 16px !important;
-  border-radius:999px !important;
-  background:rgba(2,6,23,.86) !important;
-  border:1px solid rgba(250,204,21,.38) !important;
-  color:#facc15 !important;
-  font-size:14px !important;
-  line-height:1.35 !important;
-  box-shadow:0 10px 24px rgba(0,0,0,.32) !important;
-}
-
-body.playing-mini #fishGame{
-  order:2 !important;
-  position:relative !important;
-  width:min(720px,calc(100vw - 36px)) !important;
-  height:clamp(390px,calc(100vh - 285px),620px) !important;
-  min-height:0 !important;
-  max-height:none !important;
-  margin:0 !important;
-  border-radius:20px !important;
-  border:3px solid rgba(148,163,184,.72) !important;
-  box-shadow:0 24px 70px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.08) !important;
-  overflow:hidden !important;
-}
-
-body.playing-mini #track{
-  top:18px !important;
-  bottom:18px !important;
-  height:auto !important;
-  min-height:0 !important;
-  max-height:none !important;
-  width:86px !important;
-}
-
-body.playing-mini #holdBtn{
-  order:3 !important;
-  position:relative !important;
-  display:block !important;
-  left:auto !important;
-  right:auto !important;
-  bottom:auto !important;
-  transform:none !important;
-  width:min(720px,calc(100vw - 36px)) !important;
-  height:54px !important;
-  min-height:54px !important;
-  margin:0 !important;
-  z-index:362 !important;
-  border-radius:14px !important;
-  background:linear-gradient(180deg,#fbbf24,#f59e0b) !important;
-  color:#111827 !important;
-  font-size:18px !important;
-  font-weight:900 !important;
-  box-shadow:0 14px 30px rgba(245,158,11,.32), inset 0 1px 0 rgba(255,255,255,.3) !important;
-}
-
-body.playing-mini #holdBtn:active{
-  transform:scale(.985) !important;
-}
-
-@media(max-width:720px){
-  body.playing-mini .center-title{
-    top:72px !important;
-    font-size:15px !important;
-    max-width:calc(100vw - 24px) !important;
-    overflow:hidden !important;
-    text-overflow:ellipsis !important;
-  }
-
-  body.playing-mini #miniGameBox{
-    padding:124px 12px 18px !important;
-    gap:8px !important;
-  }
-
-  body.playing-mini #miniStatus,
-  body.playing-mini #fishGame,
-  body.playing-mini #holdBtn{
-    width:calc(100vw - 24px) !important;
-  }
-
-  body.playing-mini #fishGame{
-    height:clamp(360px,calc(100vh - 245px),560px) !important;
-  }
+@media(max-width:1099px){
+  body.playing-mini{overflow:hidden!important;padding-bottom:12px!important}
+  body.playing-mini .bottom-tabs{display:none!important}
+  body.playing-mini #fishGame.timing-game{height:calc(100vh - 190px)!important;min-height:320px!important;max-height:none!important;padding:20px 12px!important}
+  .timing-meter{width:94%;height:40px}.timing-pointer{height:52px}.timing-stats{width:94%;font-size:13px}.timing-help{font-size:12px}.timing-fish-card{min-height:100px}
 }
 
 </style>
@@ -1090,18 +984,28 @@ body.playing-mini #holdBtn:active{
           <div id="miniGameBox" class="hidden">
             <div class="status" id="miniStatus">버튼 또는 스페이스바를 누르면 낚시가 시작됩니다.</div>
 
-            <div id="fishGame">
+            <div id="fishGame" class="timing-game">
               <div class="mini-bubbles"></div>
-              <div id="track">
-                <div id="verticalProgress">
-                  <div id="verticalProgressFill"></div>
-                </div>
-                <div id="catchBar"></div>
+
+              <div class="timing-fish-card">
                 <img id="fishSprite" alt="물고기" />
+                <div id="timingFishLabel" class="timing-fish-label">정체불명 물고기</div>
+              </div>
+
+              <div class="timing-help">초록 구간에 포인터가 들어왔을 때 누르세요.</div>
+
+              <div id="timingMeter" class="timing-meter">
+                <div id="timingSuccessZone" class="timing-success-zone"></div>
+                <div id="timingPointer" class="timing-pointer"></div>
+              </div>
+
+              <div class="timing-stats">
+                <span id="timingHitText">성공 0 / 5</span>
+                <span id="timingMissText">실패 0 / 3</span>
               </div>
             </div>
 
-            <button id="holdBtn">누르고 있기</button>
+            <button id="holdBtn">타이밍 맞춰 누르기</button>
           </div>
         </main>
 
@@ -1290,6 +1194,7 @@ let selectedLocation="pond";
 let miniRunning=false, isCasting=false, biteReady=false, waitingToStart=false, actualMiniStarted=false, holding=false;
 let fishY=112, fishV=0, barY=85, progressValue=0, targetFishKey="", targetSizeKey="normal", animationId=null;
 let fishPattern=null, fishPatternTime=0;
+let timingPointer=0, timingDir=1, timingHits=0, timingMisses=0, timingZoneLeft=40, timingZoneWidth=16, timingSpeed=1.6;
 let biteTimer=null, biteWindowTimer=null;
 
 const $=id=>document.getElementById(id);
@@ -1302,6 +1207,7 @@ const locationGrid=$("locationGrid"), normalControls=$("normalControls"), miniGa
 const miniStatus=$("miniStatus"), catchBar=$("catchBar"), fishSprite=$("fishSprite"), fishShadow=$("fishShadow");
 const floatBobber=$("floatBobber"), bobberRipple=$("bobberRipple"), splashEffect=$("splashEffect"), biteBtn=$("biteBtn"), verticalProgressFill=$("verticalProgressFill");
 const inventoryList=$("inventoryList"), fishBook=$("fishBook"), upgradeCostText=$("upgradeCostText"), bookProgress=$("bookProgress");
+const timingPointerEl=$("timingPointer"), timingSuccessZone=$("timingSuccessZone"), timingHitText=$("timingHitText"), timingMissText=$("timingMissText"), timingFishLabel=$("timingFishLabel");
 
 onAuthStateChanged(auth, async user=>{
   if(!user){location.href="./index.html";return;}
@@ -1855,15 +1761,30 @@ function startMiniGameHiddenFish(){
   targetSizeKey=pickFishSize();
   const loc=LOCATIONS[selectedLocation];
   $("fishGame").style.setProperty("--mini-bg", `url("${loc.scene}")`);
-  fishY=112; fishV=0; barY=85; progressValue=25;
-  updateVerticalProgress();
-  fishPattern=createFishPattern(FISHES[targetFishKey]);
-  fishPatternTime=0;
+
+  const targetFish=FISHES[targetFishKey];
+  const sizeInfo=FISH_SIZES[targetSizeKey]||FISH_SIZES.normal;
+  const rodLevel=fishing.rodLevel||1;
+  timingHits=0;
+  timingMisses=0;
+  timingPointer=12+Math.random()*76;
+  timingDir=Math.random()>.5?1:-1;
+  timingZoneWidth=Math.max(10,Math.min(22,21 - targetFish.speed*1.25 - sizeInfo.difficulty*2 + rodLevel*.9));
+  timingZoneLeft=10+Math.random()*(80-timingZoneWidth);
+  timingSpeed=Math.max(.9,Math.min(3.4,1.0 + targetFish.speed*.34 + sizeInfo.difficulty*.45 - rodLevel*.06));
+  progressValue=0;
 
   setUnknownFishSprite();
+  if(timingFishLabel)timingFishLabel.textContent=`정체불명 · ${FISH_SIZES[targetSizeKey].name} 물고기`;
+  updateTimingGameUI();
 
   normalControls.classList.add("hidden");
   miniGameBox.classList.remove("hidden");
+  const holdBtn=$("holdBtn");
+  if(holdBtn){
+    holdBtn.classList.add("timing-action-btn");
+    holdBtn.textContent="타이밍 맞춰 누르기";
+  }
   miniStatus.textContent=`정체불명 · ${FISH_SIZES[targetSizeKey].name} 물고기입니다. 버튼 또는 스페이스바로 시작하세요.`;
 
   loopMiniGame();
@@ -1905,10 +1826,54 @@ function playSplash(){
 }
 
 function forceStartMiniGame(){
-  if(!miniRunning||actualMiniStarted)return;
-  waitingToStart=false;
-  actualMiniStarted=true;
-  miniStatus.textContent="물고기를 초록 구간 안에 유지하세요.";
+  if(!miniRunning)return;
+  if(waitingToStart){
+    waitingToStart=false;
+    actualMiniStarted=true;
+    miniStatus.textContent="초록 구간에 맞춰 누르세요. 성공 5번이면 포획합니다.";
+    return;
+  }
+}
+
+function randomizeTimingZone(){
+  const targetFish=FISHES[targetFishKey];
+  const sizeInfo=FISH_SIZES[targetSizeKey]||FISH_SIZES.normal;
+  const rodLevel=fishing.rodLevel||1;
+  timingZoneWidth=Math.max(8,Math.min(22,timingZoneWidth + (Math.random()-.56)*4 - targetFish.speed*.08 + rodLevel*.04));
+  timingZoneLeft=8+Math.random()*(84-timingZoneWidth);
+  timingSpeed=Math.max(.95,Math.min(3.8,timingSpeed + (Math.random()-.42)*.25 + sizeInfo.difficulty*.03));
+}
+
+function updateTimingGameUI(){
+  if(timingPointerEl)timingPointerEl.style.left=timingPointer+"%";
+  if(timingSuccessZone){
+    timingSuccessZone.style.left=timingZoneLeft+"%";
+    timingSuccessZone.style.width=timingZoneWidth+"%";
+  }
+  if(timingHitText)timingHitText.textContent=`성공 ${timingHits} / 5`;
+  if(timingMissText)timingMissText.textContent=`실패 ${timingMisses} / 3`;
+}
+
+function evaluateTimingAction(){
+  if(isCasting&&biteReady){reactBite();return;}
+  if(!miniRunning)return;
+  if(waitingToStart){forceStartMiniGame();updateTimingGameUI();return;}
+  if(!actualMiniStarted)return;
+
+  const hit=timingPointer>=timingZoneLeft && timingPointer<=timingZoneLeft+timingZoneWidth;
+  if(hit){
+    timingHits+=1;
+    progressValue=Math.min(100,timingHits*20);
+    miniStatus.textContent=`좋아요! ${timingHits}/5 성공`;
+    if(timingHits>=5){finishFishing(true);return;}
+  }else{
+    timingMisses+=1;
+    progressValue=Math.max(0,progressValue-15);
+    miniStatus.textContent=`빗나갔습니다. ${timingMisses}/3 실패`;
+    if(timingMisses>=3){finishFishing(false);return;}
+  }
+  randomizeTimingZone();
+  updateTimingGameUI();
 }
 
 function pickFishByLocation(locationKey){
@@ -1984,55 +1949,13 @@ function updateVerticalProgress(){
 function loopMiniGame(){
   if(!miniRunning)return;
 
-  if(waitingToStart){
-    catchBar.style.top=barY+"px";
-    catchBar.style.height="60px";
-    fishSprite.style.top=fishY+"px";
-    updateVerticalProgress();
-    animationId=requestAnimationFrame(loopMiniGame);
-    return;
+  if(!waitingToStart && actualMiniStarted){
+    timingPointer+=timingDir*timingSpeed;
+    if(timingPointer>=100){timingPointer=100;timingDir=-1;}
+    if(timingPointer<=0){timingPointer=0;timingDir=1;}
   }
 
-  const targetFish=FISHES[targetFishKey];
-  const rodLevel=fishing.rodLevel||1;
-  const sizeInfo=FISH_SIZES[targetSizeKey]||FISH_SIZES.normal;
-  const trackHeight=$("track").clientHeight;
-
-  const barHeight=Math.max(50,70+rodLevel*6);
-  const fishSpeed=targetFish.speed*sizeInfo.difficulty*Math.max(.68,1.14-rodLevel*.045);
-
-  fishPatternTime+=1;
-  fishV+=getFishMovement(targetFish,fishPattern,fishPatternTime)*fishSpeed;
-  fishV*=.82;
-  fishY+=fishV;
-
-  if(fishY<4){fishY=4;fishV*=-.58;}
-  const maxFishY=trackHeight-28;
-  if(fishY>maxFishY){fishY=maxFishY;fishV*=-.58;}
-
-  const controlSpeed=4.6+rodLevel*.25;
-  const gravitySpeed=3.6+rodLevel*.18;
-
-  if(holding)barY-=controlSpeed;
-  else barY+=gravitySpeed;
-
-  barY=Math.max(0,Math.min(trackHeight-barHeight,barY));
-
-  const fishCenter=fishY+16;
-  const inBar=fishCenter>=barY&&fishCenter<=barY+barHeight;
-
-  if(inBar)progressValue+=.42+rodLevel*.06;
-  else progressValue-=.22;
-
-  progressValue=Math.max(0,Math.min(100,progressValue));
-
-  catchBar.style.top=barY+"px";
-  catchBar.style.height=barHeight+"px";
-  fishSprite.style.top=fishY+"px";
-  updateVerticalProgress();
-
-  if(progressValue>=100){finishFishing(true);return;}
-  if(progressValue<=0){finishFishing(false);return;}
+  updateTimingGameUI();
   animationId=requestAnimationFrame(loopMiniGame);
 }
 
@@ -2091,6 +2014,8 @@ async function finishFishing(success){
 
   normalControls.classList.remove("hidden");
   miniGameBox.classList.add("hidden");
+  const holdBtnEl=$("holdBtn");
+  if(holdBtnEl){holdBtnEl.classList.remove("timing-action-btn");holdBtnEl.textContent="타이밍 맞춰 누르기";}
 
   if(success){
     const fish=FISHES[targetFishKey];
@@ -2264,22 +2189,20 @@ function getUpgradeCost(){return 100+((fishing.rodLevel||1)-1)*120;}
 
 document.addEventListener("keydown",e=>{
   if(e.code==="Space"){
-    if(isCasting&&biteReady) reactBite();
-    else {forceStartMiniGame();holding=true;}
+    evaluateTimingAction();
     e.preventDefault();
   }
 });
 
 document.addEventListener("keyup",e=>{
-  if(e.code==="Space"){holding=false;e.preventDefault();}
+  if(e.code==="Space")e.preventDefault();
 });
 
 const holdBtn=$("holdBtn");
-holdBtn.addEventListener("mousedown",()=>{forceStartMiniGame();holding=true;});
-holdBtn.addEventListener("mouseup",()=>holding=false);
-holdBtn.addEventListener("mouseleave",()=>holding=false);
-holdBtn.addEventListener("touchstart",e=>{forceStartMiniGame();holding=true;e.preventDefault();},{passive:false});
-holdBtn.addEventListener("touchend",e=>{holding=false;e.preventDefault();},{passive:false});
+holdBtn.addEventListener("pointerdown",e=>{
+  evaluateTimingAction();
+  e.preventDefault();
+});
 
 
 const avatarModal=$('avatarModal');
