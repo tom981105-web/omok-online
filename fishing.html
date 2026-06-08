@@ -2614,7 +2614,8 @@ async function finishFishing(success){
     fishing.totalCaught=(fishing.totalCaught||0)+1;
     pendingBossDamage+=(getRarityRank(fish.rarity)*10);
     const sizeCm=Math.round((20+fish.price/4)*((FISH_SIZES[targetSizeKey]||FISH_SIZES.normal).priceMul||1));
-    get(ref(db,`multiplayer/records/${targetFishKey}`)).then(snap=>{const old=snap.val();if(!old||sizeCm>(old.size||0))update(ref(db),{[`multiplayer/records/${targetFishKey}`]:{ownerUid:uid,ownerName:getPlayerName(),size:sizeCm,updatedAt:Date.now()}})});
+    // 최대어 기록 1인 1개 패치: 유저별 최고 기록만 저장하고, 더 큰 물고기를 잡았을 때만 교체
+    updatePersonalBiggestRecord(targetFishKey,targetSizeKey,sizeCm);
     addExp(12 + Math.round(fish.price/8));
 
     const treasureText=applyTreasureReward();
@@ -2850,9 +2851,16 @@ const BOSS11_LIST=[
 let currentBossCache=null;
 let bossRush=null;
 
-function getBoss11Today(){const day=Math.floor(Date.now()/86400000);return BOSS11_LIST[day%BOSS11_LIST.length]}
-function getBoss11EndTime(){const d=new Date();d.setHours(23,59,59,999);return d.getTime()}
-function getBoss11RemainText(endsAt){const ms=Math.max(0,(endsAt||getBoss11EndTime())-Date.now());const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000);return `${h}시간 ${m}분`}
+const BOSS11_DURATION_MS=2*60*60*1000;
+function pickRandomBoss11(excludeId){
+  const pool=BOSS11_LIST.filter(b=>b.id!==excludeId);
+  return (pool.length?pool:BOSS11_LIST)[Math.floor(Math.random()*(pool.length?pool.length:BOSS11_LIST.length))];
+}
+function getBoss11Today(){return pickRandomBoss11()}
+function getBoss11EndTime(){return Date.now()+BOSS11_DURATION_MS}
+function getBoss11RemainText(endsAt){const ms=Math.max(0,(endsAt||getBoss11EndTime())-Date.now());const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000),s=Math.floor((ms%60000)/1000);return h>0?`${h}시간 ${m}분`:`${m}분 ${s}초`}
+function getBossInstanceKey(boss){return boss?.instanceId||`${boss?.id||'boss'}_${boss?.startedAt||getWeekKey()}`}
+function createRandomBoss(excludeId){const b=pickRandomBoss11(excludeId);const now=Date.now();return {id:b.id,name:b.name,title:b.title,img:b.img,hp:b.maxHp,maxHp:b.maxHp,element:b.element,participants:0,startedAt:now,endsAt:now+BOSS11_DURATION_MS,instanceId:`${b.id}_${now}_${Math.random().toString(36).slice(2,8)}`,updatedAt:now}}
 function calcBoss11Damage(){
   const rodMul=getRodSellMultiplier?getRodSellMultiplier():1;
   const bait=getEquippedBait?getEquippedBait():{id:'basic'};
@@ -2907,19 +2915,89 @@ window.openBossChest=function(type){ensureBossRewardState();if((fishing.bossChes
 function renderBossRewardPanel(boss){ensureBossRewardState();const type=getBossRewardType(boss?.id);const info=BOSS_CHEST_INFO[type]||BOSS_CHEST_INFO.kraken;return `<div class="boss-reward-panel"><div class="boss-reward-title">🎁 보스 보상</div><div class="small">처치 시 딜 1위는 상자 2개, 참여자는 상자 1개를 받습니다.</div><div class="boss-chest-grid">${Object.values(BOSS_CHEST_INFO).map(c=>`<div class="boss-chest-card"><img src="${c.icon}" alt="${c.name}"><b>${c.name}</b><div class="small">보유 ${fishing.bossChests?.[c.id]||0}개</div><button onclick="openBossChest('${c.id}')">열기</button></div>`).join('')}</div><div class="boss-token-line">🐙 크라켄 토큰 ${fishing.bossTokens.kraken||0} · 🌊 리바이어던 토큰 ${fishing.bossTokens.leviathan||0} · 🔥 피닉스 토큰 ${fishing.bossTokens.phoenix||0}<br>상자 확률: 골드/미끼 높음, 토큰 중간, 장식 낮음, 장비 극히 낮음</div></div>`}
 function getAuctionMarketPrice(invKey){const p=parseInventoryKey(invKey),f=FISHES[p.fishKey];if(!f)return 0;const base=getFishSellPrice(p.fishKey,p.sizeKey);const rarityMul={common:1.4,uncommon:1.55,rare:1.8,epic:2.15,legend:2.8}[f.rarity]||1.5;return Math.max(1,Math.round(base*rarityMul))}
 window.updateAuctionMarketPrice=function(){const sel=$('auctionFishSelect'),box=$('auctionMarketBox'),input=$('auctionPriceInput');if(!sel||!box)return;const key=sel.value;if(!key){box.innerHTML='<div class="small">판매할 물고기를 선택하면 권장 시장가가 표시됩니다.</div>';return}const p=parseInventoryKey(key),f=FISHES[p.fishKey],price=getAuctionMarketPrice(key);box.innerHTML=`<b>권장 시장가 ${formatNumber(price)}G</b><div class="small">${getSizedFishName(p.fishKey,p.sizeKey)} · 기본 판매가 ${formatNumber(getFishSellPrice(p.fishKey,p.sizeKey))}G · 등급 ${getRarityName(f.rarity)}</div>`;if(input&&!input.value)input.placeholder=String(price)}
-async function syncMultiplayer(){if(!uid||!fishing)return;const week=getWeekKey(),score=calcMultiScore();const updates={};updates[`multiplayer/ranking/${uid}`]={uid,name:getPlayerName(),score,totalCaught:fishing.totalCaught||0,updatedAt:Date.now()};updates[`multiplayer/weeklyTournament/${week}/${uid}`]={uid,name:getPlayerName(),score,totalCaught:fishing.totalCaught||0,updatedAt:Date.now()};for(const key of Object.keys(fishing.discovered||{})){updates[`multiplayer/worldDex/${key}`]=FISHES[key]?.name||key}if(pendingBossDamage>0){const old=await dbGet(`multiplayer/worldBoss/current`)||getDefaultBoss();const bossKey=`${old.id}_${week}`;const oldUserDamage=await dbGet(`multiplayer/bossDamage/${week}/${uid}/damage`)||0;const totalUserDamage=oldUserDamage+pendingBossDamage;const newHp=Math.max(0,(old.hp||old.maxHp||100000)-pendingBossDamage);updates[`multiplayer/worldBoss/current`]={...old,hp:newHp,updatedAt:Date.now()};updates[`multiplayer/bossDamage/${week}/${uid}`]={uid,name:getPlayerName(),damage:totalUserDamage,updatedAt:Date.now()};updates[`multiplayer/bossParticipants/${bossKey}/${uid}`]={uid,name:getPlayerName(),damage:totalUserDamage,updatedAt:Date.now()};const alreadyClaimed=await dbGet(`multiplayer/bossClaims/${bossKey}/${uid}`);if(newHp<=0&&!alreadyClaimed){const participants=await dbGet(`multiplayer/bossParticipants/${bossKey}`)||{};participants[uid]={uid,name:getPlayerName(),damage:totalUserDamage,updatedAt:Date.now()};let topUid=uid,topDamage=totalUserDamage;for(const [pid,row] of Object.entries(participants)){if((row.damage||0)>topDamage){topUid=pid;topDamage=row.damage||0}}const rewardCount=topUid===uid?2:1;grantBossChest(getBossRewardType(old.id),rewardCount);updates[`multiplayer/bossClaims/${bossKey}/${uid}`]={uid,name:getPlayerName(),chests:rewardCount,claimedAt:Date.now(),topDealer:topUid===uid};}pendingBossDamage=0}await dbPatch(updates)}function getDefaultBoss(){const b=getBoss11Today();return {id:b.id,name:b.name,title:b.title,img:b.img,hp:b.maxHp,maxHp:b.maxHp,element:b.element,participants:0,endsAt:getBoss11EndTime(),updatedAt:Date.now()}}async function loadMulti(){if(!$('multiContent'))return;const box=$('multiContent');box.innerHTML='<div class="small">불러오는 중...</div>';try{if(['worldDex','tournament','friends'].includes(currentMultiTab))currentMultiTab='ranking';if(currentMultiTab==='ranking')await renderMultiRanking(box);else if(currentMultiTab==='records')await renderMultiRecords(box);else if(currentMultiTab==='boss')await renderMultiBoss(box);else if(currentMultiTab==='auction')await renderMultiAuction(box)}catch(e){console.error('멀티 로딩 실패',e);box.innerHTML=renderFirebaseErrorBox('멀티 정보를 불러오지 못했습니다.',e,e.dbPath||(currentMultiTab==='auction'?'multiplayer/auctions':`multiplayer/${currentMultiTab}`))}}function sortTop(obj,key='score'){return Object.values(obj||{}).sort((a,b)=>(b[key]||0)-(a[key]||0)).slice(0,20)}async function renderMultiRanking(box){
+async function syncMultiplayer(){
+  if(!uid||!fishing)return;
+  const week=getWeekKey(),score=calcMultiScore();
+  const updates={};
+  updates[`multiplayer/ranking/${uid}`]={uid,name:getPlayerName(),score,totalCaught:fishing.totalCaught||0,updatedAt:Date.now()};
+  updates[`multiplayer/weeklyTournament/${week}/${uid}`]={uid,name:getPlayerName(),score,totalCaught:fishing.totalCaught||0,updatedAt:Date.now()};
+  for(const key of Object.keys(fishing.discovered||{}))updates[`multiplayer/worldDex/${key}`]=FISHES[key]?.name||key;
+
+  if(pendingBossDamage>0){
+    let old=await dbGet(`multiplayer/worldBoss/current`);
+    if(!old||old.endsAt<Date.now()||(old.hp||0)<=0)old=getDefaultBoss(old?.id);
+
+    const bossKey=getBossInstanceKey(old);
+    const damageToApply=Number(pendingBossDamage||0);
+    const oldUserDamage=await dbGet(`multiplayer/bossParticipants/${bossKey}/${uid}/damage`)||0;
+    const totalUserDamage=oldUserDamage+damageToApply;
+    const newHp=Math.max(0,(old.hp||old.maxHp||100000)-damageToApply);
+
+    updates[`multiplayer/bossParticipants/${bossKey}/${uid}`]={uid,name:getPlayerName(),damage:totalUserDamage,updatedAt:Date.now()};
+    updates[`multiplayer/bossDamage/${bossKey}/${uid}`]={uid,name:getPlayerName(),damage:totalUserDamage,updatedAt:Date.now()};
+
+    if(newHp<=0){
+      const participants=await dbGet(`multiplayer/bossParticipants/${bossKey}`)||{};
+      participants[uid]={uid,name:getPlayerName(),damage:totalUserDamage,updatedAt:Date.now()};
+      let topUid=uid,topDamage=totalUserDamage;
+      for(const [pid,row] of Object.entries(participants)){
+        if((row.damage||0)>topDamage){topUid=pid;topDamage=row.damage||0;}
+      }
+      const rewardCount=topUid===uid?2:1;
+      grantBossChest(getBossRewardType(old.id),rewardCount);
+      fishing.bossKills=fishing.bossKills||{};
+      fishing.bossKills[old.id]=(fishing.bossKills[old.id]||0)+1;
+      updates[`multiplayer/bossClaims/${bossKey}/${uid}`]={uid,name:getPlayerName(),chests:rewardCount,claimedAt:Date.now(),topDealer:topUid===uid};
+      updates[`multiplayer/bossDefeated/${bossKey}`]={...old,hp:0,defeatedAt:Date.now(),topUid,topDamage};
+      const nextBoss=getDefaultBoss(old.id);
+      updates[`multiplayer/worldBoss/current`]=nextBoss;
+      currentBossCache=nextBoss;
+    }else{
+      updates[`multiplayer/worldBoss/current`]={...old,hp:newHp,updatedAt:Date.now()};
+    }
+    pendingBossDamage=0;
+  }
+  await dbPatch(updates);
+}
+function getDefaultBoss(excludeId){return createRandomBoss(excludeId)}
+async function loadMulti(){if(!$('multiContent'))return;const box=$('multiContent');box.innerHTML='<div class="small">불러오는 중...</div>';try{if(['worldDex','tournament','friends'].includes(currentMultiTab))currentMultiTab='ranking';if(currentMultiTab==='ranking')await renderMultiRanking(box);else if(currentMultiTab==='records')await renderMultiRecords(box);else if(currentMultiTab==='boss')await renderMultiBoss(box);else if(currentMultiTab==='auction')await renderMultiAuction(box)}catch(e){console.error('멀티 로딩 실패',e);box.innerHTML=renderFirebaseErrorBox('멀티 정보를 불러오지 못했습니다.',e,e.dbPath||(currentMultiTab==='auction'?'multiplayer/auctions':`multiplayer/${currentMultiTab}`))}}function sortTop(obj,key='score'){return Object.values(obj||{}).sort((a,b)=>(b[key]||0)-(a[key]||0)).slice(0,20)}async function renderMultiRanking(box){
   const data=await dbGet('multiplayer/ranking');
   const list=sortTop(data).slice(0,12);
   const medals=['🥇','🥈','🥉'];
   const cards=list.map((r,i)=>`<div class="multi11-rank-card ${i===0?'top1':''}"><div class="multi11-medal">${medals[i]||'🏅'}</div><div class="multi11-name">${i+1}. ${r.name||'낚시꾼'}</div><div class="multi11-score">${formatNumber(r.score||0)}점</div><div class="multi11-sub">포획 ${formatNumber(r.totalCaught||0)}마리<br>최근 갱신 ${r.updatedAt?new Date(r.updatedAt).toLocaleDateString():'-'}</div></div>`).join('');
   box.innerHTML=`<div class="multi10-card">${multi10Title("ranking","글로벌 랭킹")}<div class="multi11-board">${cards||'<div class="small">기록 없음</div>'}</div></div>`
-}async function renderMultiRecords(box){
-  const data=await dbGet('multiplayer/records')||{};
-  const rows=Object.entries(data).sort((a,b)=>(b[1].size||0)-(a[1].size||0)).slice(0,24).map(([k,r],i)=>{
-    const f=FISHES[k];
-    return `<div class="multi11-record-card"><div class="multi11-record-fish"><img src="${f?.img||'./assets/icons/fish_shadow.png'}" alt=""><div><div class="multi11-name">${i+1}. ${f?.name||k}</div><div class="multi11-sub">기록 보유자 ${r.ownerName||'-'}</div></div></div><div class="multi11-score">${r.size||0}cm</div></div>`
+}
+
+function updatePersonalBiggestRecord(fishKey,sizeKey,sizeCm){
+  if(!db||!uid)return;
+  const path=`multiplayer/recordsByUser/${uid}`;
+  get(ref(db,path)).then(snap=>{
+    const old=snap.val();
+    if(!old || Number(sizeCm) > Number(old.size||0)){
+      const fish=FISHES[fishKey]||{};
+      const payload={
+        ownerUid:uid,
+        ownerName:getPlayerName(),
+        fishKey,
+        fishName:fish.name||fishKey,
+        sizeKey:sizeKey||'normal',
+        size:Number(sizeCm)||0,
+        rarity:fish.rarity||'common',
+        updatedAt:Date.now()
+      };
+      return update(ref(db),{[path]:payload});
+    }
+  }).catch(e=>console.warn('개인 최대어 기록 갱신 실패',e));
+}
+
+async function renderMultiRecords(box){
+  const data=await dbGet('multiplayer/recordsByUser')||{};
+  const rows=Object.values(data).sort((a,b)=>(b.size||0)-(a.size||0)).slice(0,24).map((r,i)=>{
+    const f=FISHES[r.fishKey]||{};
+    const sizeLabel=FISH_SIZES?.[r.sizeKey]?.label?` · ${FISH_SIZES[r.sizeKey].label}`:'';
+    return `<div class="multi11-record-card"><div class="multi11-record-fish"><img src="${f.img||'./assets/icons/fish_shadow.png'}" alt=""><div><div class="multi11-name">${i+1}. ${r.ownerName||'낚시꾼'}</div><div class="multi11-sub">${f.name||r.fishName||r.fishKey||'물고기'}${sizeLabel}</div></div></div><div class="multi11-score">${r.size||0}cm</div></div>`
   }).join('');
-  box.innerHTML=`<div class="multi10-card">${multi10Title("records","최대어 기록")}<div class="multi11-board">${rows||'<div class="small">아직 기록 없음</div>'}</div></div>`
+  box.innerHTML=`<div class="multi10-card">${multi10Title("records","최대어 기록")}<div class="small" style="margin-bottom:8px">1인당 최고 기록 1개만 표시됩니다. 더 큰 물고기를 잡으면 본인 기록이 교체됩니다.</div><div class="multi11-board">${rows||'<div class="small">아직 기록 없음</div>'}</div></div>`
 }async function renderMultiDex(box){const data=await dbGet('multiplayer/worldDex')||{};const total=Object.keys(FISHES).length,found=Object.keys(data).length;box.innerHTML=`<div class="multi10-card">${multi10Title("worldDex","월드도감")}<div class="status">${found} / ${total}종 발견</div><div class="small">발견률 ${Math.round(found/total*100)}%</div></div>`}async function renderMultiTournament(box){const data=await dbGet(`multiplayer/weeklyTournament/${getWeekKey()}`);const rows=sortTop(data).map((r,i)=>`<div class="multi10-row"><span>${i+1}. ${r.name||'낚시꾼'}</span><b>${formatNumber(r.score||0)}점</b></div>`).join('');box.innerHTML=`<div class="multi10-card">${multi10Title("tournament","주간 낚시대회")}${rows||'<div class="small">이번 주 기록 없음</div>'}</div>`}
 window.syncBossDamageAndReload=async function(){
   const dmg=Number(pendingBossDamage||0);
@@ -2929,6 +3007,8 @@ window.syncBossDamageAndReload=async function(){
   }
   try{
     await syncMultiplayer();
+    saveGame();
+    render();
     shop20Toast('누적 피해 반영 완료!',`월드보스에게 -${formatNumber(dmg)} HP 반영`);
     await loadMulti();
   }catch(e){
@@ -2938,17 +3018,17 @@ window.syncBossDamageAndReload=async function(){
 };
 async function renderMultiBoss(box){
   let boss=await dbGet('multiplayer/worldBoss/current');
-  const today=getBoss11Today();
-  if(!boss||boss.id!==today.id||boss.endsAt<Date.now()||boss.maxHp!==today.maxHp){
-    boss=getDefaultBoss();
+  if(!boss||boss.endsAt<Date.now()||(boss.hp||0)<=0){
+    boss=getDefaultBoss(boss?.id);
     await dbPatch({'multiplayer/worldBoss/current':boss});
   }
+  const today=BOSS11_LIST.find(b=>b.id===boss.id)||BOSS11_LIST[0];
   currentBossCache=boss;
   const localHp=getBoss11LocalHp(boss);
   const pct=Math.max(0,Math.round(localHp/(boss.maxHp||1)*100));
   const logs=(fishing.bossLogs||[]).map(l=>`<div class="boss11-log-item"><span>${l.text}</span><b>-${formatNumber(l.damage)}</b></div>`).join('')||'<div class="small">아직 공격 기록이 없습니다.</div>';
-  const bossKey=`${boss.id}_${getWeekKey()}`;
-  let damageRankHtml='<div class="small">아직 반영된 보스 피해 기록이 없습니다. 공격 후 “누적 피해 반영”을 누르면 순위에 표시됩니다.</div>';
+  const bossKey=getBossInstanceKey(boss);
+  let damageRankHtml='<div class="small">아직 반영된 보스 피해 기록이 없습니다. 친구도 같은 보스에서 “누적 피해 반영”을 누르면 순위에 표시됩니다.</div>';
   try{
     const rankData=await dbGet(`multiplayer/bossParticipants/${bossKey}`)||{};
     const rankList=Object.values(rankData).sort((a,b)=>(b.damage||0)-(a.damage||0)).slice(0,10);
@@ -2965,7 +3045,7 @@ async function renderMultiBoss(box){
       <div class="boss11-info">
         <span class="boss11-tag">🔥 ${boss.element||today.element} 월드보스</span>
         <h3 class="boss12-name">${boss.name||today.name}</h3>
-        <div class="boss12-desc">${boss.title||today.title} · 3~4명이 잡을 수 있도록 체력이 조정된 월드보스입니다. 러시 콤보로 피해를 누적하세요.</div>
+        <div class="boss12-desc">${boss.title||today.title} · 처치 또는 시간 종료 후 3종 중 랜덤 보스로 교체됩니다. 러시 콤보로 피해를 누적하세요.</div>
         <div class="boss11-hp-line"><span>HP</span><b>${formatNumber(localHp)} / ${formatNumber(boss.maxHp)}</b></div>
         <div class="boss11-bar"><div class="boss11-fill" style="width:${pct}%"></div></div>
         <div class="boss11-stats"><div class="boss11-stat"><b>${pct}%</b><span>남은 체력</span></div><div class="boss11-stat"><b>${formatNumber(pendingBossDamage)}</b><span>미반영 피해</span></div><div class="boss11-stat"><b>${getBoss11RemainText(boss.endsAt)}</b><span>남은 시간</span></div></div>
