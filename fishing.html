@@ -43,6 +43,36 @@ button:disabled{opacity:.45;cursor:not-allowed}
 #pond::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at center,rgba(255,255,255,.06),rgba(0,0,0,.24) 64%,rgba(0,0,0,.45));z-index:0;pointer-events:none}
 #pond::after{content:"";position:absolute;inset:-20%;background:radial-gradient(circle,rgba(255,255,255,.35) 0 1px,transparent 2px) 10% 80%/90px 120px,radial-gradient(circle,rgba(125,211,252,.22) 0 1px,transparent 3px) 70% 85%/130px 160px;opacity:.45;z-index:1;pointer-events:none;animation:sceneSparkle 8s linear infinite}
 @keyframes sceneSparkle{0%{transform:translateY(20px)}100%{transform:translateY(-40px)}}
+
+.scene-effect{position:absolute;pointer-events:none;image-rendering:pixelated;z-index:2;opacity:.9}
+.scene-cloud{top:10%;width:92px;opacity:.55;filter:drop-shadow(0 3px 5px rgba(0,0,0,.28));animation:cloudDrift 38s linear infinite}
+#sceneCloud1{left:-120px;animation-delay:0s}
+#sceneCloud2{left:-180px;top:19%;width:126px;opacity:.38;animation-delay:13s;animation-duration:54s}
+@keyframes cloudDrift{0%{transform:translateX(0)}100%{transform:translateX(calc(100vw + 260px))}}
+.scene-bird{top:22%;left:-60px;width:34px;opacity:.75;animation:birdFly 22s linear infinite;display:none}
+@keyframes birdFly{0%{transform:translateX(0) translateY(0)}50%{transform:translateX(48vw) translateY(-12px)}100%{transform:translateX(calc(100vw + 120px)) translateY(3px)}}
+.scene-firefly{width:18px;opacity:0;animation:fireflyFloat 5s ease-in-out infinite;display:none;filter:drop-shadow(0 0 8px #fde68a)}
+#sceneFirefly1{left:18%;top:56%;animation-delay:.2s}
+#sceneFirefly2{left:68%;top:62%;animation-delay:1.7s}
+#sceneFirefly3{left:82%;top:44%;animation-delay:3.1s}
+@keyframes fireflyFloat{0%,100%{opacity:.15;transform:translate(0,0) scale(.8)}45%{opacity:1;transform:translate(10px,-18px) scale(1.08)}70%{opacity:.55;transform:translate(-8px,-9px) scale(.94)}}
+.scene-weather{position:absolute;right:12px;top:12px;width:34px;height:34px;z-index:5;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 2px 4px #000)}
+.scene-rain{position:absolute;inset:0;z-index:3;pointer-events:none;display:none;background:repeating-linear-gradient(105deg,rgba(191,219,254,.0) 0 8px,rgba(191,219,254,.38) 9px 11px,rgba(191,219,254,.0) 12px 22px);opacity:.45;animation:rainMove .65s linear infinite}
+@keyframes rainMove{0%{background-position:0 -30px}100%{background-position:-38px 36px}}
+#pond.weather-night::before{background:radial-gradient(circle at center,rgba(96,165,250,.08),rgba(0,0,0,.42) 62%,rgba(0,0,0,.68))}
+#pond.weather-storm::before{background:radial-gradient(circle at center,rgba(255,255,255,.05),rgba(0,0,0,.55) 58%,rgba(0,0,0,.75))}
+#pond.weather-rainy::before{background:radial-gradient(circle at center,rgba(125,211,252,.08),rgba(0,0,0,.34) 64%,rgba(0,0,0,.54))}
+#pond.weather-night .scene-firefly{display:block}
+#pond.weather-rainy .scene-rain,#pond.weather-storm .scene-rain{display:block}
+#pond.weather-storm{animation:stormFlash 7s infinite}
+@keyframes stormFlash{0%,92%,100%{filter:brightness(1)}94%{filter:brightness(1.38)}96%{filter:brightness(.9)}}
+#pond.weather-sunny .scene-bird,#pond.weather-cloudy .scene-bird{display:block}
+#pond.weather-night .scene-cloud{opacity:.24}
+.asset-ripple{border:none!important;background:transparent!important;width:70px!important;height:70px!important;background-size:contain!important;background-repeat:no-repeat!important;background-position:center!important;animation:rippleAssetLoop 1.15s infinite ease-out!important;opacity:.85}
+@keyframes rippleAssetLoop{0%{transform:translate(-50%,-50%) scale(.55);opacity:.9}100%{transform:translate(-50%,-50%) scale(1.45);opacity:0}}
+.asset-splash{background-size:contain;background-position:center;background-repeat:no-repeat}
+.fish-card.rarity-rare::before,.fish-card.rarity-epic::before,.fish-card.rarity-legend::before{content:"";position:absolute;inset:3px;background-image:var(--rarity-glow);background-size:contain;background-position:center;background-repeat:no-repeat;z-index:1;opacity:.55;animation:cardAura 2.4s ease-in-out infinite;pointer-events:none}.fish-card.rarity-legend::before{opacity:.75}.fish-card.rarity-common::before,.fish-card.rarity-uncommon::before{content:"";position:absolute;inset:8px;background-image:var(--rarity-glow);background-size:contain;background-position:center;background-repeat:no-repeat;z-index:1;opacity:.18;pointer-events:none}@keyframes cardAura{0%,100%{transform:scale(.96);opacity:.38}50%{transform:scale(1.08);opacity:.8}}
+
 #floatBobber{position:absolute;left:50%;top:42%;width:16px;height:34px;transform:translate(-50%,-50%);display:none;z-index:6}
 #floatBobber::before{content:"";display:block;width:16px;height:16px;background:#ef4444;border-radius:50% 50% 0 0}
 #floatBobber::after{content:"";display:block;width:16px;height:16px;background:#f8fafc;border-radius:0 0 50% 50%}
@@ -835,6 +865,24 @@ const DIFFICULTY_BADGES = {
   legend:"./assets/badges/legend.png"
 };
 
+const EFFECT_ASSETS = {
+  rippleSmall:"./assets/effects/ripple_small.png",
+  rippleMedium:"./assets/effects/ripple_medium.png",
+  rippleLarge:"./assets/effects/ripple_large.png",
+  glowCommon:"./assets/effects/glow_common.png",
+  glowRare:"./assets/effects/glow_rare.png",
+  glowEpic:"./assets/effects/glow_epic.png",
+  glowLegendary:"./assets/effects/glow_legendary.png"
+};
+
+const RARITY_GLOWS = {
+  common:EFFECT_ASSETS.glowCommon,
+  uncommon:EFFECT_ASSETS.glowCommon,
+  rare:EFFECT_ASSETS.glowRare,
+  epic:EFFECT_ASSETS.glowEpic,
+  legend:EFFECT_ASSETS.glowLegendary
+};
+
 const RARITY_ICONS = {
   common:"./assets/rarity/rarity_common.png",
   uncommon:"./assets/rarity/rarity_uncommon.png",
@@ -882,6 +930,7 @@ const mainStatus=$("mainStatus"), catchResult=$("catchResult");
 const locationGrid=$("locationGrid"), normalControls=$("normalControls"), miniGameBox=$("miniGameBox");
 const miniStatus=$("miniStatus"), catchBar=$("catchBar"), fishSprite=$("fishSprite"), fishShadow=$("fishShadow");
 const floatBobber=$("floatBobber"), bobberRipple=$("bobberRipple"), splashEffect=$("splashEffect"), biteBtn=$("biteBtn"), verticalProgressFill=$("verticalProgressFill");
+const sceneWeatherIcon=$("sceneWeatherIcon"), sceneBird=$("sceneBird");
 const inventoryList=$("inventoryList"), fishBook=$("fishBook"), upgradeCostText=$("upgradeCostText"), bookProgress=$("bookProgress");
 
 onAuthStateChanged(auth, async user=>{
@@ -1016,6 +1065,7 @@ function renderInventory(){
 
     const card=document.createElement("div");
     card.className=`fish-card rarity-${fish.rarity}`;
+    card.style.setProperty("--rarity-glow", `url("${RARITY_GLOWS[fish.rarity]||RARITY_GLOWS.common}")`);
     card.title=`${displayName} / 1마리 ${sellPrice}G`;
     card.innerHTML=`
       <img class="frame" src="${frame}" alt="">
@@ -1051,6 +1101,7 @@ function renderFishBook(){
 
     const card=document.createElement("div");
     card.className=`fish-card rarity-${fish.rarity} ${known?"":"locked"}`;
+    card.style.setProperty("--rarity-glow", `url("${RARITY_GLOWS[fish.rarity]||RARITY_GLOWS.common}")`);
     card.onclick=()=>openFishDetail(key, known);
     card.innerHTML=`
       <img class="frame" src="${frame}" alt="">
@@ -1170,12 +1221,31 @@ function getDifficultyBadge(requiredRod){
 function getWeatherInfo(){
   const h=new Date().getHours();
   if(h>=19||h<6)return {key:'night',label:'밤'};
-  return {key:'sunny',label:'낮'};
+  const bucket=Math.floor(Date.now()/1000/60/20);
+  const keys=['sunny','cloudy','rainy','storm'];
+  const key=keys[bucket%keys.length];
+  const labels={sunny:'맑음',cloudy:'흐림',rainy:'비',storm:'폭풍'};
+  return {key,label:labels[key]||'맑음'};
 }
 
 function getDayNightLabel(){
   const w=getWeatherInfo();
   return `<img class="weather-badge-img" src="${WEATHER_ICONS[w.key]}" alt="">${w.label}`;
+}
+
+function applySceneWeather(){
+  const pond=$('pond');
+  if(!pond)return;
+  const w=getWeatherInfo();
+  pond.classList.remove('weather-sunny','weather-cloudy','weather-rainy','weather-storm','weather-night');
+  pond.classList.add('weather-'+w.key);
+  if(sceneWeatherIcon){
+    sceneWeatherIcon.src=WEATHER_ICONS[w.key]||WEATHER_ICONS.sunny;
+    sceneWeatherIcon.alt=w.label;
+  }
+  if(sceneBird){
+    sceneBird.src=`./assets/effects/bird_${(Math.floor(Date.now()/60000)%3)+1}.png`;
+  }
 }
 
 function updateProfileProgress(){
@@ -1344,6 +1414,7 @@ function updateLocationSceneAlways(){
   $("pond").classList.add("active-scene");
   if(sceneTitleBadge)sceneTitleBadge.textContent=`${loc.emoji} ${loc.name}`;
   if(sceneTimeBadge)sceneTimeBadge.innerHTML=getDayNightLabel();
+  applySceneWeather();
 }
 
 function showLocationScene(){
@@ -1466,6 +1537,9 @@ function showFishShadow(key){
 function hideFishShadow(){fishShadow.style.display="none";}
 
 function showBobberRipple(){
+  if(!bobberRipple)return;
+  bobberRipple.classList.add('asset-ripple');
+  bobberRipple.style.backgroundImage=`url("${EFFECT_ASSETS.rippleMedium}")`;
   bobberRipple.style.display="block";
 }
 
@@ -1474,10 +1548,14 @@ function hideBobberRipple(){
 }
 
 function playSplash(){
+  if(!splashEffect)return;
+  const ripple=targetSizeKey==='monster'?EFFECT_ASSETS.rippleLarge:EFFECT_ASSETS.rippleSmall;
+  splashEffect.classList.add('asset-splash');
+  splashEffect.style.backgroundImage=`url("${ripple}")`;
   splashEffect.style.display="none";
   void splashEffect.offsetWidth;
   splashEffect.style.display="block";
-  setTimeout(()=>{splashEffect.style.display="none";},600);
+  setTimeout(()=>{splashEffect.style.display="none";},650);
 }
 
 function forceStartMiniGame(){
