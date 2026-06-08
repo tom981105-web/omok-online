@@ -485,6 +485,63 @@ body.playing-mini #miniStatus{
   .location-grid{grid-template-columns:repeat(3,1fr)}
   .location-thumb{height:76px}
 }
+
+
+/* UI 2.6 cleanup patch: spacing, polish, sorting, sell actions */
+body{padding-bottom:112px;}
+.ui2-panel{
+  background:linear-gradient(180deg,rgba(15,35,58,.78),rgba(2,12,27,.78));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08), inset 0 -2px 0 rgba(0,0,0,.35), 0 12px 34px rgba(0,0,0,.18);
+}
+.fish-card:hover{
+  transform:translateY(-3px) scale(1.05);
+  filter:drop-shadow(0 0 12px rgba(255,255,255,.22));
+}
+.fish-card.rarity-uncommon:hover{filter:drop-shadow(0 0 13px rgba(34,197,94,.55));}
+.fish-card.rarity-rare:hover{filter:drop-shadow(0 0 15px rgba(59,130,246,.72));}
+.fish-card.rarity-epic:hover{filter:drop-shadow(0 0 18px rgba(168,85,247,.85));}
+.fish-card.rarity-legend:hover{filter:drop-shadow(0 0 20px rgba(250,204,21,1));}
+.bag-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:8px 0 10px;align-items:center}
+.bag-actions select,.sort-select{
+  width:100%;height:34px;border-radius:9px;border:1px solid rgba(148,163,184,.28);
+  background:rgba(2,6,23,.75);color:#fff;font-weight:800;padding:0 8px;
+}
+.bag-actions button{margin:0;height:34px;padding:0 8px;border-radius:9px;font-size:12px;white-space:nowrap}
+.bag-actions .danger{background:#7f1d1d;color:#fee2e2}
+.bag-actions .sell-all{background:#166534;color:#dcfce7}
+.catch-result{min-height:26px}
+.catch-result img{display:none}
+.available-panel{
+  max-width:190px;padding:7px;border-radius:12px;backdrop-filter:blur(6px);
+}
+.available-title{font-size:12px;margin-bottom:4px}
+.available-fishes{gap:5px}
+.available-mini{width:42px;height:38px;border-radius:8px}
+.available-mini img{max-width:32px;max-height:23px}
+.available-mini span{font-size:8px;right:2px;bottom:1px}
+.codex-progress-mini{display:flex;align-items:center;gap:8px}
+.codex-ring{
+  --pct:0%;width:38px;height:38px;border-radius:50%;
+  background:conic-gradient(#f59e0b var(--pct), rgba(148,163,184,.18) 0);
+  display:grid;place-items:center;position:relative;box-shadow:0 0 12px rgba(245,158,11,.15);
+}
+.codex-ring::after{content:"";position:absolute;inset:5px;border-radius:50%;background:#071426;border:1px solid rgba(255,255,255,.08)}
+.codex-ring span{position:relative;z-index:1;font-size:10px;font-weight:900;color:#fff}
+@media(min-width:1100px){
+  .codex-strip{max-height:180px;overflow:hidden;margin-bottom:86px;}
+  .codex-preview-grid{max-height:112px;overflow-y:auto;grid-template-columns:repeat(auto-fill,88px);gap:8px;}
+  .preview-grid{grid-template-columns:repeat(3,88px);gap:8px;max-height:430px;}
+  .preview-grid .fish-card,.codex-preview-grid .fish-card{width:88px;height:88px;}
+  .preview-grid .fish-img,.codex-preview-grid .fish-img{width:52px;height:40px;}
+  .bottom-tabs{height:66px;padding:7px 8px calc(7px + env(safe-area-inset-bottom));}
+  .tab-btn{padding:5px 2px;font-size:11px;}
+  #pond{height:395px;}
+  .available-panel{right:20px;bottom:104px;}
+  #normalControls{margin-top:6px;}
+  #fishBtn,#holdBtn{height:45px;font-size:18px;}
+}
+@media(max-width:1099px){.bag-actions{grid-template-columns:1fr}.codex-progress-mini{justify-content:center}}
+
 </style>
 </head>
 
@@ -589,6 +646,16 @@ body.playing-mini #miniStatus{
             <button type="button">아이템</button>
             <button type="button">기타</button>
           </div>
+          <div class="bag-actions">
+            <select id="bagSortSelect" title="가방 정렬">
+              <option value="recent">최근순</option>
+              <option value="rarity">희귀도순</option>
+              <option value="price">가격순</option>
+              <option value="count">수량순</option>
+            </select>
+            <button id="sellCommonBtn" class="danger" type="button">일반 판매</button>
+            <button id="sellAllPreviewBtn" class="sell-all" type="button">전체 판매</button>
+          </div>
           <div id="inventoryPreviewList" class="fish-card-grid preview-grid"></div>
         </aside>
       </div>
@@ -596,7 +663,10 @@ body.playing-mini #miniStatus{
       <div class="ui2-panel codex-strip">
         <div class="panel-head">
           <h2><img class="icon-img" src="./assets/icons/book.png" alt=""> 도감</h2>
-          <span id="bookProgressInline" class="panel-count">0 / 20</span>
+          <div class="codex-progress-mini">
+            <div id="codexProgressRing" class="codex-ring"><span id="codexProgressPercent">0%</span></div>
+            <span id="bookProgressInline" class="panel-count">0 / 20</span>
+          </div>
         </div>
         <div id="fishBookPreview" class="fish-card-grid codex-preview-grid"></div>
       </div>
@@ -873,20 +943,20 @@ function renderLocations(){
 
 function renderInventory(){
   inventoryList.innerHTML="";
-  const entries=Object.entries(fishing.inventory||{}).filter(([key,count])=>count>0);
+  const entries=getSortedInventoryEntries();
   if(!entries.length){inventoryList.innerHTML=`<div class="small">보유한 물고기가 없습니다.</div>`;return;}
 
   const grid=document.createElement("div");
   grid.className="fish-card-grid";
 
-  for(const [key,count] of entries){
-    const parsed=parseInventoryKey(key);
-    const fishKey=FISHES[parsed.fishKey]?parsed.fishKey:key;
-    const sizeKey=FISHES[parsed.fishKey]?parsed.sizeKey:"normal";
-    const fish=FISHES[fishKey];
-    if(!fish) continue;
+  for(const item of entries){
+    const key=item.key;
+    const count=item.count;
+    const fishKey=item.fishKey;
+    const sizeKey=item.sizeKey;
+    const fish=item.fish;
 
-    const sellPrice=getFishSellPrice(fishKey,sizeKey);
+    const sellPrice=item.price;
     const displayName=getSizedFishName(fishKey,sizeKey);
     const frame=RARITY_FRAMES[fish.rarity]||RARITY_FRAMES.common;
 
@@ -971,19 +1041,37 @@ function makeFishCardElement({key,fishKey,sizeKey='normal',count=0,known=true,cl
   return card;
 }
 
+
+function getRarityRank(rarity){
+  return {common:1,uncommon:2,rare:3,epic:4,legend:5}[rarity]||0;
+}
+
+function getSortedInventoryEntries(){
+  const entries=Object.entries(fishing.inventory||{}).filter(([key,count])=>count>0);
+  const mode=$('bagSortSelect')?.value||'recent';
+  const mapped=entries.map(([key,count])=>{
+    const parsed=parseInventoryKey(key);
+    const fishKey=FISHES[parsed.fishKey]?parsed.fishKey:key;
+    const sizeKey=FISHES[parsed.fishKey]?parsed.sizeKey:'normal';
+    const fish=FISHES[fishKey];
+    return {key,count,fishKey,sizeKey,fish,price:fish?getFishSellPrice(fishKey,sizeKey):0,rarity:fish?getRarityRank(fish.rarity):0};
+  }).filter(x=>x.fish);
+  if(mode==='rarity')mapped.sort((a,b)=>b.rarity-a.rarity||b.price-a.price);
+  else if(mode==='price')mapped.sort((a,b)=>b.price-a.price||b.rarity-a.rarity);
+  else if(mode==='count')mapped.sort((a,b)=>b.count-a.count||b.price-a.price);
+  return mapped;
+}
+
 function renderInventoryPreview(){
   const target=$('inventoryPreviewList');
   if(!target)return;
   target.innerHTML='';
-  const entries=Object.entries(fishing.inventory||{}).filter(([key,count])=>count>0);
+  const entries=getSortedInventoryEntries();
   const countText=$('bagPreviewCount');
   if(countText) countText.textContent=`${entries.length} / 60`;
   if(!entries.length){target.innerHTML='<div class="small">보유한 물고기가 없습니다.</div>';return;}
-  for(const [key,count] of entries.slice(0,12)){
-    const parsed=parseInventoryKey(key);
-    const fishKey=FISHES[parsed.fishKey]?parsed.fishKey:key;
-    const sizeKey=FISHES[parsed.fishKey]?parsed.sizeKey:'normal';
-    const card=makeFishCardElement({key,fishKey,sizeKey,count,known:true,clickable:true});
+  for(const item of entries.slice(0,12)){
+    const card=makeFishCardElement({key:item.key,fishKey:item.fishKey,sizeKey:item.sizeKey,count:item.count,known:true,clickable:true});
     if(card)target.appendChild(card);
   }
 }
@@ -995,7 +1083,13 @@ function renderFishBookPreview(){
   const discovered=fishing.discovered||{};
   const ownedCount=Object.keys(FISHES).filter(k=>discovered[k]).length;
   const inline=$('bookProgressInline');
-  if(inline) inline.textContent=`${ownedCount} / ${Object.keys(FISHES).length}`;
+  const totalFish=Object.keys(FISHES).length;
+  if(inline) inline.textContent=`${ownedCount} / ${totalFish}`;
+  const pct=Math.round((ownedCount/totalFish)*100);
+  const ring=$('codexProgressRing');
+  const pctText=$('codexProgressPercent');
+  if(ring)ring.style.setProperty('--pct',pct+'%');
+  if(pctText)pctText.textContent=pct+'%';
   for(const [key,fish] of Object.entries(FISHES)){
     const owned=Object.entries(fishing.inventory||{}).reduce((sum,[invKey,count])=>{
       const parsed=parseInventoryKey(invKey);
@@ -1591,6 +1685,29 @@ async function sellAllFish(){
   await saveGame();
 }
 
+
+async function sellCommonFish(){
+  const inv=fishing.inventory||{};
+  let earn=0;
+  let sold=0;
+  for(const [key,count] of Object.entries({...inv})){
+    const parsed=parseInventoryKey(key);
+    const fish=FISHES[parsed.fishKey];
+    if(!fish)continue;
+    if(fish.rarity==='common'){
+      earn+=getFishSellPrice(parsed.fishKey,parsed.sizeKey)*count;
+      sold+=count;
+      delete fishing.inventory[key];
+    }
+  }
+  if(!sold){showToast('판매할 일반 물고기가 없습니다.');return;}
+  fishing.gold+=earn;
+  fishing.totalEarned=(fishing.totalEarned||0)+earn;
+  showToast(`일반 물고기 ${sold}마리 판매: ${earn}G 획득`);
+  render();
+  await saveGame();
+}
+
 window.changeSellQty=function(key,delta){
   const el=document.getElementById(`sell_${key}`);
   const have=fishing.inventory?.[key]||0;
@@ -1708,6 +1825,9 @@ $("sellAllBtn").onclick=sellAllFish;
 $("upgradeRodBtn").onclick=upgradeRod;
 $("buyBaitBtn").onclick=buyBait;
 $("saveBtn").onclick=saveGame;
+if($('bagSortSelect'))$('bagSortSelect').onchange=()=>{renderInventoryPreview();renderInventory();};
+if($('sellCommonBtn'))$('sellCommonBtn').onclick=sellCommonFish;
+if($('sellAllPreviewBtn'))$('sellAllPreviewBtn').onclick=sellAllFish;
 
 document.querySelectorAll(".tab-btn").forEach(btn=>{
   btn.onclick=()=>{
