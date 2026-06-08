@@ -735,6 +735,128 @@ body{padding-bottom:112px;}
   }
 }
 
+
+
+/* ===============================
+   UI 3.1 통합 패치
+   - 미니게임 버튼 복구
+   - 획득 가능 패널 겹침 제거
+   - 경험치/업적/상세팝업/잠금/최근로그/오늘수익
+================================ */
+@media(min-width:1100px){
+  body.playing-mini{overflow:hidden;padding-bottom:70px}
+
+  body.playing-mini .location-panel,
+  body.playing-mini .codex-strip,
+  body.playing-mini #pond,
+  body.playing-mini #normalControls{display:none!important}
+
+  body.playing-mini .fishing-layout{
+    display:grid!important;
+    grid-template-columns:minmax(720px,920px) 430px!important;
+    gap:12px!important;
+    justify-content:center!important;
+    align-items:start!important;
+    min-height:auto!important;
+  }
+
+  body.playing-mini .center-panel{padding:12px 14px!important;min-height:auto!important}
+  body.playing-mini .center-title{font-size:23px!important;margin:0 0 8px!important}
+  body.playing-mini #miniGameBox{display:block!important;margin:0!important}
+  body.playing-mini #miniStatus{
+    display:inline-block!important;
+    max-width:92%;
+    margin:0 auto 10px!important;
+    padding:8px 16px!important;
+    font-size:14px!important;
+    background:rgba(2,6,23,.78)!important;
+    border:1px solid rgba(250,204,21,.32)!important;
+    color:#facc15!important;
+  }
+  body.playing-mini #fishGame{
+    height:calc(100vh - 255px)!important;
+    min-height:500px!important;
+    max-height:650px!important;
+    width:100%!important;
+    margin:0 auto!important;
+  }
+  body.playing-mini #track{
+    height:calc(100vh - 305px)!important;
+    min-height:450px!important;
+    max-height:600px!important;
+  }
+  body.playing-mini #holdBtn{
+    position:relative!important;
+    display:block!important;
+    left:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    transform:none!important;
+    width:100%!important;
+    height:52px!important;
+    margin:12px auto 0!important;
+    z-index:80!important;
+    border-radius:14px!important;
+    background:#f59e0b!important;
+    color:#111827!important;
+    font-size:18px!important;
+    box-shadow:0 10px 22px rgba(245,158,11,.28)!important;
+  }
+  body.playing-mini .bag-panel{
+    display:block!important;
+    min-height:auto!important;
+    max-height:calc(100vh - 170px)!important;
+    overflow:auto!important;
+  }
+  body.playing-mini .preview-grid{max-height:calc(100vh - 330px)!important}
+
+  .available-panel{
+    position:static!important;
+    width:100%!important;
+    max-width:none!important;
+    margin:10px 0 0!important;
+    padding:10px 12px!important;
+    display:block!important;
+    background:rgba(2,6,23,.72)!important;
+    border:1px solid rgba(250,204,21,.22)!important;
+    border-radius:14px!important;
+  }
+  .available-title{margin-bottom:8px!important}
+  .available-fishes{display:flex!important;justify-content:center!important;gap:8px!important;flex-wrap:wrap!important}
+  .available-mini{width:58px!important;height:52px!important}
+}
+
+@media(max-width:1099px){
+  body.playing-mini #holdBtn{left:12px!important;right:12px!important;width:auto!important;transform:none!important}
+}
+
+.ui-toast-stack{position:fixed;top:82px;right:18px;z-index:300;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.ui-toast{min-width:220px;max-width:340px;background:rgba(2,6,23,.94);border:1px solid rgba(250,204,21,.38);border-radius:14px;padding:10px 13px;color:white;font-weight:900;box-shadow:0 16px 38px rgba(0,0,0,.45);animation:toastIn .28s ease-out both;transition:.35s}
+.ui-toast small{display:block;color:#cbd5e1;font-weight:700;margin-top:3px}
+@keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+
+.ui-modal-backdrop{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.68);z-index:260;padding:16px}
+.ui-modal-backdrop.show{display:flex}
+.ui-modal-card{width:min(420px,100%);background:linear-gradient(180deg,#10223b,#020617);border:1px solid rgba(148,163,184,.35);border-radius:20px;padding:18px;text-align:center;box-shadow:0 30px 90px rgba(0,0,0,.55)}
+.ui-modal-card.legend{box-shadow:0 0 80px rgba(250,204,21,.36),0 30px 90px rgba(0,0,0,.55);border-color:rgba(250,204,21,.65)}
+.ui-modal-title{font-size:25px;font-weight:900;margin:6px 0;color:#fff;text-shadow:0 2px 6px #000}
+.ui-modal-sub{color:#facc15;font-weight:900;margin-bottom:8px}
+.ui-modal-fish{position:relative;width:138px;height:138px;margin:0 auto 8px}
+.ui-modal-fish img.frame{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;z-index:1}
+.ui-modal-fish img.fish{position:absolute;left:50%;top:43%;transform:translate(-50%,-50%);width:82px;height:62px;object-fit:contain;image-rendering:pixelated;z-index:2}
+.ui-modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.ui-modal-actions button{margin:0;height:44px}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;text-align:center}
+.detail-cell{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:9px;font-size:13px;color:#cbd5e1}
+.detail-cell b{display:block;color:white;font-size:16px;margin-top:2px}
+.lock-badge{position:absolute;right:9px;top:9px;z-index:8;background:rgba(2,6,23,.78);border:1px solid rgba(250,204,21,.5);border-radius:999px;padding:3px 6px;font-size:12px}
+.fish-card.locked-sale{filter:drop-shadow(0 0 10px rgba(250,204,21,.35))!important}
+.fish-card.locked-sale::before{content:'🔒';position:absolute;right:8px;top:8px;z-index:8;font-size:13px;background:rgba(2,6,23,.74);border-radius:999px;padding:2px 5px}
+.ui-side-widget{background:rgba(2,6,23,.55);border:1px solid rgba(148,163,184,.18);border-radius:14px;padding:10px;margin:10px 0;text-align:left}
+.ui-side-widget h3{margin:0 0 8px;font-size:14px;color:#facc15}
+.ui-log-item{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:#cbd5e1;border-top:1px solid rgba(255,255,255,.06);padding:6px 0}
+.ui-log-item:first-of-type{border-top:0}
+
 </style>
 </head>
 
@@ -2058,6 +2180,255 @@ document.querySelectorAll(".tab-btn").forEach(btn=>{
     document.getElementById("tab"+btn.dataset.tab).classList.add("active");
   };
 });
+
+
+/* ===============================
+   UI 3.1 통합 기능 패치
+================================ */
+(function(){
+  const RARITY_LABEL={common:'일반',uncommon:'고급',rare:'희귀',epic:'영웅',legend:'전설'};
+
+  function ensureUi31State(){
+    if(!fishing)return;
+    fishing.exp ??= 0;
+    fishing.nextExp ??= 100;
+    fishing.level ??= fishing.rodLevel || 1;
+    fishing.achievements ??= {};
+    fishing.lockedFish ??= {};
+    fishing.recentLog ??= [];
+    fishing.todayEarned ??= 0;
+    fishing.profile ??= {};
+  }
+
+  function toast(title,sub=''){
+    let stack=document.querySelector('.ui-toast-stack');
+    if(!stack){
+      stack=document.createElement('div');
+      stack.className='ui-toast-stack';
+      document.body.appendChild(stack);
+    }
+    const el=document.createElement('div');
+    el.className='ui-toast';
+    el.innerHTML=`${title}${sub?`<small>${sub}</small>`:''}`;
+    stack.appendChild(el);
+    setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(20px)'},2600);
+    setTimeout(()=>el.remove(),3150);
+  }
+
+  function getFishFrameUi31(fish){return RARITY_FRAMES[fish.rarity]||RARITY_FRAMES.common;}
+
+  function addRecentLog(text,value=''){
+    ensureUi31State();
+    fishing.recentLog.unshift({text,value,time:Date.now()});
+    fishing.recentLog=fishing.recentLog.slice(0,6);
+  }
+
+  function checkAchievementsUi31(fish){
+    ensureUi31State();
+    const a=fishing.achievements;
+    const discovered=Object.keys(fishing.discovered||{}).length;
+    const total=Object.keys(FISHES).length;
+    const checks=[
+      ['firstFish',(fishing.totalCaught||0)>=1,'첫 낚시 성공'],
+      ['fish50',(fishing.totalCaught||0)>=50,'50마리 포획'],
+      ['fish100',(fishing.totalCaught||0)>=100,'100마리 포획'],
+      ['firstRare',['rare','epic','legend'].includes(fish?.rarity),'희귀 이상 첫 획득'],
+      ['firstLegend',fish?.rarity==='legend','전설 첫 획득'],
+      ['codex50',discovered/total>=.5,'도감 50% 달성']
+    ];
+    for(const [key,ok,label] of checks){
+      if(ok&&!a[key]){a[key]=true;toast('🏆 업적 달성!',label)}
+    }
+  }
+
+  function updateHudUi31(){
+    ensureUi31State();
+    const discovered=Object.keys(fishing.discovered||{}).length;
+    const total=Object.keys(FISHES).length;
+    const pct=Math.round(discovered/total*100);
+    const book=document.getElementById('hudBookText');
+    if(book)book.textContent=pct+'%';
+    const trophy=document.getElementById('hudTrophyText');
+    if(trophy)trophy.textContent=Object.values(fishing.achievements||{}).filter(Boolean).length;
+    const expFill=document.getElementById('hudExpFill');
+    if(expFill)expFill.style.width=Math.round((fishing.exp||0)/(fishing.nextExp||100)*100)+'%';
+    const expText=document.getElementById('hudExpText');
+    if(expText)expText.textContent=Math.round((fishing.exp||0)/(fishing.nextExp||100)*100)+'%';
+  }
+
+  function ensureUi31Modals(){
+    if(document.getElementById('uiDetailModal'))return;
+    document.body.insertAdjacentHTML('beforeend',`
+      <div id="uiDetailModal" class="ui-modal-backdrop"><div class="ui-modal-card"><div id="uiDetailContent"></div></div></div>
+      <div id="uiCatchModal" class="ui-modal-backdrop"><div id="uiCatchCard" class="ui-modal-card"><div id="uiCatchContent"></div></div></div>
+    `);
+    document.getElementById('uiDetailModal').onclick=e=>{if(e.target.id==='uiDetailModal')e.currentTarget.classList.remove('show')};
+    document.getElementById('uiCatchModal').onclick=e=>{if(e.target.id==='uiCatchModal')e.currentTarget.classList.remove('show')};
+  }
+
+  window.openFishDetailUi31=function(invKeyOrFishKey){
+    ensureUi31State();ensureUi31Modals();
+    const parsed=parseInventoryKey(invKeyOrFishKey);
+    const fishKey=FISHES[parsed.fishKey]?parsed.fishKey:invKeyOrFishKey;
+    const sizeKey=FISHES[parsed.fishKey]?parsed.sizeKey:'normal';
+    const fish=FISHES[fishKey];
+    if(!fish)return;
+    const invKey=FISHES[parsed.fishKey]?invKeyOrFishKey:getInventoryKey(fishKey,sizeKey);
+    const count=fishing.inventory?.[invKey]||0;
+    const locked=!!fishing.lockedFish[invKey];
+    const price=getFishSellPrice(fishKey,sizeKey);
+    document.getElementById('uiDetailContent').innerHTML=`
+      <div class="ui-modal-fish fish-card rarity-${fish.rarity}">
+        <img class="frame" src="${getFishFrameUi31(fish)}" alt="">
+        <img class="fish" src="${fish.img}" alt="${fish.name}">
+        ${locked?'<div class="lock-badge">🔒</div>':''}
+      </div>
+      <div class="ui-modal-title">${getSizedFishName(fishKey,sizeKey)}</div>
+      <div class="ui-modal-sub">${RARITY_LABEL[fish.rarity]||fish.rarity}</div>
+      <div class="detail-grid">
+        <div class="detail-cell">판매가<b>${price}G</b></div>
+        <div class="detail-cell">보유<b>${count}마리</b></div>
+        <div class="detail-cell">속도<b>${fish.speed}</b></div>
+        <div class="detail-cell">잠금<b>${locked?'ON':'OFF'}</b></div>
+      </div>
+      <div class="ui-modal-actions">
+        <button class="secondary" onclick="toggleFishLockUi31('${invKey}')">${locked?'잠금 해제':'잠금'}</button>
+        <button class="sell" onclick="sellFishFromDetailUi31('${invKey}')">1마리 판매</button>
+      </div>
+      <button class="secondary" onclick="document.getElementById('uiDetailModal').classList.remove('show')">닫기</button>
+    `;
+    document.getElementById('uiDetailModal').classList.add('show');
+  };
+
+  window.toggleFishLockUi31=function(invKey){
+    ensureUi31State();
+    fishing.lockedFish[invKey]=!fishing.lockedFish[invKey];
+    toast(fishing.lockedFish[invKey]?'🔒 잠금 설정':'🔓 잠금 해제');
+    render();
+    openFishDetailUi31(invKey);
+  };
+
+  window.sellFishFromDetailUi31=async function(invKey){
+    ensureUi31State();
+    if(fishing.lockedFish[invKey]){toast('잠긴 물고기는 판매할 수 없습니다.');return;}
+    document.getElementById('uiDetailModal').classList.remove('show');
+    await window.sellFishAmount(invKey,1);
+  };
+
+  function showCatchRewardUi31(fishKey,sizeKey,expText=''){
+    ensureUi31Modals();
+    const fish=FISHES[fishKey];
+    if(!fish)return;
+    const modal=document.getElementById('uiCatchModal');
+    const card=document.getElementById('uiCatchCard');
+    const name=getSizedFishName(fishKey,sizeKey);
+    card.className='ui-modal-card '+(fish.rarity==='legend'?'legend':'');
+    document.getElementById('uiCatchContent').innerHTML=`
+      <div class="ui-modal-fish fish-card rarity-${fish.rarity}">
+        <img class="frame" src="${getFishFrameUi31(fish)}" alt="">
+        <img class="fish" src="${fish.img}" alt="${name}">
+      </div>
+      <div class="ui-modal-title">${fish.rarity==='legend'?'⭐⭐⭐⭐⭐<br>':''}${name}</div>
+      <div class="ui-modal-sub">${RARITY_LABEL[fish.rarity]||fish.rarity}${expText?` · ${expText}`:''}</div>
+      <button onclick="document.getElementById('uiCatchModal').classList.remove('show')">확인</button>
+    `;
+    modal.classList.add('show');
+  }
+
+  function injectSideWidgetsUi31(){
+    ensureUi31State();
+    const bagPanel=document.querySelector('.bag-panel')||document.querySelector('#tabBag .box');
+    if(!bagPanel)return;
+    let widget=document.getElementById('uiBagLogWidget');
+    if(!widget){
+      widget=document.createElement('div');
+      widget.id='uiBagLogWidget';
+      widget.className='ui-side-widget';
+      bagPanel.appendChild(widget);
+    }
+    const logs=(fishing.recentLog||[]).slice(0,5);
+    widget.innerHTML=`<h3>최근 획득</h3>${logs.length?logs.map(l=>`<div class="ui-log-item"><span>${l.text}</span><b>${l.value||''}</b></div>`).join(''):'<div class="small">아직 기록이 없습니다.</div>'}<h3 style="margin-top:10px">오늘 수익</h3><div class="ui-log-item"><span>판매 수익</span><b>${fishing.todayEarned||0}G</b></div>`;
+  }
+
+  function patchInventoryCardsUi31(){
+    ensureUi31State();
+    const entries=typeof getSortedInventoryEntries==='function'?getSortedInventoryEntries():Object.entries(fishing.inventory||{}).map(([key,count])=>({key,count}));
+    const bind=(selector)=>{
+      document.querySelectorAll(selector).forEach((card,idx)=>{
+        const item=entries[idx];
+        if(!item)return;
+        const key=item.key;
+        if(fishing.lockedFish?.[key])card.classList.add('locked-sale');
+        card.onclick=()=>openFishDetailUi31(key);
+      });
+    };
+    bind('#inventoryList .fish-card');
+    bind('#inventoryPreviewList .fish-card');
+  }
+
+  const oldRender=render;
+  render=function(){
+    ensureUi31State();
+    oldRender();
+    updateHudUi31();
+    injectSideWidgetsUi31();
+    patchInventoryCardsUi31();
+  };
+
+  const oldSellAmount=window.sellFishAmount;
+  window.sellFishAmount=async function(key,amount){
+    ensureUi31State();
+    if(fishing.lockedFish?.[key]){toast('잠긴 물고기는 판매할 수 없습니다.');return;}
+    const beforeGold=fishing.gold||0;
+    await oldSellAmount(key,amount);
+    const earned=(fishing.gold||0)-beforeGold;
+    if(earned>0){
+      fishing.todayEarned=(fishing.todayEarned||0)+earned;
+      toast('판매 완료',`${earned}G 획득`);
+    }
+    injectSideWidgetsUi31();
+  };
+
+  if(typeof sellAllFish==='function'){
+    sellAllFish=async function(){
+      ensureUi31State();
+      let earn=0,sold=0;
+      for(const [key,count] of Object.entries({...fishing.inventory})){
+        if(fishing.lockedFish?.[key])continue;
+        const parsed=parseInventoryKey(key);
+        earn+=getFishSellPrice(parsed.fishKey,parsed.sizeKey)*count;
+        sold+=count;
+        delete fishing.inventory[key];
+      }
+      if(!sold){toast('판매할 물고기가 없습니다.','잠금 물고기는 제외됩니다.');return;}
+      fishing.gold+=earn;
+      fishing.totalEarned=(fishing.totalEarned||0)+earn;
+      fishing.todayEarned=(fishing.todayEarned||0)+earn;
+      toast(`물고기 ${sold}마리 판매`,`${earn}G 획득`);
+      render();
+      await saveGame();
+    };
+  }
+
+  const oldFinish=finishFishing;
+  finishFishing=async function(success){
+    const beforeDiscovered={...(fishing?.discovered||{})};
+    const fishKey=targetFishKey;
+    const sizeKey=targetSizeKey;
+    const fish=FISHES[fishKey];
+    await oldFinish(success);
+    if(success&&fish){
+      const expText=`+${12+Math.round(fish.price/8)} EXP`;
+      addRecentLog(getSizedFishName(fishKey,sizeKey),expText);
+      if(!beforeDiscovered[fishKey])toast('📖 신규 도감 등록!',fish.name);
+      checkAchievementsUi31(fish);
+      showCatchRewardUi31(fishKey,sizeKey,expText);
+      updateHudUi31();
+      await saveGame();
+    }
+  };
+})();
+
 </script>
 </body>
 </html>
