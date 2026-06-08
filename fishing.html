@@ -28,6 +28,62 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .quick-stat{background:rgba(255,255,255,.1);border-radius:12px;padding:7px 3px;font-size:12px;line-height:1.35}
 .quick-stat b{font-size:16px}
 
+
+/* 상단 HUD */
+.game-hud{
+  display:grid;
+  grid-template-columns:minmax(230px,1fr) minmax(280px,1.4fr) auto;
+  gap:10px;
+  align-items:center;
+  margin:8px 0;
+}
+.hud-profile,.hud-resources,.hud-actions{
+  background:rgba(2,6,23,.58);
+  border:1px solid rgba(148,163,184,.35);
+  border-radius:14px;
+  min-height:62px;
+  box-shadow:0 8px 22px rgba(0,0,0,.22);
+}
+.hud-profile{display:grid;grid-template-columns:46px 1fr auto;gap:10px;align-items:center;padding:8px 12px;text-align:left}
+.avatar{width:42px;height:42px;border-radius:12px;background:rgba(15,23,42,.85);display:flex;align-items:center;justify-content:center;font-size:24px;border:1px solid rgba(255,255,255,.18)}
+.hud-text{display:flex;flex-direction:column;gap:2px;min-width:0}
+.hud-text b{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hud-text span{font-size:12px;color:#cbd5e1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hud-level{font-weight:900;color:#e5e7eb;background:rgba(15,23,42,.65);border-radius:999px;padding:6px 10px;white-space:nowrap}
+.hud-resources{display:grid;grid-template-columns:repeat(3,1fr);overflow:hidden}
+.hud-resource{display:flex;align-items:center;justify-content:center;gap:6px;font-weight:900;font-size:15px;border-right:1px solid rgba(148,163,184,.18);padding:0 8px;white-space:nowrap}
+.hud-resource:last-child{border-right:0}
+.hud-resource b{font-size:20px;color:#fff;max-width:120px;overflow:hidden;text-overflow:ellipsis}
+.hud-resource:first-child b{color:#facc15}
+.hud-actions{display:flex;align-items:center;justify-content:center;padding:8px;gap:6px}
+.hud-actions button{min-width:58px}
+.toast{position:fixed;left:50%;top:14px;transform:translateX(-50%);background:rgba(15,23,42,.95);border:1px solid rgba(250,204,21,.6);color:#facc15;border-radius:999px;padding:10px 18px;font-weight:900;z-index:100;box-shadow:0 8px 28px rgba(0,0,0,.35)}
+.toast.show{animation:toastPop 1.8s ease forwards}
+@keyframes toastPop{0%{opacity:0;transform:translate(-50%,-12px)}12%,78%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-12px)}}
+
+/* 판매 모달 */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.62);z-index:90;display:flex;align-items:center;justify-content:center;padding:18px}
+.sell-modal{position:relative;width:min(360px,100%);background:#0f2940;border:1px solid rgba(148,163,184,.35);border-radius:20px;padding:18px;box-shadow:0 20px 50px rgba(0,0,0,.45);text-align:center}
+.modal-close{position:absolute;right:10px;top:8px;width:34px;height:34px;border-radius:50%;padding:0;background:rgba(15,23,42,.8);color:#fff;font-size:20px}
+.sell-modal-card{height:112px;display:flex;align-items:center;justify-content:center;margin-top:4px}
+.sell-modal-card .fish-card{transform:scale(1.05);cursor:default}
+.sell-modal h3{margin:6px 0 4px;font-size:22px}
+.sell-stepper{display:flex;align-items:center;justify-content:center;gap:18px;margin:16px 0 8px}
+.sell-stepper .qty-btn{width:44px;height:44px;font-size:24px}
+#sellAmountText{font-size:28px;min-width:54px}
+.modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.modal-actions button{margin:0;height:44px}
+
+@media(max-width:720px){
+  .game-hud{grid-template-columns:1fr;gap:6px}
+  .hud-profile,.hud-resources,.hud-actions{min-height:48px}
+  .hud-profile{grid-template-columns:36px 1fr auto;padding:7px 10px}
+  .avatar{width:34px;height:34px;font-size:19px}
+  .hud-resource{font-size:12px;padding:7px 4px}
+  .hud-resource b{font-size:15px;max-width:82px}
+  .hud-actions{display:none}
+}
+
 .tab-page{display:none}
 .tab-page.active{display:block}
 
@@ -38,7 +94,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .location-card .lv{font-size:11px;color:inherit;opacity:.8}
 .location-thumb{width:100%;height:90px;object-fit:cover;border-radius:10px;margin-bottom:6px;image-rendering:pixelated}
 
-#pond{position:relative;height:170px;border-radius:22px;overflow:hidden;border:4px solid rgba(255,255,255,.25);background-size:cover;background-position:center;background-repeat:no-repeat;display:block}
+#pond{position:relative;height:170px;border-radius:22px;overflow:hidden;border:4px solid rgba(255,255,255,.25);background-size:cover;background-position:center;background-repeat:no-repeat;display:none}
 #pond.active-scene{display:block}
 #floatBobber{position:absolute;left:50%;top:42%;width:16px;height:34px;transform:translate(-50%,-50%);display:none}
 #floatBobber::before{content:"";display:block;width:16px;height:16px;background:#ef4444;border-radius:50% 50% 0 0}
@@ -292,8 +348,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
 
 body.playing-mini{overflow:hidden}
 body.playing-mini h1,
-body.playing-mini .top-bar,
-body.playing-mini .quick-stats,
+body.playing-mini .game-hud,
 body.playing-mini #locationBox,
 body.playing-mini #pond,
 body.playing-mini #normalControls{display:none!important}
@@ -312,54 +367,6 @@ body.playing-mini #miniStatus{
   border-radius:999px;
   padding:8px 14px;
   margin:6px auto 8px;
-}
-
-
-/* PC 3단 게임 UI 레이아웃 */
-.fishing-shell{background:rgba(15,23,42,.58);border:1px solid rgba(148,163,184,.25);box-shadow:0 18px 60px rgba(0,0,0,.25)}
-.fishing-layout{display:block}
-.side-panel,.center-panel,.codex-strip{background:rgba(2,6,23,.35);border:1px solid rgba(148,163,184,.25);border-radius:16px;padding:10px}
-.center-title{display:flex;align-items:center;justify-content:center;gap:8px;font-size:22px;font-weight:900;margin:4px 0 10px;text-shadow:0 2px 4px #000}
-.help-badge{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:rgba(15,23,42,.8);border:1px solid rgba(255,255,255,.25);font-size:14px}
-.panel-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
-.panel-head h2{margin:0;font-size:18px}
-.panel-head span{color:#d1d5db;font-weight:800}
-.preview-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:8px 0 10px}
-.preview-tabs button{margin:0;padding:8px 4px;border-radius:9px;background:rgba(2,6,23,.65);color:#d1d5db;border:1px solid rgba(148,163,184,.2);font-size:12px}
-.preview-tabs button.active{border-color:#f59e0b;color:#fff;background:rgba(245,158,11,.18)}
-.bag-panel{display:none}
-.codex-strip{display:none;margin-top:10px}
-.preview-grid{grid-template-columns:repeat(3,96px);justify-content:center;align-content:start;max-height:500px;overflow:auto;padding:2px}
-.codex-preview-grid{grid-template-columns:repeat(auto-fill,96px);justify-content:start;max-height:210px;overflow:hidden;padding:2px}
-
-@media(min-width:980px){
-  body{padding-bottom:76px;background:radial-gradient(circle at top,#0f3455 0,#071426 50%,#020617 100%)}
-  .wrap{max-width:1480px;padding:8px 14px}
-  h1{display:none}
-  .top-bar{max-width:none}
-  .quick-stats{grid-template-columns:repeat(4,1fr)}
-  .fishing-layout{display:grid;grid-template-columns:270px minmax(520px,1fr) 420px;gap:10px;align-items:stretch}
-  .location-panel{min-height:560px}
-  .bag-panel{display:block;min-height:560px}
-  .codex-strip{display:block}
-  .location-grid{grid-template-columns:1fr;gap:10px}
-  .location-card{display:grid;grid-template-columns:82px 1fr;grid-template-rows:auto auto;align-items:center;text-align:left;gap:2px 10px;min-height:72px;padding:10px 12px;border-radius:10px;background:rgba(15,23,42,.65)}
-  .location-card.active{background:rgba(15,23,42,.75);border-color:#38bdf8;color:#fff;box-shadow:0 0 0 1px rgba(56,189,248,.35) inset}
-  .location-card.locked{opacity:.65}
-  .location-card .location-thumb{grid-row:1/3;width:82px;height:48px;margin:0;border-radius:6px}
-  .location-card b{font-size:15px}
-  .location-card .lv{font-size:12px;color:#86efac;font-weight:800}
-  .location-card.locked .lv{color:#f87171}
-  #pond{height:430px;border-radius:14px;border-color:rgba(148,163,184,.35);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}
-  #normalControls{margin-top:8px}
-  #fishBtn,#holdBtn{width:min(100%,720px);height:48px;font-size:20px}
-  #fishGame{height:520px}
-  #track{height:480px}
-  body.playing-mini .fishing-shell{max-width:860px;margin:8px auto}
-  body.playing-mini #fishGame{height:calc(100vh - 190px);min-height:520px}
-  body.playing-mini #track{height:calc(100vh - 230px);min-height:480px}
-  body.playing-mini #holdBtn{left:50%;right:auto;transform:translateX(-50%);width:min(760px,calc(100vw - 40px));bottom:92px}
-  .bottom-tabs{left:50%;right:auto;transform:translateX(-50%);width:min(100%,1480px);border-radius:14px 14px 0 0}
 }
 
 @media(max-width:720px){
@@ -389,91 +396,64 @@ body.playing-mini #miniStatus{
 </section>
 
 <section id="gameBox" class="hidden">
-  <div class="box top-bar">
-    <div class="small">
-      <b id="userName">-</b><br>
-      <span id="userEmail">-</span>
+  <div class="game-hud">
+    <div class="hud-profile">
+      <div class="avatar">🎣</div>
+      <div class="hud-text">
+        <b id="userName">-</b>
+        <span id="userEmail">-</span>
+      </div>
+      <div class="hud-level">Lv.<b id="rodText">1</b></div>
     </div>
-    <button onclick="location.href='./index.html'" class="secondary">메인</button>
-    <button id="saveBtn" class="secondary">저장</button>
-  </div>
 
-  <div class="quick-stats">
-    <div class="quick-stat">💰 골드<br><b id="goldText">0</b>G</div>
-    <div class="quick-stat">🎣 낚싯대<br>Lv.<b id="rodText">1</b></div>
-    <div class="quick-stat">🪱 미끼<br><b id="baitText">0</b>개</div>
-    <div class="quick-stat">🐟 포획<br><b id="caughtText">0</b>마리</div>
+    <div class="hud-resources">
+      <div class="hud-resource">💰 <b id="goldText">0</b><span>G</span></div>
+      <div class="hud-resource">🪱 <b id="baitText">0</b><span>개</span></div>
+      <div class="hud-resource">🐟 <b id="caughtText">0</b><span>마리</span></div>
+    </div>
+
+    <div class="hud-actions">
+      <button onclick="location.href='./index.html'" class="secondary">메인</button>
+      <button id="saveBtn" class="secondary">저장</button>
+    </div>
   </div>
 
   <section id="tabFishing" class="tab-page active">
-    <div class="box fishing-shell">
-      <div class="fishing-layout">
-        <aside class="side-panel location-panel">
-          <div id="locationBox">
-            <h2>🐟 낚시터 선택</h2>
-            <div id="locationGrid" class="location-grid"></div>
-          </div>
-        </aside>
-
-        <main class="center-panel">
-          <div class="center-title">
-            <span id="currentLocationTitle">🌱 초보 연못</span>
-            <span class="help-badge">?</span>
-          </div>
-
-          <div id="pond">
-            <div id="floatBobber"></div>
-            <div id="bobberRipple"></div>
-            <div id="splashEffect"></div>
-            <div id="fishShadow"></div>
-          </div>
-
-          <div id="normalControls">
-            <div id="mainStatus" class="status">낚시터를 고르고 낚시를 시작하세요.</div>
-            <button id="fishBtn">찌 던지기</button>
-            <button id="biteBtn" class="bite hidden">입질! 낚아채기</button>
-            <div id="catchResult" class="catch-result"></div>
-          </div>
-
-          <div id="miniGameBox" class="hidden">
-            <div class="status" id="miniStatus">버튼 또는 스페이스바를 누르면 낚시가 시작됩니다.</div>
-
-            <div id="fishGame">
-              <div class="mini-bubbles"></div>
-              <div id="track">
-                <div id="verticalProgress">
-                  <div id="verticalProgressFill"></div>
-                </div>
-                <div id="catchBar"></div>
-                <img id="fishSprite" alt="물고기" />
-              </div>
-            </div>
-
-            <button id="holdBtn">누르고 있기</button>
-          </div>
-        </main>
-
-        <aside class="side-panel bag-panel">
-          <div class="panel-head">
-            <h2>🎒 가방</h2>
-            <span id="bagPreviewCount">0 / 60</span>
-          </div>
-          <div class="preview-tabs">
-            <button class="active" type="button">전체</button>
-            <button type="button">물고기</button>
-            <button type="button">아이템</button>
-            <button type="button">기타</button>
-          </div>
-          <div id="inventoryPreviewList" class="fish-card-grid preview-grid"></div>
-        </aside>
+    <div class="box">
+      <div id="locationBox">
+        <h2>낚시터 선택</h2>
+        <div id="locationGrid" class="location-grid"></div>
       </div>
 
-      <div class="codex-strip">
-        <div class="panel-head">
-          <h2>📖 도감</h2>
-          <span id="bookProgressInline">0 / 20</span>
+      <div id="pond">
+        <div id="floatBobber"></div>
+        <div id="bobberRipple"></div>
+        <div id="splashEffect"></div>
+        <div id="fishShadow"></div>
+      </div>
+
+      <div id="normalControls">
+        <div id="mainStatus" class="status">낚시터를 고르고 낚시를 시작하세요.</div>
+        <button id="fishBtn">찌 던지기</button>
+        <button id="biteBtn" class="bite hidden">입질! 낚아채기</button>
+        <div id="catchResult" class="catch-result"></div>
+      </div>
+
+      <div id="miniGameBox" class="hidden">
+        <div class="status" id="miniStatus">버튼 또는 스페이스바를 누르면 낚시가 시작됩니다.</div>
+
+        <div id="fishGame">
+          <div class="mini-bubbles"></div>
+          <div id="track">
+            <div id="verticalProgress">
+              <div id="verticalProgressFill"></div>
+            </div>
+            <div id="catchBar"></div>
+            <img id="fishSprite" alt="물고기" />
+          </div>
         </div>
-        <div id="fishBookPreview" class="fish-card-grid codex-preview-grid"></div>
+
+        <button id="holdBtn">누르고 있기</button>
       </div>
     </div>
   </section>
@@ -510,6 +490,27 @@ body.playing-mini #miniStatus{
     </div>
   </section>
 </section>
+</div>
+
+<div id="toast" class="toast hidden">저장 완료!</div>
+
+<div id="sellModal" class="modal-backdrop hidden">
+  <div class="sell-modal">
+    <button id="sellModalClose" class="modal-close">×</button>
+    <div class="sell-modal-card" id="sellModalPreview"></div>
+    <h3 id="sellModalTitle">물고기 판매</h3>
+    <div id="sellModalInfo" class="small">보유 0마리</div>
+    <div class="sell-stepper">
+      <button id="sellMinus" class="qty-btn">-</button>
+      <b id="sellAmountText">1</b>
+      <button id="sellPlus" class="qty-btn">+</button>
+    </div>
+    <div id="sellEarnText" class="status">예상 수익 0G</div>
+    <div class="modal-actions">
+      <button id="sellCancel" class="secondary">취소</button>
+      <button id="sellConfirm" class="sell">판매</button>
+    </div>
+  </div>
 </div>
 
 <nav class="bottom-tabs hidden" id="bottomTabs">
@@ -602,7 +603,8 @@ const locationGrid=$("locationGrid"), normalControls=$("normalControls"), miniGa
 const miniStatus=$("miniStatus"), catchBar=$("catchBar"), fishSprite=$("fishSprite"), fishShadow=$("fishShadow");
 const floatBobber=$("floatBobber"), bobberRipple=$("bobberRipple"), splashEffect=$("splashEffect"), biteBtn=$("biteBtn"), verticalProgressFill=$("verticalProgressFill");
 const inventoryList=$("inventoryList"), fishBook=$("fishBook"), upgradeCostText=$("upgradeCostText"), bookProgress=$("bookProgress");
-const inventoryPreviewList=$("inventoryPreviewList"), fishBookPreview=$("fishBookPreview"), bagPreviewCount=$("bagPreviewCount"), bookProgressInline=$("bookProgressInline"), currentLocationTitle=$("currentLocationTitle");
+const sellModal=$("sellModal"), sellModalPreview=$("sellModalPreview"), sellModalTitle=$("sellModalTitle"), sellModalInfo=$("sellModalInfo"), sellAmountText=$("sellAmountText"), sellEarnText=$("sellEarnText");
+let sellModalState=null;
 
 onAuthStateChanged(auth, async user=>{
   if(!user){location.href="./index.html";return;}
@@ -637,11 +639,31 @@ async function loadUser(){
 async function saveGame(){
   fishing.updatedAt=Date.now();
   await update(ref(db,`users/${uid}`),{fishing,lastPlayedAt:serverTimestamp()});
-  mainStatus.textContent="저장 완료!";
+  showToast("저장 완료!");
+}
+
+function formatNumberKR(value){
+  const n=Number(value)||0;
+  if(n>=1_0000_0000_0000) return (n/1_0000_0000_0000).toFixed(n>=10_0000_0000_0000?0:1).replace(/\.0$/,'')+"조";
+  if(n>=1_0000_0000) return (n/1_0000_0000).toFixed(n>=10_0000_0000?0:1).replace(/\.0$/,'')+"억";
+  if(n>=10000) return (n/10000).toFixed(n>=100000?0:1).replace(/\.0$/,'')+"만";
+  return String(n);
+}
+
+let toastTimer=null;
+function showToast(message){
+  const toast=$("toast");
+  if(!toast)return;
+  toast.textContent=message;
+  toast.classList.remove("hidden","show");
+  void toast.offsetWidth;
+  toast.classList.add("show");
+  if(toastTimer)clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>toast.classList.add("hidden"),1850);
 }
 
 function render(){
-  goldText.textContent=fishing.gold||0;
+  goldText.textContent=formatNumberKR(fishing.gold||0);
   rodText.textContent=fishing.rodLevel||1;
   baitText.textContent=fishing.bait||0;
   caughtText.textContent=fishing.totalCaught||0;
@@ -655,7 +677,6 @@ function render(){
   renderLocations();
   renderInventory();
   renderFishBook();
-  renderDesktopPreviews();
 }
 
 function renderLocations(){
@@ -676,70 +697,6 @@ function renderLocations(){
       renderLocations();
     };
     locationGrid.appendChild(div);
-  }
-  updateCurrentLocationUI();
-}
-
-function updateCurrentLocationUI(){
-  const loc=LOCATIONS[selectedLocation];
-  if(currentLocationTitle) currentLocationTitle.textContent=`${loc.emoji} ${loc.name}`;
-  const pondEl=$("pond");
-  if(pondEl) pondEl.style.backgroundImage=`url("${loc.scene}")`;
-}
-
-function renderDesktopPreviews(){
-  renderInventoryPreview();
-  renderFishBookPreview();
-}
-
-function renderInventoryPreview(){
-  if(!inventoryPreviewList)return;
-  inventoryPreviewList.innerHTML="";
-  const entries=Object.entries(fishing?.inventory||{}).filter(([key,count])=>count>0).slice(0,12);
-  const total=Object.values(fishing?.inventory||{}).reduce((a,b)=>a+(Number(b)||0),0);
-  if(bagPreviewCount) bagPreviewCount.textContent=`${total} / 60`;
-  if(!entries.length){inventoryPreviewList.innerHTML=`<div class="small">보유 물고기 없음</div>`;return;}
-  for(const [key,count] of entries){
-    const parsed=parseInventoryKey(key);
-    const fishKey=FISHES[parsed.fishKey]?parsed.fishKey:key;
-    const sizeKey=FISHES[parsed.fishKey]?parsed.sizeKey:"normal";
-    const fish=FISHES[fishKey]; if(!fish)continue;
-    const frame=RARITY_FRAMES[fish.rarity]||RARITY_FRAMES.common;
-    const displayName=getSizedFishName(fishKey,sizeKey);
-    const card=document.createElement("div");
-    card.className="fish-card";
-    card.title=displayName;
-    card.innerHTML=`
-      <img class="frame" src="${frame}" alt="">
-      <img class="fish-img" src="${fish.img}" alt="${displayName}">
-      <div class="fish-count">x${count}</div>
-      <div class="fish-name">${displayName}</div>`;
-    card.onclick=()=>openSellPrompt(key,displayName,count,getFishSellPrice(fishKey,sizeKey));
-    inventoryPreviewList.appendChild(card);
-  }
-}
-
-function renderFishBookPreview(){
-  if(!fishBookPreview)return;
-  fishBookPreview.innerHTML="";
-  const discovered=fishing?.discovered||{};
-  const ownedCount=Object.keys(FISHES).filter(k=>discovered[k]).length;
-  if(bookProgressInline) bookProgressInline.textContent=`${ownedCount} / ${Object.keys(FISHES).length}`;
-  for(const [key,fish] of Object.entries(FISHES)){
-    const known=!!discovered[key];
-    const owned=Object.entries(fishing?.inventory||{}).reduce((sum,[invKey,count])=>{
-      const parsed=parseInventoryKey(invKey);
-      return sum+(parsed.fishKey===key?count:0);
-    },0);
-    const frame=RARITY_FRAMES[fish.rarity]||RARITY_FRAMES.common;
-    const card=document.createElement("div");
-    card.className=`fish-card ${known?"":"locked"}`;
-    card.innerHTML=`
-      <img class="frame" src="${frame}" alt="">
-      <img class="fish-img" src="${fish.img}" alt="${known?fish.name:"미발견"}">
-      ${known&&owned>0?`<div class="fish-count">x${owned}</div>`:""}
-      <div class="fish-name">${known?fish.name:"???"}</div>`;
-    fishBookPreview.appendChild(card);
   }
 }
 
@@ -811,11 +768,51 @@ function renderFishBook(){
 }
 
 function openSellPrompt(key,displayName,count,sellPrice){
-  const amount=prompt(`${displayName} 몇 마리 판매할까요?\n보유: ${count}마리 / 1마리 ${sellPrice}G`,"1");
-  if(amount===null)return;
-  const num=Math.floor(Number(amount));
-  if(!num||num<=0)return;
-  sellFishAmount(key,num);
+  const parsed=parseInventoryKey(key);
+  const fishKey=FISHES[parsed.fishKey]?parsed.fishKey:key;
+  const sizeKey=FISHES[parsed.fishKey]?parsed.sizeKey:"normal";
+  const fish=FISHES[fishKey];
+  if(!fish)return;
+  sellModalState={key,displayName,count,sellPrice,amount:1,fishKey,sizeKey};
+  const frame=RARITY_FRAMES[fish.rarity]||RARITY_FRAMES.common;
+  sellModalPreview.innerHTML=`
+    <div class="fish-card">
+      <img class="frame" src="${frame}" alt="">
+      <img class="fish-img" src="${fish.img}" alt="${displayName}">
+      <div class="fish-count">x${count}</div>
+      <div class="fish-name">${displayName}</div>
+    </div>`;
+  sellModalTitle.textContent=displayName;
+  sellModalInfo.textContent=`보유 ${count}마리 · 1마리 ${sellPrice}G`;
+  updateSellModal();
+  sellModal.classList.remove("hidden");
+}
+
+function updateSellModal(){
+  if(!sellModalState)return;
+  sellAmountText.textContent=sellModalState.amount;
+  sellEarnText.textContent=`예상 수익 ${formatNumberKR(sellModalState.amount*sellModalState.sellPrice)}G`;
+}
+
+function closeSellModal(){
+  sellModal.classList.add("hidden");
+  sellModalState=null;
+}
+
+function changeSellModalAmount(delta){
+  if(!sellModalState)return;
+  let next=sellModalState.amount+delta;
+  if(next<1)next=1;
+  if(next>sellModalState.count)next=sellModalState.count;
+  sellModalState.amount=next;
+  updateSellModal();
+}
+
+async function confirmSellModal(){
+  if(!sellModalState)return;
+  const {key,amount}=sellModalState;
+  closeSellModal();
+  await sellFishAmount(key,amount);
 }
 
 window.sellFishAmount=async function(key,amount){
@@ -1333,6 +1330,12 @@ $("biteBtn").onclick=reactBite;
 $("sellAllBtn").onclick=sellAllFish;
 $("upgradeRodBtn").onclick=upgradeRod;
 $("buyBaitBtn").onclick=buyBait;
+$("sellModalClose").onclick=closeSellModal;
+$("sellCancel").onclick=closeSellModal;
+$("sellMinus").onclick=()=>changeSellModalAmount(-1);
+$("sellPlus").onclick=()=>changeSellModalAmount(1);
+$("sellConfirm").onclick=confirmSellModal;
+$("sellModal").addEventListener("click",e=>{if(e.target===$("sellModal"))closeSellModal();});
 $("saveBtn").onclick=saveGame;
 
 document.querySelectorAll(".tab-btn").forEach(btn=>{
