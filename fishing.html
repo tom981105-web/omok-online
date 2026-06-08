@@ -542,6 +542,19 @@ body{padding-bottom:112px;}
 }
 @media(max-width:1099px){.bag-actions{grid-template-columns:1fr}.codex-progress-mini{justify-content:center}}
 
+
+/* UI 2.0 phase assets */
+.inline-icon{width:18px;height:18px;object-fit:contain;image-rendering:pixelated;vertical-align:-4px;margin-right:4px}
+.location-status{display:flex;align-items:center;gap:4px;justify-content:flex-start;margin-top:4px}
+.location-status img{width:18px;height:18px;object-fit:contain;image-rendering:pixelated}
+.weather-badge-img{width:18px;height:18px;object-fit:contain;image-rendering:pixelated;vertical-align:-4px;margin-right:4px}
+.rarity-mini-icon{position:absolute;left:10px;top:10px;width:16px;height:16px;object-fit:contain;image-rendering:pixelated;z-index:5;filter:drop-shadow(0 2px 2px #000)}
+.bag-actions button img{width:16px;height:16px;object-fit:contain;image-rendering:pixelated;vertical-align:-3px;margin-right:4px}
+.codex-rarity-filters{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-left:auto}
+.codex-rarity-filters button{padding:6px 8px;font-size:11px;border-radius:10px;background:rgba(15,23,42,.75);color:#cbd5e1;border:1px solid rgba(148,163,184,.25)}
+.codex-rarity-filters button.active{background:#f59e0b;color:#111827}
+.codex-rarity-filters img{width:15px;height:15px;vertical-align:-3px;margin-right:3px;image-rendering:pixelated}
+
 </style>
 </head>
 
@@ -653,8 +666,8 @@ body{padding-bottom:112px;}
               <option value="price">가격순</option>
               <option value="count">수량순</option>
             </select>
-            <button id="sellCommonBtn" class="danger" type="button">일반 판매</button>
-            <button id="sellAllPreviewBtn" class="sell-all" type="button">전체 판매</button>
+            <button id="sellCommonBtn" class="danger" type="button"><img src="./assets/icons/sell.png" alt="">일반 판매</button>
+            <button id="sellAllPreviewBtn" class="sell-all" type="button"><img src="./assets/icons/sell_all.png" alt="">전체 판매</button>
           </div>
           <div id="inventoryPreviewList" class="fish-card-grid preview-grid"></div>
         </aside>
@@ -666,6 +679,14 @@ body{padding-bottom:112px;}
           <div class="codex-progress-mini">
             <div id="codexProgressRing" class="codex-ring"><span id="codexProgressPercent">0%</span></div>
             <span id="bookProgressInline" class="panel-count">0 / 20</span>
+          </div>
+          <div class="codex-rarity-filters" id="codexRarityFilters">
+            <button class="active" data-rarity="all">전체</button>
+            <button data-rarity="common"><img src="./assets/rarity/rarity_common.png" alt="">일반</button>
+            <button data-rarity="uncommon"><img src="./assets/rarity/rarity_uncommon.png" alt="">고급</button>
+            <button data-rarity="rare"><img src="./assets/rarity/rarity_rare.png" alt="">희귀</button>
+            <button data-rarity="epic"><img src="./assets/rarity/rarity_epic.png" alt="">영웅</button>
+            <button data-rarity="legend"><img src="./assets/rarity/rarity_legendary.png" alt="">전설</button>
           </div>
         </div>
         <div id="fishBookPreview" class="fish-card-grid codex-preview-grid"></div>
@@ -799,6 +820,35 @@ const RARITY_FRAMES = {
   legend:"./assets/frames/frame_legend.png"
 };
 
+const WEATHER_ICONS = {
+  sunny:"./assets/weather/sunny.png",
+  cloudy:"./assets/weather/cloudy.png",
+  rainy:"./assets/weather/rainy.png",
+  storm:"./assets/weather/storm.png",
+  night:"./assets/weather/night.png"
+};
+
+const DIFFICULTY_BADGES = {
+  safe:"./assets/badges/safe.png",
+  caution:"./assets/badges/caution.png",
+  danger:"./assets/badges/danger.png",
+  legend:"./assets/badges/legend.png"
+};
+
+const RARITY_ICONS = {
+  common:"./assets/rarity/rarity_common.png",
+  uncommon:"./assets/rarity/rarity_uncommon.png",
+  rare:"./assets/rarity/rarity_rare.png",
+  epic:"./assets/rarity/rarity_epic.png",
+  legend:"./assets/rarity/rarity_legendary.png"
+};
+
+const SELL_ICONS = {
+  sell:"./assets/icons/sell.png",
+  sellAll:"./assets/icons/sell_all.png",
+  moneyBag:"./assets/icons/money_bag.png"
+};
+
 const FISH_SIZES = {
   small:{name:"작은",rate:24,priceMul:.8,difficulty:.9},
   normal:{name:"보통",rate:42,priceMul:1,difficulty:1},
@@ -816,6 +866,7 @@ const LOCATIONS = {
 };
 
 let uid="", userData=null, fishing=null;
+let selectedCodexRarity="all";
 let selectedLocation="pond";
 let miniRunning=false, isCasting=false, biteReady=false, waitingToStart=false, actualMiniStarted=false, holding=false;
 let fishY=112, fishV=0, barY=85, progressValue=0, targetFishKey="", targetSizeKey="normal", animationId=null;
@@ -926,7 +977,10 @@ function renderLocations(){
       <img class="location-thumb" src="${loc.card}" alt="${loc.name}">
       <b>${loc.name}</b>
       <div class="lv">Lv.${loc.requiredRod}+ 필요</div>
-      <div class="location-meta"><span class="location-pill ${loc.requiredRod<=2?'safe':loc.requiredRod<=4?'warn':'danger'}">${loc.requiredRod<=2?'안전':loc.requiredRod<=4?'주의':'위험'}</span></div>
+      <div class="location-status">
+        <img src="${getDifficultyBadge(loc.requiredRod)}" alt="">
+        <span class="location-pill ${loc.requiredRod<=2?'safe':loc.requiredRod<=4?'warn':'danger'}">${loc.requiredRod<=2?'안전':loc.requiredRod<=4?'주의':'위험'}</span>
+      </div>
     `;
     div.onclick=()=>{
       if(locked){mainStatus.textContent=`${loc.name}은 낚싯대 Lv.${loc.requiredRod}부터 갈 수 있습니다.`;return;}
@@ -965,6 +1019,7 @@ function renderInventory(){
     card.title=`${displayName} / 1마리 ${sellPrice}G`;
     card.innerHTML=`
       <img class="frame" src="${frame}" alt="">
+      <img class="rarity-mini-icon" src="${RARITY_ICONS[fish.rarity]||RARITY_ICONS.common}" alt="">
       <img class="fish-img" src="${fish.img}" alt="${displayName}">
       <div class="fish-count">x${count}</div>
       <div class="fish-name">${displayName}</div>
@@ -986,6 +1041,7 @@ function renderFishBook(){
   grid.className="fish-card-grid";
 
   for(const [key,fish] of Object.entries(FISHES)){
+    if(selectedCodexRarity!=='all' && fish.rarity!==selectedCodexRarity) continue;
     const owned=Object.entries(fishing.inventory||{}).reduce((sum,[invKey,count])=>{
       const parsed=parseInventoryKey(invKey);
       return sum+(parsed.fishKey===key?count:0);
@@ -998,6 +1054,7 @@ function renderFishBook(){
     card.onclick=()=>openFishDetail(key, known);
     card.innerHTML=`
       <img class="frame" src="${frame}" alt="">
+      <img class="rarity-mini-icon" src="${RARITY_ICONS[fish.rarity]||RARITY_ICONS.common}" alt="">
       <img class="fish-img" src="${fish.img}" alt="${known?fish.name:"미발견"}">
       ${known&&owned>0?`<div class="fish-count">x${owned}</div>`:""}
       ${known?`<div class="fish-price">${fish.price}G</div>`:""}
@@ -1091,6 +1148,7 @@ function renderFishBookPreview(){
   if(ring)ring.style.setProperty('--pct',pct+'%');
   if(pctText)pctText.textContent=pct+'%';
   for(const [key,fish] of Object.entries(FISHES)){
+    if(selectedCodexRarity!=='all' && fish.rarity!==selectedCodexRarity) continue;
     const owned=Object.entries(fishing.inventory||{}).reduce((sum,[invKey,count])=>{
       const parsed=parseInventoryKey(invKey);
       return sum+(parsed.fishKey===key?count:0);
@@ -1102,9 +1160,22 @@ function renderFishBookPreview(){
 }
 
 
-function getDayNightLabel(){
+function getDifficultyBadge(requiredRod){
+  if(requiredRod>=6)return DIFFICULTY_BADGES.legend;
+  if(requiredRod>=5)return DIFFICULTY_BADGES.danger;
+  if(requiredRod>=3)return DIFFICULTY_BADGES.caution;
+  return DIFFICULTY_BADGES.safe;
+}
+
+function getWeatherInfo(){
   const h=new Date().getHours();
-  return (h>=19||h<6)?'🌙 밤':'☀ 낮';
+  if(h>=19||h<6)return {key:'night',label:'밤'};
+  return {key:'sunny',label:'낮'};
+}
+
+function getDayNightLabel(){
+  const w=getWeatherInfo();
+  return `<img class="weather-badge-img" src="${WEATHER_ICONS[w.key]}" alt="">${w.label}`;
 }
 
 function updateProfileProgress(){
@@ -1217,6 +1288,7 @@ function showCatchPopup(fishKey,sizeKey,treasureText=''){
   catchPopupContent.innerHTML=`
     <div class="detail-card-preview fish-card rarity-${fish.rarity}">
       <img class="frame" src="${frame}" alt="">
+      <img class="rarity-mini-icon" src="${RARITY_ICONS[fish.rarity]||RARITY_ICONS.common}" alt="">
       <img class="fish-img" src="${fish.img}" alt="${sizedName}">
     </div>
     <div class="detail-title">${sizedName}</div>
@@ -1271,7 +1343,7 @@ function updateLocationSceneAlways(){
   setLocationScene();
   $("pond").classList.add("active-scene");
   if(sceneTitleBadge)sceneTitleBadge.textContent=`${loc.emoji} ${loc.name}`;
-  if(sceneTimeBadge)sceneTimeBadge.textContent=getDayNightLabel();
+  if(sceneTimeBadge)sceneTimeBadge.innerHTML=getDayNightLabel();
 }
 
 function showLocationScene(){
@@ -1828,6 +1900,15 @@ $("saveBtn").onclick=saveGame;
 if($('bagSortSelect'))$('bagSortSelect').onchange=()=>{renderInventoryPreview();renderInventory();};
 if($('sellCommonBtn'))$('sellCommonBtn').onclick=sellCommonFish;
 if($('sellAllPreviewBtn'))$('sellAllPreviewBtn').onclick=sellAllFish;
+
+document.querySelectorAll('#codexRarityFilters button').forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll('#codexRarityFilters button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedCodexRarity=btn.dataset.rarity||'all';
+    renderFishBookPreview();
+  };
+});
 
 document.querySelectorAll(".tab-btn").forEach(btn=>{
   btn.onclick=()=>{
