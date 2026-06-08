@@ -1597,6 +1597,15 @@ html,body{
 </div>
 
 
+
+<div id="bossMailboxPopup" class="ui-modal-backdrop" onclick="if(event.target.id==='bossMailboxPopup') closeBossMailboxPopup()">
+  <div class="ui-modal-card mail-popup-card">
+    <div class="mail-popup-head"><img src="./assets/icons/mailbox.png" alt="">우편함</div>
+    <div id="bossMailboxPopupBody"><div class="small">받을 우편을 확인 중입니다...</div></div>
+    <button class="secondary" onclick="closeBossMailboxPopup()" style="width:100%;margin-top:10px">닫기</button>
+  </div>
+</div>
+
 <div id="avatarModal" class="avatar-modal-backdrop">
   <div class="avatar-modal">
     <h2>프로필 설정</h2>
@@ -3081,7 +3090,19 @@ async function renderBossRareDropLog(){
   }catch(e){return `<div class="boss-broadcast-box"><h4>최근 전설/신화 획득</h4><div class="small">방송 로그를 불러오지 못했습니다.</div></div>`}
 }
 function renderBossMailboxPanel(){ensureBossRewardState();const mails=(fishing.bossMailbox||[]).filter(m=>!m.claimed).slice(0,8);const rows=mails.map(m=>{const info=BOSS_CHEST_INFO[m.type]||BOSS_CHEST_INFO.kraken;return `<div class="boss-mail-item"><div><b>${m.title||'보스 보상 우편'}</b><div class="small">${m.desc||`${info.name} x${m.count||1}`} · ${m.createdAt?new Date(m.createdAt).toLocaleString():'-'}</div></div><button onclick="claimBossMail('${m.id}')">받기</button></div>`}).join('')||'<div class="small">받을 보스 보상 우편이 없습니다.</div>';return `<div class="boss-mailbox-panel"><div class="boss-mail-title"><img src="${BOSS_GACHA_ASSETS.mailbox}" alt="">보스 우편함</div>${rows}</div>`}
-window.openBossMailboxPopup=function(){ensureBossRewardState();const box=$('bossMailboxPopup'),body=$('bossMailboxPopupBody');if(!box||!body)return;body.innerHTML=renderBossMailboxPanel();box.classList.add('show')}
+window.openBossMailboxPopup=function(){
+  ensureBossRewardState();
+  let box=$('bossMailboxPopup');
+  if(!box){
+    document.body.insertAdjacentHTML('beforeend',`<div id="bossMailboxPopup" class="ui-modal-backdrop"><div class="ui-modal-card mail-popup-card"><div class="mail-popup-head"><img src="./assets/icons/mailbox.png" alt="">우편함</div><div id="bossMailboxPopupBody"><div class="small">받을 우편을 확인 중입니다...</div></div><button class="secondary" onclick="closeBossMailboxPopup()" style="width:100%;margin-top:10px">닫기</button></div></div>`);
+    box=$('bossMailboxPopup');
+    box.addEventListener('click',e=>{if(e.target.id==='bossMailboxPopup')closeBossMailboxPopup();});
+  }
+  const body=$('bossMailboxPopupBody');
+  if(!body){shop20Toast('우편함 팝업을 열 수 없습니다.');return;}
+  body.innerHTML=renderBossMailboxPanel();
+  box.classList.add('show');
+}
 window.closeBossMailboxPopup=function(){const box=$('bossMailboxPopup');if(box)box.classList.remove('show')}
 function renderBossRewardPanel(boss){ensureBossRewardState();const type=getBossRewardType(boss?.id);const info=BOSS_CHEST_INFO[type]||BOSS_CHEST_INFO.kraken;return `<div class="boss-reward-panel"><div class="boss-reward-title">🎁 보스 보상 / 상자 가방</div><div class="small">처치 보상은 우편함으로 도착합니다. 우편을 받으면 아래 상자가 가방에 들어오고, 열기 시 가챠 확률로 보상이 지급됩니다.</div><div class="boss-chest-grid">${Object.values(BOSS_CHEST_INFO).map(c=>`<div class="boss-chest-card"><img src="${c.icon}" alt="${c.name}"><b>${c.name}</b><div class="small">가방 보유 ${fishing.bossChests?.[c.id]||0}개</div><div class="open-enhance-note">타이밍 성공 시 강화 개봉</div><button onclick="openBossChest('${c.id}')">열기</button></div>`).join('')}</div><div id="bossRareDropLogBox"></div><div class="boss-token-line">🐙 크라켄 토큰 ${fishing.bossTokens.kraken||0} · 🌊 레비아탄 토큰 ${fishing.bossTokens.leviathan||0} · 🐉 심해룡 토큰 ${fishing.bossTokens.phoenix||0}<br>상자 확률: 골드/미끼 높음, 토큰 중간, 장식 낮음, 장비 극히 낮음</div></div>${renderAdminBossPanel(boss)}`}
 function renderAdminBossPanel(boss){if(!fishing?.adminMode)return '';return `<div class="admin-boss-panel"><h3>🛠 관리자 모드 · 보스 HP 조절</h3><div class="small">현재 보스 HP를 직접 수정합니다. 테스트용으로만 사용하세요.</div><div class="admin-boss-form"><input id="adminBossHpInput" type="number" min="0" placeholder="현재 HP" value="${Math.max(0,Number(boss?.hp||0))}"><input id="adminBossMaxHpInput" type="number" min="1" placeholder="최대 HP" value="${Math.max(1,Number(boss?.maxHp||1))}"><button onclick="adminSetBossHp()">적용</button></div><div class="admin-boss-form" style="margin-top:8px"><button onclick="adminSetBossQuick(1)">HP 1로</button><button onclick="adminSetBossQuick(0)">즉시 처치 상태</button><button onclick="adminSpawnRandomBoss()">랜덤 보스 교체</button></div></div>`}
