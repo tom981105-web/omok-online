@@ -38,9 +38,12 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .location-card .lv{font-size:11px;color:inherit;opacity:.8}
 .location-thumb{width:100%;height:90px;object-fit:cover;border-radius:10px;margin-bottom:6px;image-rendering:pixelated}
 
-#pond{position:relative;height:170px;border-radius:22px;overflow:hidden;border:4px solid rgba(255,255,255,.25);background-size:cover;background-position:center;background-repeat:no-repeat;display:none}
+#pond{position:relative;height:260px;border-radius:22px;overflow:hidden;border:4px solid rgba(255,255,255,.25);background-size:cover;background-position:center;background-repeat:no-repeat;display:block;background-color:#0f172a;isolation:isolate}
 #pond.active-scene{display:block}
-#floatBobber{position:absolute;left:50%;top:42%;width:16px;height:34px;transform:translate(-50%,-50%);display:none}
+#pond::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at center,rgba(255,255,255,.06),rgba(0,0,0,.24) 64%,rgba(0,0,0,.45));z-index:0;pointer-events:none}
+#pond::after{content:"";position:absolute;inset:-20%;background:radial-gradient(circle,rgba(255,255,255,.35) 0 1px,transparent 2px) 10% 80%/90px 120px,radial-gradient(circle,rgba(125,211,252,.22) 0 1px,transparent 3px) 70% 85%/130px 160px;opacity:.45;z-index:1;pointer-events:none;animation:sceneSparkle 8s linear infinite}
+@keyframes sceneSparkle{0%{transform:translateY(20px)}100%{transform:translateY(-40px)}}
+#floatBobber{position:absolute;left:50%;top:42%;width:16px;height:34px;transform:translate(-50%,-50%);display:none;z-index:6}
 #floatBobber::before{content:"";display:block;width:16px;height:16px;background:#ef4444;border-radius:50% 50% 0 0}
 #floatBobber::after{content:"";display:block;width:16px;height:16px;background:#f8fafc;border-radius:0 0 50% 50%}
 #floatBobber.waiting{display:block;animation:bobberWait 1.8s infinite ease-in-out}
@@ -61,6 +64,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
   display:none;
   pointer-events:none;
   animation:rippleLoop 1.6s infinite ease-out;
+  z-index:5;
 }
 @keyframes rippleLoop{
   0%{width:14px;height:14px;opacity:.75}
@@ -75,6 +79,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
   transform:translate(-50%,-50%);
   display:none;
   pointer-events:none;
+  z-index:7;
 }
 #splashEffect::before,
 #splashEffect::after{
@@ -94,7 +99,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
   100%{transform:translateY(-28px) scale(1.4);opacity:0}
 }
 
-#fishShadow{position:absolute;left:50%;top:62%;width:90px;height:28px;background:rgba(0,0,0,.35);border-radius:50%;transform:translate(-50%,-50%);filter:blur(2px);display:none;animation:shadowMove 2.4s infinite ease-in-out}
+#fishShadow{position:absolute;left:50%;top:62%;z-index:4;width:90px;height:28px;background:rgba(0,0,0,.35);border-radius:50%;transform:translate(-50%,-50%);filter:blur(2px);display:none;animation:shadowMove 2.4s infinite ease-in-out}
 @keyframes shadowMove{0%{transform:translate(-55%,-50%) scale(1)}50%{transform:translate(-45%,-45%) scale(1.08)}100%{transform:translate(-55%,-50%) scale(1)}}
 
 .catch-result{margin-top:8px}
@@ -334,6 +339,56 @@ button:disabled{opacity:.45;cursor:not-allowed}
   .resource-chip{font-size:15px}
 }
 
+
+/* UI 2.5 visual polish */
+.hud-profile{position:relative;overflow:hidden}
+.hud-title{font-size:11px;color:#93c5fd;font-weight:800;margin-top:2px}
+.hud-exp{position:absolute;left:66px;right:58px;bottom:8px;height:7px;background:rgba(15,23,42,.85);border:1px solid rgba(148,163,184,.28);border-radius:999px;overflow:hidden}
+.hud-exp-fill{height:100%;width:0%;background:linear-gradient(90deg,#38bdf8,#3b82f6,#a78bfa);box-shadow:0 0 10px rgba(56,189,248,.65)}
+.hud-exp-text{position:absolute;right:58px;bottom:17px;font-size:10px;color:#cbd5e1;font-weight:800}
+
+.fish-card.rarity-uncommon{filter:drop-shadow(0 0 6px rgba(34,197,94,.32))}
+.fish-card.rarity-rare{filter:drop-shadow(0 0 7px rgba(59,130,246,.48))}
+.fish-card.rarity-epic{filter:drop-shadow(0 0 8px rgba(168,85,247,.55));animation:epicGlow 2.4s ease-in-out infinite}
+.fish-card.rarity-legend{filter:drop-shadow(0 0 10px rgba(250,204,21,.7));animation:legendGlow 2.1s ease-in-out infinite}
+@keyframes epicGlow{0%,100%{transform:translateY(0);filter:drop-shadow(0 0 6px rgba(168,85,247,.45))}50%{transform:translateY(-1px);filter:drop-shadow(0 0 13px rgba(216,180,254,.8))}}
+@keyframes legendGlow{0%,100%{transform:translateY(0) scale(1);filter:drop-shadow(0 0 8px rgba(250,204,21,.55))}50%{transform:translateY(-1px) scale(1.02);filter:drop-shadow(0 0 18px rgba(250,204,21,.95))}}
+
+.location-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.location-pill{font-size:10px;font-weight:900;padding:3px 6px;border-radius:999px;background:rgba(15,23,42,.72);border:1px solid rgba(148,163,184,.25);color:#cbd5e1}
+.location-pill.safe{color:#86efac}.location-pill.warn{color:#fbbf24}.location-pill.danger{color:#f87171}
+
+.scene-title-badge{position:absolute;left:14px;top:14px;z-index:8;background:rgba(2,6,23,.68);border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:7px 12px;font-size:13px;font-weight:900;backdrop-filter:blur(4px)}
+.scene-time-badge{position:absolute;right:14px;top:14px;z-index:8;background:rgba(2,6,23,.68);border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:7px 12px;font-size:13px;font-weight:900;color:#fde68a;backdrop-filter:blur(4px)}
+.scene-idle-text{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);z-index:8;background:rgba(2,6,23,.7);border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:8px 14px;font-size:13px;font-weight:900;color:#facc15;white-space:nowrap;backdrop-filter:blur(4px)}
+.available-panel{margin:10px auto 0;max-width:520px;background:rgba(2,6,23,.48);border:1px solid rgba(148,163,184,.22);border-radius:14px;padding:8px}
+.available-title{font-size:13px;font-weight:900;color:#facc15;margin-bottom:6px}
+.available-fishes{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.available-mini{width:56px;height:46px;position:relative;background:rgba(15,23,42,.68);border:1px solid rgba(148,163,184,.22);border-radius:10px;display:grid;place-items:center}
+.available-mini img{max-width:42px;max-height:30px;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 2px 3px rgba(0,0,0,.7))}
+.available-mini.unknown img{filter:brightness(0);opacity:.55}
+.available-mini span{position:absolute;right:3px;bottom:2px;font-size:10px;color:#facc15;font-weight:900;text-shadow:0 1px 2px #000}
+
+.fish-detail-backdrop,.catch-popup-backdrop{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.62);z-index:120;padding:16px}
+.fish-detail-backdrop.show,.catch-popup-backdrop.show{display:flex}
+.fish-detail-card,.catch-popup-card{width:min(420px,100%);background:linear-gradient(180deg,#0f172a,#020617);border:1px solid rgba(148,163,184,.35);border-radius:20px;padding:18px;box-shadow:0 24px 80px rgba(0,0,0,.55);position:relative;overflow:hidden}
+.fish-detail-card::before,.catch-popup-card::before{content:"";position:absolute;inset:-40%;background:radial-gradient(circle,rgba(255,255,255,.12),transparent 35%);opacity:.5;animation:detailGlow 4s linear infinite;pointer-events:none}
+@keyframes detailGlow{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+.detail-card-preview{position:relative;width:132px;height:132px;margin:0 auto 10px}
+.detail-card-preview .frame{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;z-index:1}
+.detail-card-preview .fish-img{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);width:78px;height:58px;object-fit:contain;image-rendering:pixelated;z-index:2}
+.detail-title{font-size:24px;font-weight:900;margin:4px 0;color:#fff;text-shadow:0 2px 5px #000}
+.detail-rarity{font-weight:900;margin-bottom:8px}
+.detail-desc{color:#cbd5e1;line-height:1.5;font-size:14px;background:rgba(255,255,255,.06);border-radius:12px;padding:10px;margin:10px 0}
+.detail-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.detail-stat{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px;font-size:13px}
+.catch-popup-card{animation:catchPop .32s ease-out both;text-align:center}
+@keyframes catchPop{0%{transform:scale(.82);opacity:0}100%{transform:scale(1);opacity:1}}
+.catch-popup-card.legend{box-shadow:0 0 60px rgba(250,204,21,.45),0 24px 80px rgba(0,0,0,.55)}
+.catch-reward{font-size:14px;color:#facc15;font-weight:900;margin-top:8px}
+.screen-shake{animation:screenShake .35s linear both}
+@keyframes screenShake{0%,100%{transform:translate(0,0)}20%{transform:translate(-5px,2px)}40%{transform:translate(4px,-2px)}60%{transform:translate(-3px,-1px)}80%{transform:translate(3px,2px)}}
+
 .bottom-tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;display:grid;grid-template-columns:repeat(4,1fr);background:#020617;border-top:1px solid rgba(255,255,255,.16);padding:8px 8px calc(8px + env(safe-area-inset-bottom))}
 .tab-btn{background:transparent;color:#d1d5db;margin:0;padding:8px 2px;border-radius:14px;font-size:12px;line-height:1.25}
 .tab-btn.active{background:#f59e0b;color:#111827}
@@ -402,6 +457,8 @@ body.playing-mini #miniStatus{
   .location-card .lv{font-size:12px;color:#86efac;font-weight:900}
   .location-card.locked .lv{color:#f87171}
   #pond{height:430px;border-radius:14px;border-color:rgba(148,163,184,.35);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}
+  .center-panel{overflow:hidden}
+  .available-panel{position:absolute;right:24px;bottom:86px;width:210px;margin:0;background:rgba(2,6,23,.56)}
   #normalControls{margin-top:8px}
   #fishBtn,#holdBtn{width:min(100%,720px);height:48px;font-size:20px}
   #fishGame{height:520px}
@@ -446,7 +503,10 @@ body.playing-mini #miniStatus{
       <div class="hud-info">
         <div class="hud-name" id="userName">-</div>
         <div class="hud-sub" id="userEmail">-</div>
+        <div class="hud-title" id="playerTitle">초보 낚시꾼</div>
       </div>
+      <div class="hud-exp"><div id="hudExpFill" class="hud-exp-fill"></div></div>
+      <div id="hudExpText" class="hud-exp-text">0%</div>
       <div class="hud-level">Lv.<span id="rodText">1</span></div>
     </div>
 
@@ -484,6 +544,13 @@ body.playing-mini #miniStatus{
             <div id="bobberRipple"></div>
             <div id="splashEffect"></div>
             <div id="fishShadow"></div>
+            <div id="sceneTitleBadge" class="scene-title-badge">🌱 초보 연못</div>
+            <div id="sceneTimeBadge" class="scene-time-badge">☀ 낮</div>
+            <div id="sceneIdleText" class="scene-idle-text">찌를 던져보세요</div>
+          </div>
+          <div id="availablePanel" class="available-panel">
+            <div class="available-title">획득 가능</div>
+            <div id="availableFishes" class="available-fishes"></div>
           </div>
 
           <div id="normalControls">
@@ -590,6 +657,21 @@ body.playing-mini #miniStatus{
   </div>
 </div>
 
+
+<div id="fishDetailModal" class="fish-detail-backdrop">
+  <div class="fish-detail-card">
+    <div id="fishDetailContent"></div>
+    <button id="closeFishDetailBtn" class="secondary">닫기</button>
+  </div>
+</div>
+
+<div id="catchPopup" class="catch-popup-backdrop">
+  <div id="catchPopupCard" class="catch-popup-card">
+    <div id="catchPopupContent"></div>
+    <button id="closeCatchPopupBtn">확인</button>
+  </div>
+</div>
+
 <nav class="bottom-tabs hidden" id="bottomTabs">
   <button class="tab-btn active" data-tab="Fishing"><img class="icon-img" src="./assets/icons/rod.png" alt=""> <br>낚시</button>
   <button class="tab-btn" data-tab="Bag"><img class="icon-img" src="./assets/icons/backpack.png" alt=""><br>가방</button>
@@ -693,7 +775,7 @@ onAuthStateChanged(auth, async user=>{
 async function loadUser(){
   const snap=await get(ref(db,`users/${uid}`));
   userData=snap.val()||{};
-  const defaultFishing={gold:0,rodLevel:1,bait:5,inventory:{},discovered:{},treasureOpened:0,totalCaught:0,totalEarned:0,updatedAt:Date.now()};
+  const defaultFishing={gold:0,gems:0,rodLevel:1,exp:0,nextExp:100,title:"초보 낚시꾼",bait:5,inventory:{},discovered:{},treasureOpened:0,totalCaught:0,totalEarned:0,updatedAt:Date.now()};
   fishing={...defaultFishing,...(userData.fishing||{})};
   fishing.inventory=fishing.inventory||{};
   fishing.discovered=fishing.discovered||{};
@@ -738,6 +820,7 @@ function applyProfileUI(){
   if(avatarImg) avatarImg.src=getAvatarPath(avatarType);
   userName.textContent=nickname;
   userEmail.textContent=userData.email||auth.currentUser.email;
+  updateProfileProgress();
 }
 
 function render(){
@@ -758,6 +841,9 @@ function render(){
   renderInventoryPreview();
   renderFishBookPreview();
   updateCurrentLocationTitle();
+  updateLocationSceneAlways();
+  renderAvailableFishes();
+  updateProfileProgress();
 }
 
 function renderLocations(){
@@ -770,6 +856,7 @@ function renderLocations(){
       <img class="location-thumb" src="${loc.card}" alt="${loc.name}">
       <b>${loc.name}</b>
       <div class="lv">Lv.${loc.requiredRod}+ 필요</div>
+      <div class="location-meta"><span class="location-pill ${loc.requiredRod<=2?'safe':loc.requiredRod<=4?'warn':'danger'}">${loc.requiredRod<=2?'안전':loc.requiredRod<=4?'주의':'위험'}</span></div>
     `;
     div.onclick=()=>{
       if(locked){mainStatus.textContent=`${loc.name}은 낚싯대 Lv.${loc.requiredRod}부터 갈 수 있습니다.`;return;}
@@ -777,6 +864,8 @@ function renderLocations(){
       mainStatus.textContent=`${loc.emoji} ${loc.name}에서 낚시합니다.`;
       renderLocations();
       updateCurrentLocationTitle();
+      updateLocationSceneAlways();
+      renderAvailableFishes();
     };
     locationGrid.appendChild(div);
   }
@@ -802,7 +891,7 @@ function renderInventory(){
     const frame=RARITY_FRAMES[fish.rarity]||RARITY_FRAMES.common;
 
     const card=document.createElement("div");
-    card.className="fish-card";
+    card.className=`fish-card rarity-${fish.rarity}`;
     card.title=`${displayName} / 1마리 ${sellPrice}G`;
     card.innerHTML=`
       <img class="frame" src="${frame}" alt="">
@@ -835,7 +924,8 @@ function renderFishBook(){
     const frame=RARITY_FRAMES[fish.rarity]||RARITY_FRAMES.common;
 
     const card=document.createElement("div");
-    card.className=`fish-card ${known?"":"locked"}`;
+    card.className=`fish-card rarity-${fish.rarity} ${known?"":"locked"}`;
+    card.onclick=()=>openFishDetail(key, known);
     card.innerHTML=`
       <img class="frame" src="${frame}" alt="">
       <img class="fish-img" src="${fish.img}" alt="${known?fish.name:"미발견"}">
@@ -863,7 +953,7 @@ function makeFishCardElement({key,fishKey,sizeKey='normal',count=0,known=true,cl
   const frame=RARITY_FRAMES[fish.rarity]||RARITY_FRAMES.common;
   const displayName=known ? (sizeKey && sizeKey!=='normal' ? getSizedFishName(fishKey,sizeKey) : fish.name) : '???';
   const card=document.createElement('div');
-  card.className=`fish-card ${known?'':'locked'}`;
+  card.className=`fish-card rarity-${fish.rarity} ${known?'':'locked'}`;
   card.innerHTML=`
     <img class="frame" src="${frame}" alt="">
     <img class="fish-img" src="${fish.img}" alt="${known?displayName:'미발견'}">
@@ -875,6 +965,8 @@ function makeFishCardElement({key,fishKey,sizeKey='normal',count=0,known=true,cl
     const sellPrice=getFishSellPrice(fishKey,sizeKey);
     card.title=`${displayName} / 1마리 ${sellPrice}G`;
     card.onclick=()=>openSellPrompt(key,displayName,count,sellPrice);
+  }else{
+    card.onclick=()=>openFishDetail(fishKey, known);
   }
   return card;
 }
@@ -915,6 +1007,135 @@ function renderFishBookPreview(){
   }
 }
 
+
+function getDayNightLabel(){
+  const h=new Date().getHours();
+  return (h>=19||h<6)?'🌙 밤':'☀ 낮';
+}
+
+function updateProfileProgress(){
+  if(!fishing)return;
+  const exp=Number(fishing.exp||0);
+  const next=Number(fishing.nextExp||100);
+  const pct=Math.max(0,Math.min(100,Math.round((exp/next)*100)));
+  const fill=$('hudExpFill');
+  const text=$('hudExpText');
+  const title=$('playerTitle');
+  if(fill)fill.style.width=pct+'%';
+  if(text)text.textContent=pct+'%';
+  if(title)title.textContent=fishing.title||getPlayerTitle();
+}
+
+function getPlayerTitle(){
+  const caught=fishing?.totalCaught||0;
+  const discovered=Object.keys(fishing?.discovered||{}).length;
+  if(discovered>=18)return '전설 수집가';
+  if(caught>=100)return '숙련 낚시꾼';
+  if(caught>=30)return '강태공';
+  return '초보 낚시꾼';
+}
+
+function addExp(amount){
+  fishing.exp=(fishing.exp||0)+amount;
+  fishing.nextExp=fishing.nextExp||100;
+  while(fishing.exp>=fishing.nextExp){
+    fishing.exp-=fishing.nextExp;
+    fishing.nextExp=Math.round(fishing.nextExp*1.25+25);
+    fishing.gems=(fishing.gems||0)+3;
+  }
+  fishing.title=getPlayerTitle();
+}
+
+function renderAvailableFishes(){
+  if(!availableFishes)return;
+  availableFishes.innerHTML='';
+  const loc=LOCATIONS[selectedLocation]||LOCATIONS.pond;
+  const list=loc.fishes.slice(0,5);
+  for(const key of list){
+    const fish=FISHES[key];
+    if(!fish)continue;
+    const known=!!(fishing?.discovered||{})[key];
+    const div=document.createElement('div');
+    div.className=`available-mini ${known?'':'unknown'}`;
+    div.innerHTML=`<img src="${fish.img}" alt="${known?fish.name:'???'}"><span>${known?fish.rarity:'?'}</span>`;
+    div.onclick=()=>openFishDetail(key,known);
+    availableFishes.appendChild(div);
+  }
+}
+
+function getFishDescription(key){
+  const map={
+    flounder:'납작한 몸으로 바닥에 숨어 지내는 초보 연못의 단골 손님입니다.',
+    octopus:'똑똑하고 빠르게 움직이는 영웅급 바다 생물입니다.',
+    sunfish:'거대한 몸집을 가진 전설급 물고기입니다. 잡기 어렵지만 값어치가 큽니다.',
+    tuna:'강한 힘으로 도망치는 희귀 어종입니다.',
+    bass:'초보자를 벗어나면 자주 만나게 되는 힘 좋은 물고기입니다.',
+    perch:'잔잔한 물가에서 자주 보이는 기본 어종입니다.',
+    lavaEel:'용암 속에서도 살아남는 전설의 장어입니다.',
+    trout:'맑은 강물에서 잘 잡히는 민첩한 물고기입니다.',
+    carp:'연못과 강에 널리 사는 친숙한 물고기입니다.',
+    crucian:'작지만 꾸준히 골드를 벌어주는 기본 물고기입니다.',
+    goldenCarp:'황금빛 비늘을 가진 희귀한 잉어입니다.',
+    ghostFish:'밤과 어둠 속에서 모습을 드러내는 신비한 물고기입니다.',
+    grayMullet:'강과 호수를 오가는 은빛 물고기입니다.',
+    rainbowTrout:'무지갯빛 비늘이 반짝이는 아름다운 송어입니다.',
+    puffer:'위협을 받으면 부풀어 오르는 영웅급 물고기입니다.',
+    pike:'날카로운 움직임으로 먹잇감을 노리는 희귀 어종입니다.',
+    sardine:'작고 빠르지만 초보 낚시터에서 자주 만날 수 있습니다.',
+    tropicalFish:'화려한 색감을 가진 희귀 물고기입니다.',
+    sturgeon:'오래 사는 묵직한 희귀 어종입니다.',
+    mackerel:'빠르게 떼 지어 다니는 기본 어종입니다.'
+  };
+  return map[key]||'아직 자세한 정보가 부족한 물고기입니다.';
+}
+
+function openFishDetail(fishKey,known=true){
+  const fish=FISHES[fishKey];
+  if(!fish||!fishDetailModal)return;
+  const frame=RARITY_FRAMES[fish.rarity]||RARITY_FRAMES.common;
+  const owned=Object.entries(fishing.inventory||{}).reduce((sum,[invKey,count])=>{
+    const parsed=parseInventoryKey(invKey);
+    return sum+(parsed.fishKey===fishKey?count:0);
+  },0);
+  fishDetailContent.innerHTML=`
+    <div class="detail-card-preview fish-card rarity-${fish.rarity}">
+      <img class="frame" src="${frame}" alt="">
+      <img class="fish-img ${known?'':'undiscovered'}" src="${fish.img}" alt="${known?fish.name:'???'}">
+    </div>
+    <div class="detail-title">${known?fish.name:'???'}</div>
+    <div class="detail-rarity r-${fish.rarity}">${known?fish.rarity.toUpperCase():'미발견'}</div>
+    <div class="detail-desc">${known?getFishDescription(fishKey):'아직 잡아본 적 없는 물고기입니다.'}</div>
+    <div class="detail-stats">
+      <div class="detail-stat">기본가<br><b>${known?fish.price+'G':'-'}</b></div>
+      <div class="detail-stat">보유<br><b>${known?owned+'마리':'-'}</b></div>
+      <div class="detail-stat">속도<br><b>${known?fish.speed:'-'}</b></div>
+      <div class="detail-stat">희귀도<br><b>${known?fish.rarity:'-'}</b></div>
+    </div>`;
+  fishDetailModal.classList.add('show');
+}
+
+function showCatchPopup(fishKey,sizeKey,treasureText=''){
+  const fish=FISHES[fishKey];
+  if(!fish||!catchPopup)return;
+  const frame=RARITY_FRAMES[fish.rarity]||RARITY_FRAMES.common;
+  const sizedName=getSizedFishName(fishKey,sizeKey);
+  catchPopupCard.className=`catch-popup-card ${fish.rarity==='legend'?'legend':''}`;
+  catchPopupContent.innerHTML=`
+    <div class="detail-card-preview fish-card rarity-${fish.rarity}">
+      <img class="frame" src="${frame}" alt="">
+      <img class="fish-img" src="${fish.img}" alt="${sizedName}">
+    </div>
+    <div class="detail-title">${sizedName}</div>
+    <div class="detail-rarity r-${fish.rarity}">${fish.rarity.toUpperCase()}</div>
+    <div class="catch-reward">판매가 ${getFishSellPrice(fishKey,sizeKey)}G</div>
+    ${treasureText?`<div class="catch-reward">${treasureText}</div>`:''}`;
+  catchPopup.classList.add('show');
+  if(fish.rarity==='legend'||fish.rarity==='epic'){
+    document.body.classList.add('screen-shake');
+    setTimeout(()=>document.body.classList.remove('screen-shake'),380);
+  }
+}
+
 function openSellPrompt(key,displayName,count,sellPrice){
   const amount=prompt(`${displayName} 몇 마리 판매할까요?\n보유: ${count}마리 / 1마리 ${sellPrice}G`,"1");
   if(amount===null)return;
@@ -951,13 +1172,25 @@ function setLocationScene(){
   pond.style.backgroundImage=`url("${loc.scene}")`;
 }
 
-function showLocationScene(){
+function updateLocationSceneAlways(){
+  const loc=LOCATIONS[selectedLocation]||LOCATIONS.pond;
   setLocationScene();
   $("pond").classList.add("active-scene");
+  if(sceneTitleBadge)sceneTitleBadge.textContent=`${loc.emoji} ${loc.name}`;
+  if(sceneTimeBadge)sceneTimeBadge.textContent=getDayNightLabel();
+}
+
+function showLocationScene(){
+  updateLocationSceneAlways();
+  if(sceneIdleText)sceneIdleText.textContent="물고기를 기다리는 중...";
 }
 
 function hideLocationScene(){
-  $("pond").classList.remove("active-scene");
+  hideBobberRipple();
+  hideFishShadow();
+  if(floatBobber)floatBobber.className="";
+  if(sceneIdleText)sceneIdleText.textContent="찌를 던져보세요";
+  updateLocationSceneAlways();
 }
 
 function castLine(){
@@ -1279,6 +1512,7 @@ async function finishFishing(success){
     fishing.inventory[invKey]=(fishing.inventory[invKey]||0)+1;
     fishing.discovered[targetFishKey]=true;
     fishing.totalCaught=(fishing.totalCaught||0)+1;
+    addExp(12 + Math.round(fish.price/8));
 
     const treasureText=applyTreasureReward();
 
@@ -1288,6 +1522,7 @@ async function finishFishing(success){
       ${treasureText ? `<div class="status">${treasureText}</div>` : ""}
     `;
     mainStatus.textContent=`정체는 ${sizedName}이었습니다!`;
+    showCatchPopup(targetFishKey,targetSizeKey,treasureText);
   }else{
     catchResult.innerHTML="";
     mainStatus.textContent="물고기가 도망갔습니다. 정체는 알 수 없습니다.";
@@ -1452,6 +1687,10 @@ document.querySelectorAll('.avatar-choice').forEach(el=>{
     document.querySelectorAll('.avatar-choice').forEach(x=>x.classList.toggle('selected',x===el));
   };
 });
+if($('closeFishDetailBtn'))$('closeFishDetailBtn').onclick=()=>fishDetailModal.classList.remove('show');
+if(fishDetailModal)fishDetailModal.onclick=e=>{if(e.target===fishDetailModal)fishDetailModal.classList.remove('show')};
+if($('closeCatchPopupBtn'))$('closeCatchPopupBtn').onclick=()=>catchPopup.classList.remove('show');
+if(catchPopup)catchPopup.onclick=e=>{if(e.target===catchPopup)catchPopup.classList.remove('show')};
 $('avatarBtn').onclick=openProfileModal;
 $('profileCard').onclick=openProfileModal;
 $('closeProfileBtn').onclick=closeProfileModal;
