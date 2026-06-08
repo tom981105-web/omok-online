@@ -1363,6 +1363,34 @@ html,body{
 .admin-badge{display:inline-block;margin-left:8px;padding:3px 8px;border-radius:999px;background:#7f1d1d;color:#fecaca;border:1px solid rgba(248,113,113,.45);font-size:12px;font-weight:900}
 @media(max-width:720px){.admin-boss-form{grid-template-columns:1fr}.boss-mail-item{grid-template-columns:1fr}}
 
+
+/* Boss chest unlock + gacha presentation patch */
+.boss-mail-title img{width:22px;height:22px;object-fit:contain;image-rendering:pixelated;vertical-align:middle;margin-right:6px}
+.boss-chest-card .open-enhance-note{font-size:11px;color:#facc15;margin-top:4px;line-height:1.35}
+.boss-gacha-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.74);z-index:520;display:none;align-items:center;justify-content:center;padding:16px}
+.boss-gacha-backdrop.show{display:flex}
+.boss-gacha-card{width:min(480px,100%);background:linear-gradient(180deg,#10233e,#020617);border:1px solid rgba(148,163,184,.36);border-radius:24px;padding:20px;text-align:center;box-shadow:0 30px 100px rgba(0,0,0,.65);position:relative;overflow:hidden}
+.boss-gacha-card::before{content:"";position:absolute;inset:-40%;background:radial-gradient(circle,rgba(255,255,255,.14),transparent 34%);opacity:.55;animation:gachaSpin 7s linear infinite;pointer-events:none}
+.boss-gacha-card.legend::after,.boss-gacha-card.mythic::after{content:"";position:absolute;inset:0;background-image:var(--gacha-bg);background-size:cover;background-position:center;opacity:.32;pointer-events:none;image-rendering:pixelated}
+@keyframes gachaSpin{to{transform:rotate(360deg)}}
+.boss-gacha-inner{position:relative;z-index:2}
+.boss-gacha-title{font-size:25px;font-weight:1000;margin-bottom:8px;color:#fff;text-shadow:0 2px 6px #000}
+.boss-gacha-sub{font-weight:900;color:#facc15;margin-bottom:12px}
+.boss-chest-big{width:124px;height:124px;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 16px 20px rgba(0,0,0,.55));margin:4px auto 12px;display:block}
+.boss-chest-big.shake{animation:bossChestShake .48s ease-in-out infinite}
+@keyframes bossChestShake{0%,100%{transform:rotate(0) scale(1)}20%{transform:rotate(-5deg) scale(1.03)}40%{transform:rotate(5deg) scale(1.05)}60%{transform:rotate(-4deg) scale(1.04)}80%{transform:rotate(3deg) scale(1.02)}}
+.unlock-meter{position:relative;width:100%;height:44px;border-radius:999px;background:rgba(2,6,23,.9);border:2px solid rgba(148,163,184,.42);overflow:hidden;box-shadow:inset 0 0 18px rgba(0,0,0,.7);margin:14px 0 10px}
+.unlock-meter::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,.08) 0 1px,transparent 1px 10%);opacity:.5}
+.unlock-zone{position:absolute;left:42%;top:5px;bottom:5px;width:16%;border-radius:999px;background:linear-gradient(180deg,#86efac,#22c55e);box-shadow:0 0 18px rgba(34,197,94,.8)}
+.unlock-pointer{position:absolute;left:0%;top:50%;width:24px;height:56px;transform:translate(-50%,-50%);border-radius:999px;background:linear-gradient(180deg,#fde047,#f59e0b);border:2px solid rgba(255,255,255,.8);box-shadow:0 0 20px rgba(245,158,11,.9)}
+.boss-gacha-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.boss-gacha-actions button{height:44px;margin:0;border-radius:13px}
+.boss-gacha-result{font-size:18px;font-weight:1000;line-height:1.5;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:13px;margin-top:10px}
+.boss-gacha-result.legend{color:#facc15;box-shadow:0 0 22px rgba(250,204,21,.22)}
+.boss-gacha-result.mythic{color:#e9d5ff;box-shadow:0 0 28px rgba(216,180,254,.28)}
+.boss-broadcast-box{margin-top:12px;background:rgba(2,6,23,.52);border:1px solid rgba(250,204,21,.2);border-radius:14px;padding:10px;text-align:left}
+.boss-broadcast-box h4{margin:0 0 8px;color:#facc15}.boss-broadcast-row{font-size:12px;color:#dbeafe;border-top:1px solid rgba(255,255,255,.07);padding:6px 0}.boss-broadcast-row:first-of-type{border-top:0}
+
 .auction-market-box{background:rgba(15,23,42,.68);border:1px solid rgba(250,204,21,.18);border-radius:14px;padding:9px;margin:8px 0;text-align:left}.auction-market-box b{color:#facc15}.auction-market-box .small{font-size:12px}.auction11-form{grid-template-columns:1fr 130px auto!important}@media(max-width:720px){.boss-chest-grid{grid-template-columns:1fr}.auction11-form{grid-template-columns:1fr!important}}
 
 </style>
@@ -1768,10 +1796,11 @@ const SHOP20_ITEMS={bait:[{id:"bait_basic",name:"일반 미끼",icon:SHOP20_ASSE
 const EQUIP_BAITS={basic:{id:"basic",name:"일반 미끼",icon:SHOP20_ASSETS.baitBasic,effect:"기본 확률",rareBonus:0,epicBonus:0,legendBonus:0},rare:{id:"rare",name:"고급 미끼",icon:SHOP20_ASSETS.baitRare,effect:"희귀 +10% / 영웅 +4%",rareBonus:8,epicBonus:4,legendBonus:.8},legend:{id:"legend",name:"전설 미끼",icon:SHOP20_ASSETS.baitLegend,effect:"희귀 +25% / 전설 +5%",rareBonus:18,epicBonus:8,legendBonus:3.5}};
 const EQUIP_RODS={rod_wood:{id:"rod_wood",name:"나무 낚싯대",icon:SHOP20_ASSETS.rodWood,level:1,effect:"기본 장비",sellMul:1,legendBonus:0},rod_iron:{id:"rod_iron",name:"강철 낚싯대",icon:SHOP20_ASSETS.rodIron,level:3,effect:"판매가 +10%",sellMul:1.1,legendBonus:.3},rod_gold:{id:"rod_gold",name:"황금 낚싯대",icon:SHOP20_ASSETS.rodGold,level:5,effect:"판매가 +25%",sellMul:1.25,legendBonus:.8},rod_dragon:{id:"rod_dragon",name:"드래곤 낚싯대",icon:SHOP20_ASSETS.rodDragon,level:7,effect:"판매가 +50% / 전설 확률 증가",sellMul:1.5,legendBonus:2}};
 const COSMETIC_ITEMS={profile_none:{id:"profile_none",type:"profile",name:"기본 프로필",icon:SHOP20_ASSETS.crown,effect:"기본 테두리"},profile_gold:{id:"profile_gold",type:"profile",name:"골드 프로필",icon:SHOP20_ASSETS.crown,effect:"아바타 황금 테두리"},title_none:{id:"title_none",type:"title",name:"기본 칭호",icon:SHOP20_ASSETS.star,effect:"기본 칭호"},name_star:{id:"name_star",type:"title",name:"별빛 칭호",icon:SHOP20_ASSETS.star,effect:"닉네임 별빛 효과"}};
-const BOSS_REWARD_ASSETS={chest_kraken:"./assets/chests/chest_kraken.png",chest_leviathan:"./assets/chests/chest_leviathan.png",chest_phoenix:"./assets/chests/chest_phoenix.png",frame_kraken:"./assets/cosmetics/frame_kraken.png",frame_leviathan:"./assets/cosmetics/frame_leviathan.png",frame_phoenix:"./assets/cosmetics/frame_phoenix.png",rod_kraken:"./assets/rods/rod_kraken.png",rod_leviathan:"./assets/rods/rod_leviathan.png",rod_phoenix:"./assets/rods/rod_phoenix.png"};
+const BOSS_GACHA_ASSETS={mailbox:"./assets/icon/mailbox.png",legendaryBg:"./assets/effect/legendary_bg.png",mythicBg:"./assets/effect/mythic_bg.png"};
+const BOSS_REWARD_ASSETS={chest_kraken:"./assets/chest/boss_chest_kraken.png",chest_leviathan:"./assets/chest/boss_chest_leviathan.png",chest_phoenix:"./assets/chest/boss_chest_dragon.png",frame_kraken:"./assets/cosmetics/frame_kraken.png",frame_leviathan:"./assets/cosmetics/frame_leviathan.png",frame_phoenix:"./assets/cosmetics/frame_phoenix.png",rod_kraken:"./assets/rods/rod_kraken.png",rod_leviathan:"./assets/rods/rod_leviathan.png",rod_phoenix:"./assets/rods/rod_phoenix.png"};
 Object.assign(EQUIP_RODS,{rod_kraken:{id:"rod_kraken",name:"크라켄 낚싯대",icon:BOSS_REWARD_ASSETS.rod_kraken,level:8,effect:"전설 확률 +3% / 보스 데미지 +10%",sellMul:1.35,legendBonus:3,bossMul:1.1},rod_leviathan:{id:"rod_leviathan",name:"리바이어던 낚싯대",icon:BOSS_REWARD_ASSETS.rod_leviathan,level:9,effect:"판매가 +35% / 보스 데미지 +15%",sellMul:1.35,legendBonus:1.5,bossMul:1.15},rod_phoenix:{id:"rod_phoenix",name:"피닉스 낚싯대",icon:BOSS_REWARD_ASSETS.rod_phoenix,level:10,effect:"보스 데미지 +30% / 치명타 강화",sellMul:1.25,legendBonus:2,bossMul:1.3,critMul:.25}});
 Object.assign(COSMETIC_ITEMS,{frame_kraken:{id:"frame_kraken",type:"profile",name:"크라켄 프레임",icon:BOSS_REWARD_ASSETS.frame_kraken,effect:"심해 보스 장식"},frame_leviathan:{id:"frame_leviathan",type:"profile",name:"리바이어던 프레임",icon:BOSS_REWARD_ASSETS.frame_leviathan,effect:"고대 해룡 장식"},frame_phoenix:{id:"frame_phoenix",type:"profile",name:"피닉스 프레임",icon:BOSS_REWARD_ASSETS.frame_phoenix,effect:"불멸의 불꽃 장식"}});
-const BOSS_CHEST_INFO={kraken:{id:"kraken",name:"크라켄 상자",icon:BOSS_REWARD_ASSETS.chest_kraken,token:"kraken",tokenName:"크라켄 토큰",gold:[650,1600],bait:[8,18],tokenRange:[2,5],frame:"frame_kraken",rod:"rod_kraken",frameRate:.017,rodRate:.003},leviathan:{id:"leviathan",name:"리바이어던 상자",icon:BOSS_REWARD_ASSETS.chest_leviathan,token:"leviathan",tokenName:"리바이어던 토큰",gold:[900,2300],bait:[10,24],tokenRange:[3,7],frame:"frame_leviathan",rod:"rod_leviathan",frameRate:.025,rodRate:.005},phoenix:{id:"phoenix",name:"피닉스 상자",icon:BOSS_REWARD_ASSETS.chest_phoenix,token:"phoenix",tokenName:"피닉스 토큰",gold:[1200,3200],bait:[12,30],tokenRange:[4,9],frame:"frame_phoenix",rod:"rod_phoenix",frameRate:.04,rodRate:.01}};
+const BOSS_CHEST_INFO={kraken:{id:"kraken",name:"크라켄 상자",icon:BOSS_REWARD_ASSETS.chest_kraken,token:"kraken",tokenName:"크라켄 토큰",gold:[650,1600],bait:[8,18],tokenRange:[2,5],frame:"frame_kraken",rod:"rod_kraken",frameRate:.017,rodRate:.003},leviathan:{id:"leviathan",name:"리바이어던 상자",icon:BOSS_REWARD_ASSETS.chest_leviathan,token:"leviathan",tokenName:"리바이어던 토큰",gold:[900,2300],bait:[10,24],tokenRange:[3,7],frame:"frame_leviathan",rod:"rod_leviathan",frameRate:.025,rodRate:.005},phoenix:{id:"phoenix",name:"심해룡 상자",icon:BOSS_REWARD_ASSETS.chest_phoenix,token:"phoenix",tokenName:"심해룡 토큰",gold:[1200,3200],bait:[12,30],tokenRange:[4,9],frame:"frame_phoenix",rod:"rod_phoenix",frameRate:.04,rodRate:.01}};
 
 let currentShopTab="bait";let currentMultiTab="ranking";let pendingBossDamage=0;
 
@@ -2920,15 +2949,128 @@ async function dbPatch(obj){
 }
 function getWeekKey(){const d=new Date(),onejan=new Date(d.getFullYear(),0,1);return `${d.getFullYear()}-W${Math.ceil((((d-onejan)/86400000)+onejan.getDay()+1)/7)}`}function getPlayerName(){return fishing?.profile?.nickname||userData?.nickname||auth.currentUser?.email?.split('@')[0]||'낚시꾼'}function calcMultiScore(){const rank={common:1,uncommon:5,rare:20,epic:50,legend:100};let score=0;for(const [k,c] of Object.entries(fishing.inventory||{})){const p=parseInventoryKey(k),f=FISHES[p.fishKey];if(f)score+=(rank[f.rarity]||1)*c}return score+(fishing.totalCaught||0)}function ensureBossRewardState(){fishing.bossChests=fishing.bossChests||{kraken:0,leviathan:0,phoenix:0};fishing.bossTokens=fishing.bossTokens||{kraken:0,leviathan:0,phoenix:0};fishing.bossKills=fishing.bossKills||{};fishing.bossMailbox=fishing.bossMailbox||[];fishing.claimedBossMail=fishing.claimedBossMail||{};fishing.cosmetics=fishing.cosmetics||{};fishing.cosmetics.owned=fishing.cosmetics.owned||{};fishing.ownedShopItems=fishing.ownedShopItems||{};fishing.adminMode=!!fishing.adminMode}
 function getBossRewardType(id){if((id||'').includes('leviathan'))return 'leviathan';if((id||'').includes('phoenix'))return 'phoenix';return 'kraken'}
-function rollBossChest(type){ensureBossRewardState();const info=BOSS_CHEST_INFO[type]||BOSS_CHEST_INFO.kraken;const r=Math.random();if(r<info.rodRate){fishing.ownedShopItems[info.rod]=true;return {kind:'rod',text:`${EQUIP_RODS[info.rod].name} 획득!`}}if(r<info.rodRate+info.frameRate){fishing.cosmetics.owned[info.frame]=true;fishing.cosmetics.equippedProfile=info.frame;return {kind:'frame',text:`${COSMETIC_ITEMS[info.frame].name} 획득!`}}if(r<info.rodRate+info.frameRate+.18){const amount=randRange(info.tokenRange[0],info.tokenRange[1]);fishing.bossTokens[type]=(fishing.bossTokens[type]||0)+amount;return {kind:'token',text:`${info.tokenName} ${amount}개 획득`}}if(r<info.rodRate+info.frameRate+.18+.35){const bait=randRange(info.bait[0],info.bait[1]);fishing.bait=(fishing.bait||0)+bait;return {kind:'bait',text:`미끼 ${bait}개 획득`}}const gold=randRange(info.gold[0],info.gold[1]);fishing.gold=(fishing.gold||0)+gold;return {kind:'gold',text:`${formatNumber(gold)}G 획득`}}
+function getBossChestRates(enhanced){
+  return enhanced
+    ? {gold:.40,equipment:.35,accessory:.15,legend:.08,mythic:.02}
+    : {gold:.60,equipment:.25,accessory:.10,legend:.04,mythic:.01};
+}
+function pickBossRewardKind(enhanced){
+  const r=Math.random(),rate=getBossChestRates(enhanced);
+  if(r<rate.mythic)return 'mythic';
+  if(r<rate.mythic+rate.legend)return 'legend';
+  if(r<rate.mythic+rate.legend+rate.accessory)return 'accessory';
+  if(r<rate.mythic+rate.legend+rate.accessory+rate.equipment)return 'equipment';
+  return 'gold';
+}
+function rollBossChest(type,enhanced=false){
+  ensureBossRewardState();
+  const info=BOSS_CHEST_INFO[type]||BOSS_CHEST_INFO.kraken;
+  const kind=pickBossRewardKind(enhanced);
+  if(kind==='mythic'){
+    fishing.ownedShopItems[info.rod]=true;
+    fishing.cosmetics.owned[info.frame]=true;
+    fishing.cosmetics.equippedProfile=info.frame;
+    fishing.gems=(fishing.gems||0)+5;
+    return {kind:'mythic',grade:'🌈 신화',text:`${info.name}에서 신화 보상! ${EQUIP_RODS[info.rod].name} + ${COSMETIC_ITEMS[info.frame].name} + 보석 5개 획득!`};
+  }
+  if(kind==='legend'){
+    fishing.ownedShopItems[info.rod]=true;
+    fishing.equipment=fishing.equipment||{};
+    fishing.equipment.rod=info.rod;
+    return {kind:'legend',grade:'⭐⭐⭐⭐⭐ 전설',text:`${EQUIP_RODS[info.rod].name} 획득!`};
+  }
+  if(kind==='accessory'){
+    fishing.cosmetics.owned[info.frame]=true;
+    fishing.cosmetics.equippedProfile=info.frame;
+    return {kind:'accessory',grade:'장신구',text:`${COSMETIC_ITEMS[info.frame].name} 획득!`};
+  }
+  if(kind==='equipment'){
+    const amount=randRange(info.tokenRange[0],info.tokenRange[1])+randRange(1,3);
+    fishing.bossTokens[type]=(fishing.bossTokens[type]||0)+amount;
+    const bait=randRange(Math.floor(info.bait[0]/2),Math.floor(info.bait[1]/2));
+    fishing.bait=(fishing.bait||0)+bait;
+    return {kind:'equipment',grade:'장비 재료',text:`${info.tokenName} ${amount}개 + 미끼 ${bait}개 획득`};
+  }
+  const gold=randRange(info.gold[0],info.gold[1])*(enhanced?2:1);
+  fishing.gold=(fishing.gold||0)+gold;
+  return {kind:'gold',grade:'골드',text:`${formatNumber(gold)}G 획득`};
+}
 function randRange(min,max){return Math.floor(min+Math.random()*(max-min+1))}
 function addBossMail(type,count,source='월드보스 클리어 보상',mailId='local_'+Date.now()+'_'+Math.random().toString(36).slice(2)){ensureBossRewardState();if(fishing.bossMailbox.some(m=>m.id===mailId))return;const info=BOSS_CHEST_INFO[type]||BOSS_CHEST_INFO.kraken;fishing.bossMailbox.unshift({id:mailId,type,count:Math.max(1,Number(count)||1),title:source,desc:`${info.name} x${Math.max(1,Number(count)||1)}`,createdAt:Date.now(),claimed:false});fishing.bossMailbox=fishing.bossMailbox.slice(0,50)}
 function grantBossChest(type,count){addBossMail(type,count,'월드보스 클리어 보상');shop20Toast('보스 보상 도착!',`우편함에 ${(BOSS_CHEST_INFO[type]||BOSS_CHEST_INFO.kraken).name} x${count}`)}
 async function importBossMailsFromFirebase(){if(!db||!uid||!fishing)return;ensureBossRewardState();try{const data=await dbGet(`multiplayer/bossMailByUser/${uid}`)||{};let changed=false;for(const [mailId,m] of Object.entries(data)){if(!m||m.claimed||fishing.claimedBossMail[mailId])continue;if(!fishing.bossMailbox.some(x=>x.id===mailId)){addBossMail(m.type||'kraken',m.count||1,m.title||'월드보스 클리어 보상',mailId);changed=true;}}if(changed){await update(ref(db,`users/${uid}`),{fishing});}}catch(e){console.warn('보스 우편 동기화 실패',e)}}
 window.claimBossMail=async function(mailId){ensureBossRewardState();const mail=fishing.bossMailbox.find(m=>m.id===mailId);if(!mail||mail.claimed){shop20Toast('받을 우편이 없습니다.');return;}const type=mail.type||'kraken',count=Math.max(1,Number(mail.count)||1);fishing.bossChests[type]=(fishing.bossChests[type]||0)+count;mail.claimed=true;fishing.claimedBossMail[mailId]=true;try{await dbPatch({[`multiplayer/bossMailByUser/${uid}/${mailId}/claimed`]:true,[`multiplayer/bossMailByUser/${uid}/${mailId}/claimedAt`]:Date.now()});}catch(e){console.warn('우편 수령 상태 동기화 실패',e)}shop20Toast('우편 수령 완료!',`${(BOSS_CHEST_INFO[type]||BOSS_CHEST_INFO.kraken).name} x${count} 가방 지급`);render();await saveGame();if(currentMultiTab==='boss')loadMulti()}
-window.openBossChest=function(type){ensureBossRewardState();if((fishing.bossChests[type]||0)<=0){shop20Toast('상자가 없습니다.','보스 우편함에서 먼저 수령하세요.');return}fishing.bossChests[type]-=1;const reward=rollBossChest(type);shop20Toast('보스 상자 개봉!',reward.text);render();saveGame()}
-function renderBossMailboxPanel(){ensureBossRewardState();const mails=(fishing.bossMailbox||[]).filter(m=>!m.claimed).slice(0,8);const rows=mails.map(m=>{const info=BOSS_CHEST_INFO[m.type]||BOSS_CHEST_INFO.kraken;return `<div class="boss-mail-item"><div><b>${m.title||'보스 보상 우편'}</b><div class="small">${m.desc||`${info.name} x${m.count||1}`} · ${m.createdAt?new Date(m.createdAt).toLocaleString():'-'}</div></div><button onclick="claimBossMail('${m.id}')">받기</button></div>`}).join('')||'<div class="small">받을 보스 보상 우편이 없습니다.</div>';return `<div class="boss-mailbox-panel"><div class="boss-mail-title">📬 보스 우편함</div>${rows}</div>`}
-function renderBossRewardPanel(boss){ensureBossRewardState();const type=getBossRewardType(boss?.id);const info=BOSS_CHEST_INFO[type]||BOSS_CHEST_INFO.kraken;return `${renderBossMailboxPanel()}<div class="boss-reward-panel"><div class="boss-reward-title">🎁 보스 보상 / 상자 가방</div><div class="small">처치 보상은 우편함으로 도착합니다. 우편을 받으면 아래 상자가 가방에 들어오고, 열기 시 가챠 확률로 보상이 지급됩니다.</div><div class="boss-chest-grid">${Object.values(BOSS_CHEST_INFO).map(c=>`<div class="boss-chest-card"><img src="${c.icon}" alt="${c.name}"><b>${c.name}</b><div class="small">가방 보유 ${fishing.bossChests?.[c.id]||0}개</div><button onclick="openBossChest('${c.id}')">열기</button></div>`).join('')}</div><div class="boss-token-line">🐙 크라켄 토큰 ${fishing.bossTokens.kraken||0} · 🌊 리바이어던 토큰 ${fishing.bossTokens.leviathan||0} · 🔥 피닉스 토큰 ${fishing.bossTokens.phoenix||0}<br>상자 확률: 골드/미끼 높음, 토큰 중간, 장식 낮음, 장비 극히 낮음</div></div>${renderAdminBossPanel(boss)}`}
+let bossUnlockState=null;
+function ensureBossGachaModal(){
+  let modal=document.getElementById('bossGachaModal');
+  if(modal)return modal;
+  modal=document.createElement('div');
+  modal.id='bossGachaModal';
+  modal.className='boss-gacha-backdrop';
+  modal.innerHTML='<div class="boss-gacha-card"><div id="bossGachaInner" class="boss-gacha-inner"></div></div>';
+  document.body.appendChild(modal);
+  return modal;
+}
+window.openBossChest=function(type){
+  ensureBossRewardState();
+  if((fishing.bossChests[type]||0)<=0){shop20Toast('상자가 없습니다.','보스 우편함에서 먼저 수령하세요.');return}
+  startBossChestUnlock(type);
+}
+function startBossChestUnlock(type){
+  const info=BOSS_CHEST_INFO[type]||BOSS_CHEST_INFO.kraken;
+  const modal=ensureBossGachaModal(),inner=document.getElementById('bossGachaInner'),card=modal.querySelector('.boss-gacha-card');
+  card.className='boss-gacha-card';
+  card.style.removeProperty('--gacha-bg');
+  modal.classList.add('show');
+  inner.innerHTML=`<div class="boss-gacha-title">${info.name} 해방</div><div class="boss-gacha-sub">빠른 타이밍 바를 초록 구간에서 멈추세요. 성공 시 강화 개봉!</div><img class="boss-chest-big shake" src="${info.icon}" alt="${info.name}"><div class="unlock-meter"><div class="unlock-zone"></div><div id="unlockPointer" class="unlock-pointer"></div></div><div class="small">보스 9콤보급 속도 · 판정은 1회만 진행됩니다.</div><div class="boss-gacha-actions"><button onclick="finishBossChestUnlock()">지금 멈추기</button><button class="secondary" onclick="cancelBossChestUnlock()">취소</button></div>`;
+  let pos=0,dir=1;
+  clearInterval(bossUnlockState?.timer);
+  bossUnlockState={type,pos,dir,timer:setInterval(()=>{pos+=dir*5.8;if(pos>=100){pos=100;dir=-1}if(pos<=0){pos=0;dir=1}bossUnlockState.pos=pos;bossUnlockState.dir=dir;const p=document.getElementById('unlockPointer');if(p)p.style.left=pos+'%';},16)};
+}
+window.cancelBossChestUnlock=function(){clearInterval(bossUnlockState?.timer);bossUnlockState=null;ensureBossGachaModal().classList.remove('show')}
+window.finishBossChestUnlock=async function(){
+  if(!bossUnlockState)return;
+  const {type,pos}=bossUnlockState;
+  clearInterval(bossUnlockState.timer);
+  bossUnlockState=null;
+  const success=pos>=42&&pos<=58;
+  fishing.bossChests[type]-=1;
+  const reward=rollBossChest(type,success);
+  await showBossGachaResult(type,reward,success);
+  await saveGame();
+  render();
+  if(currentMultiTab==='boss')loadMulti();
+}
+async function showBossGachaResult(type,reward,enhanced){
+  const info=BOSS_CHEST_INFO[type]||BOSS_CHEST_INFO.kraken;
+  const modal=ensureBossGachaModal(),inner=document.getElementById('bossGachaInner'),card=modal.querySelector('.boss-gacha-card');
+  const rareClass=reward.kind==='mythic'?'mythic':reward.kind==='legend'?'legend':'';
+  card.className='boss-gacha-card '+rareClass;
+  if(reward.kind==='mythic')card.style.setProperty('--gacha-bg',`url(${BOSS_GACHA_ASSETS.mythicBg})`);
+  else if(reward.kind==='legend')card.style.setProperty('--gacha-bg',`url(${BOSS_GACHA_ASSETS.legendaryBg})`);
+  inner.innerHTML=`<div class="boss-gacha-title">${enhanced?'강화 개봉 성공!':'일반 개봉'}</div><div class="boss-gacha-sub">${enhanced?'성공 판정으로 보상 확률이 상승했습니다.':'아쉽지만 상자는 정상 개봉됩니다.'}</div><img class="boss-chest-big shake" src="${info.icon}" alt="${info.name}"><div class="small">상자가 열리는 중...</div>`;
+  await new Promise(r=>setTimeout(r,760));
+  inner.innerHTML=`<div class="boss-gacha-title">${reward.grade||'보상 공개'}</div><div class="boss-gacha-sub">${info.name}</div><img class="boss-chest-big" src="${info.icon}" alt="${info.name}"><div class="boss-gacha-result ${rareClass}">${reward.text}</div><div class="boss-gacha-actions"><button onclick="closeBossGachaModal()">확인</button><button class="secondary" onclick="closeBossGachaModal(); openBossChest('${type}')" ${(fishing.bossChests[type]||0)<=0?'disabled':''}>한 번 더 열기</button></div>`;
+  shop20Toast(enhanced?'강화 개봉!':'보스 상자 개봉!',reward.text);
+  if(reward.kind==='legend'||reward.kind==='mythic')await publishBossRareDrop(reward,type,enhanced);
+}
+window.closeBossGachaModal=function(){ensureBossGachaModal().classList.remove('show')}
+async function publishBossRareDrop(reward,type,enhanced){
+  if(!db||!uid)return;
+  const id=`${Date.now()}_${uid}`;
+  const info=BOSS_CHEST_INFO[type]||BOSS_CHEST_INFO.kraken;
+  const payload={id,uid,name:getPlayerName(),type,boxName:info.name,grade:reward.kind,text:reward.text,enhanced:!!enhanced,createdAt:Date.now()};
+  try{await dbPatch({[`multiplayer/bossRareDrops/${id}`]:payload});}catch(e){console.warn('희귀 획득 방송 실패',e)}
+}
+async function renderBossRareDropLog(){
+  try{
+    const data=await dbGet('multiplayer/bossRareDrops')||{};
+    const rows=Object.values(data).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,8).map(x=>`<div class="boss-broadcast-row">📢 <b>${x.name||'낚시꾼'}</b> · ${x.grade==='mythic'?'🌈 신화':'⭐⭐⭐⭐⭐ 전설'} · ${x.text||''}<br><span class="small">${x.boxName||'보스 상자'} · ${x.createdAt?new Date(x.createdAt).toLocaleString():'-'}</span></div>`).join('');
+    return `<div class="boss-broadcast-box"><h4>최근 전설/신화 획득</h4>${rows||'<div class="small">아직 전설/신화 획득 기록이 없습니다.</div>'}</div>`;
+  }catch(e){return `<div class="boss-broadcast-box"><h4>최근 전설/신화 획득</h4><div class="small">방송 로그를 불러오지 못했습니다.</div></div>`}
+}
+function renderBossMailboxPanel(){ensureBossRewardState();const mails=(fishing.bossMailbox||[]).filter(m=>!m.claimed).slice(0,8);const rows=mails.map(m=>{const info=BOSS_CHEST_INFO[m.type]||BOSS_CHEST_INFO.kraken;return `<div class="boss-mail-item"><div><b>${m.title||'보스 보상 우편'}</b><div class="small">${m.desc||`${info.name} x${m.count||1}`} · ${m.createdAt?new Date(m.createdAt).toLocaleString():'-'}</div></div><button onclick="claimBossMail('${m.id}')">받기</button></div>`}).join('')||'<div class="small">받을 보스 보상 우편이 없습니다.</div>';return `<div class="boss-mailbox-panel"><div class="boss-mail-title"><img src="${BOSS_GACHA_ASSETS.mailbox}" alt="">보스 우편함</div>${rows}</div>`}
+function renderBossRewardPanel(boss){ensureBossRewardState();const type=getBossRewardType(boss?.id);const info=BOSS_CHEST_INFO[type]||BOSS_CHEST_INFO.kraken;return `${renderBossMailboxPanel()}<div class="boss-reward-panel"><div class="boss-reward-title">🎁 보스 보상 / 상자 가방</div><div class="small">처치 보상은 우편함으로 도착합니다. 우편을 받으면 아래 상자가 가방에 들어오고, 열기 시 가챠 확률로 보상이 지급됩니다.</div><div class="boss-chest-grid">${Object.values(BOSS_CHEST_INFO).map(c=>`<div class="boss-chest-card"><img src="${c.icon}" alt="${c.name}"><b>${c.name}</b><div class="small">가방 보유 ${fishing.bossChests?.[c.id]||0}개</div><div class="open-enhance-note">타이밍 성공 시 강화 개봉</div><button onclick="openBossChest('${c.id}')">열기</button></div>`).join('')}</div><div id="bossRareDropLogBox"></div><div class="boss-token-line">🐙 크라켄 토큰 ${fishing.bossTokens.kraken||0} · 🌊 리바이어던 토큰 ${fishing.bossTokens.leviathan||0} · 🐉 심해룡 토큰 ${fishing.bossTokens.phoenix||0}<br>상자 확률: 골드/미끼 높음, 토큰 중간, 장식 낮음, 장비 극히 낮음</div></div>${renderAdminBossPanel(boss)}`}
 function renderAdminBossPanel(boss){if(!fishing?.adminMode)return '';return `<div class="admin-boss-panel"><h3>🛠 관리자 모드 · 보스 HP 조절</h3><div class="small">현재 보스 HP를 직접 수정합니다. 테스트용으로만 사용하세요.</div><div class="admin-boss-form"><input id="adminBossHpInput" type="number" min="0" placeholder="현재 HP" value="${Math.max(0,Number(boss?.hp||0))}"><input id="adminBossMaxHpInput" type="number" min="1" placeholder="최대 HP" value="${Math.max(1,Number(boss?.maxHp||1))}"><button onclick="adminSetBossHp()">적용</button></div><div class="admin-boss-form" style="margin-top:8px"><button onclick="adminSetBossQuick(1)">HP 1로</button><button onclick="adminSetBossQuick(0)">즉시 처치 상태</button><button onclick="adminSpawnRandomBoss()">랜덤 보스 교체</button></div></div>`}
 let shop20SecretTapCount=0,shop20SecretTapTimer=null;
 window.tapShop20Secret=function(){shop20SecretTapCount++;clearTimeout(shop20SecretTapTimer);shop20SecretTapTimer=setTimeout(()=>{shop20SecretTapCount=0},1600);if(shop20SecretTapCount>=7){shop20SecretTapCount=0;const pw=prompt('관리자 비밀번호를 입력하세요.');if(pw==='1105'){ensureBossRewardState();fishing.adminMode=!fishing.adminMode;updateAdminBadge();shop20Toast(fishing.adminMode?'관리자 모드 ON':'관리자 모드 OFF',fishing.adminMode?'보스 HP 조절이 활성화되었습니다.':'일반 모드로 돌아왔습니다.');saveGame();if(currentMultiTab==='boss')loadMulti();}else if(pw!==null){shop20Toast('비밀번호가 틀렸습니다.');}}}
@@ -3087,6 +3229,8 @@ async function renderMultiBoss(box){
     <div class="boss12-log"><div class="boss11-log-title">🏆 보스 딜 순위</div>${damageRankHtml}</div>
     <div class="boss12-log"><div class="boss11-log-title">최근 공격</div>${logs}</div>
   </div>`
+  const rareBox=document.getElementById('bossRareDropLogBox');
+  if(rareBox)rareBox.innerHTML=await renderBossRareDropLog();
 }async function renderMultiAuction(box){
   const now=Date.now();
   let data={};
