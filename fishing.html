@@ -38,7 +38,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .location-card .lv{font-size:11px;color:inherit;opacity:.8}
 .location-thumb{width:100%;height:90px;object-fit:cover;border-radius:10px;margin-bottom:6px;image-rendering:pixelated}
 
-#pond{position:relative;height:170px;border-radius:22px;overflow:hidden;border:4px solid rgba(255,255,255,.25);background-size:cover;background-position:center;background-repeat:no-repeat;display:none}
+#pond{position:relative;height:170px;border-radius:22px;overflow:hidden;border:4px solid rgba(255,255,255,.25);background-size:cover;background-position:center;background-repeat:no-repeat;display:block}
 #pond.active-scene{display:block}
 #floatBobber{position:absolute;left:50%;top:42%;width:16px;height:34px;transform:translate(-50%,-50%);display:none}
 #floatBobber::before{content:"";display:block;width:16px;height:16px;background:#ef4444;border-radius:50% 50% 0 0}
@@ -221,7 +221,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
   height:100%;
   object-fit:contain;
   image-rendering:pixelated;
-  z-index:1;
+  z-index:2;
   pointer-events:none;
 }
 
@@ -231,13 +231,13 @@ button:disabled{opacity:.45;cursor:not-allowed}
   top:42%;
   transform:translate(-50%,-50%);
 
-  width:62px;
-  height:48px;
+  width:58px;
+  height:44px;
 
   object-fit:contain;
   image-rendering:pixelated;
 
-  z-index:5;
+  z-index:4;
 }
 .fish-card .fish-name{
   position:absolute;
@@ -314,6 +314,54 @@ body.playing-mini #miniStatus{
   margin:6px auto 8px;
 }
 
+
+/* PC 3단 게임 UI 레이아웃 */
+.fishing-shell{background:rgba(15,23,42,.58);border:1px solid rgba(148,163,184,.25);box-shadow:0 18px 60px rgba(0,0,0,.25)}
+.fishing-layout{display:block}
+.side-panel,.center-panel,.codex-strip{background:rgba(2,6,23,.35);border:1px solid rgba(148,163,184,.25);border-radius:16px;padding:10px}
+.center-title{display:flex;align-items:center;justify-content:center;gap:8px;font-size:22px;font-weight:900;margin:4px 0 10px;text-shadow:0 2px 4px #000}
+.help-badge{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:rgba(15,23,42,.8);border:1px solid rgba(255,255,255,.25);font-size:14px}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.panel-head h2{margin:0;font-size:18px}
+.panel-head span{color:#d1d5db;font-weight:800}
+.preview-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:8px 0 10px}
+.preview-tabs button{margin:0;padding:8px 4px;border-radius:9px;background:rgba(2,6,23,.65);color:#d1d5db;border:1px solid rgba(148,163,184,.2);font-size:12px}
+.preview-tabs button.active{border-color:#f59e0b;color:#fff;background:rgba(245,158,11,.18)}
+.bag-panel{display:none}
+.codex-strip{display:none;margin-top:10px}
+.preview-grid{grid-template-columns:repeat(3,96px);justify-content:center;align-content:start;max-height:500px;overflow:auto;padding:2px}
+.codex-preview-grid{grid-template-columns:repeat(auto-fill,96px);justify-content:start;max-height:210px;overflow:hidden;padding:2px}
+
+@media(min-width:980px){
+  body{padding-bottom:76px;background:radial-gradient(circle at top,#0f3455 0,#071426 50%,#020617 100%)}
+  .wrap{max-width:1480px;padding:8px 14px}
+  h1{display:none}
+  .top-bar{max-width:none}
+  .quick-stats{grid-template-columns:repeat(4,1fr)}
+  .fishing-layout{display:grid;grid-template-columns:270px minmax(520px,1fr) 420px;gap:10px;align-items:stretch}
+  .location-panel{min-height:560px}
+  .bag-panel{display:block;min-height:560px}
+  .codex-strip{display:block}
+  .location-grid{grid-template-columns:1fr;gap:10px}
+  .location-card{display:grid;grid-template-columns:82px 1fr;grid-template-rows:auto auto;align-items:center;text-align:left;gap:2px 10px;min-height:72px;padding:10px 12px;border-radius:10px;background:rgba(15,23,42,.65)}
+  .location-card.active{background:rgba(15,23,42,.75);border-color:#38bdf8;color:#fff;box-shadow:0 0 0 1px rgba(56,189,248,.35) inset}
+  .location-card.locked{opacity:.65}
+  .location-card .location-thumb{grid-row:1/3;width:82px;height:48px;margin:0;border-radius:6px}
+  .location-card b{font-size:15px}
+  .location-card .lv{font-size:12px;color:#86efac;font-weight:800}
+  .location-card.locked .lv{color:#f87171}
+  #pond{height:430px;border-radius:14px;border-color:rgba(148,163,184,.35);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}
+  #normalControls{margin-top:8px}
+  #fishBtn,#holdBtn{width:min(100%,720px);height:48px;font-size:20px}
+  #fishGame{height:520px}
+  #track{height:480px}
+  body.playing-mini .fishing-shell{max-width:860px;margin:8px auto}
+  body.playing-mini #fishGame{height:calc(100vh - 190px);min-height:520px}
+  body.playing-mini #track{height:calc(100vh - 230px);min-height:480px}
+  body.playing-mini #holdBtn{left:50%;right:auto;transform:translateX(-50%);width:min(760px,calc(100vw - 40px));bottom:92px}
+  .bottom-tabs{left:50%;right:auto;transform:translateX(-50%);width:min(100%,1480px);border-radius:14px 14px 0 0}
+}
+
 @media(max-width:720px){
   h1{font-size:23px}
   .wrap{padding:5px}
@@ -358,41 +406,74 @@ body.playing-mini #miniStatus{
   </div>
 
   <section id="tabFishing" class="tab-page active">
-    <div class="box">
-      <div id="locationBox">
-        <h2>낚시터 선택</h2>
-        <div id="locationGrid" class="location-grid"></div>
-      </div>
-
-      <div id="pond">
-        <div id="floatBobber"></div>
-        <div id="bobberRipple"></div>
-        <div id="splashEffect"></div>
-        <div id="fishShadow"></div>
-      </div>
-
-      <div id="normalControls">
-        <div id="mainStatus" class="status">낚시터를 고르고 낚시를 시작하세요.</div>
-        <button id="fishBtn">찌 던지기</button>
-        <button id="biteBtn" class="bite hidden">입질! 낚아채기</button>
-        <div id="catchResult" class="catch-result"></div>
-      </div>
-
-      <div id="miniGameBox" class="hidden">
-        <div class="status" id="miniStatus">버튼 또는 스페이스바를 누르면 낚시가 시작됩니다.</div>
-
-        <div id="fishGame">
-          <div class="mini-bubbles"></div>
-          <div id="track">
-            <div id="verticalProgress">
-              <div id="verticalProgressFill"></div>
-            </div>
-            <div id="catchBar"></div>
-            <img id="fishSprite" alt="물고기" />
+    <div class="box fishing-shell">
+      <div class="fishing-layout">
+        <aside class="side-panel location-panel">
+          <div id="locationBox">
+            <h2>🐟 낚시터 선택</h2>
+            <div id="locationGrid" class="location-grid"></div>
           </div>
-        </div>
+        </aside>
 
-        <button id="holdBtn">누르고 있기</button>
+        <main class="center-panel">
+          <div class="center-title">
+            <span id="currentLocationTitle">🌱 초보 연못</span>
+            <span class="help-badge">?</span>
+          </div>
+
+          <div id="pond">
+            <div id="floatBobber"></div>
+            <div id="bobberRipple"></div>
+            <div id="splashEffect"></div>
+            <div id="fishShadow"></div>
+          </div>
+
+          <div id="normalControls">
+            <div id="mainStatus" class="status">낚시터를 고르고 낚시를 시작하세요.</div>
+            <button id="fishBtn">찌 던지기</button>
+            <button id="biteBtn" class="bite hidden">입질! 낚아채기</button>
+            <div id="catchResult" class="catch-result"></div>
+          </div>
+
+          <div id="miniGameBox" class="hidden">
+            <div class="status" id="miniStatus">버튼 또는 스페이스바를 누르면 낚시가 시작됩니다.</div>
+
+            <div id="fishGame">
+              <div class="mini-bubbles"></div>
+              <div id="track">
+                <div id="verticalProgress">
+                  <div id="verticalProgressFill"></div>
+                </div>
+                <div id="catchBar"></div>
+                <img id="fishSprite" alt="물고기" />
+              </div>
+            </div>
+
+            <button id="holdBtn">누르고 있기</button>
+          </div>
+        </main>
+
+        <aside class="side-panel bag-panel">
+          <div class="panel-head">
+            <h2>🎒 가방</h2>
+            <span id="bagPreviewCount">0 / 60</span>
+          </div>
+          <div class="preview-tabs">
+            <button class="active" type="button">전체</button>
+            <button type="button">물고기</button>
+            <button type="button">아이템</button>
+            <button type="button">기타</button>
+          </div>
+          <div id="inventoryPreviewList" class="fish-card-grid preview-grid"></div>
+        </aside>
+      </div>
+
+      <div class="codex-strip">
+        <div class="panel-head">
+          <h2>📖 도감</h2>
+          <span id="bookProgressInline">0 / 20</span>
+        </div>
+        <div id="fishBookPreview" class="fish-card-grid codex-preview-grid"></div>
       </div>
     </div>
   </section>
@@ -521,6 +602,7 @@ const locationGrid=$("locationGrid"), normalControls=$("normalControls"), miniGa
 const miniStatus=$("miniStatus"), catchBar=$("catchBar"), fishSprite=$("fishSprite"), fishShadow=$("fishShadow");
 const floatBobber=$("floatBobber"), bobberRipple=$("bobberRipple"), splashEffect=$("splashEffect"), biteBtn=$("biteBtn"), verticalProgressFill=$("verticalProgressFill");
 const inventoryList=$("inventoryList"), fishBook=$("fishBook"), upgradeCostText=$("upgradeCostText"), bookProgress=$("bookProgress");
+const inventoryPreviewList=$("inventoryPreviewList"), fishBookPreview=$("fishBookPreview"), bagPreviewCount=$("bagPreviewCount"), bookProgressInline=$("bookProgressInline"), currentLocationTitle=$("currentLocationTitle");
 
 onAuthStateChanged(auth, async user=>{
   if(!user){location.href="./index.html";return;}
@@ -573,6 +655,7 @@ function render(){
   renderLocations();
   renderInventory();
   renderFishBook();
+  renderDesktopPreviews();
 }
 
 function renderLocations(){
@@ -593,6 +676,70 @@ function renderLocations(){
       renderLocations();
     };
     locationGrid.appendChild(div);
+  }
+  updateCurrentLocationUI();
+}
+
+function updateCurrentLocationUI(){
+  const loc=LOCATIONS[selectedLocation];
+  if(currentLocationTitle) currentLocationTitle.textContent=`${loc.emoji} ${loc.name}`;
+  const pondEl=$("pond");
+  if(pondEl) pondEl.style.backgroundImage=`url("${loc.scene}")`;
+}
+
+function renderDesktopPreviews(){
+  renderInventoryPreview();
+  renderFishBookPreview();
+}
+
+function renderInventoryPreview(){
+  if(!inventoryPreviewList)return;
+  inventoryPreviewList.innerHTML="";
+  const entries=Object.entries(fishing?.inventory||{}).filter(([key,count])=>count>0).slice(0,12);
+  const total=Object.values(fishing?.inventory||{}).reduce((a,b)=>a+(Number(b)||0),0);
+  if(bagPreviewCount) bagPreviewCount.textContent=`${total} / 60`;
+  if(!entries.length){inventoryPreviewList.innerHTML=`<div class="small">보유 물고기 없음</div>`;return;}
+  for(const [key,count] of entries){
+    const parsed=parseInventoryKey(key);
+    const fishKey=FISHES[parsed.fishKey]?parsed.fishKey:key;
+    const sizeKey=FISHES[parsed.fishKey]?parsed.sizeKey:"normal";
+    const fish=FISHES[fishKey]; if(!fish)continue;
+    const frame=RARITY_FRAMES[fish.rarity]||RARITY_FRAMES.common;
+    const displayName=getSizedFishName(fishKey,sizeKey);
+    const card=document.createElement("div");
+    card.className="fish-card";
+    card.title=displayName;
+    card.innerHTML=`
+      <img class="frame" src="${frame}" alt="">
+      <img class="fish-img" src="${fish.img}" alt="${displayName}">
+      <div class="fish-count">x${count}</div>
+      <div class="fish-name">${displayName}</div>`;
+    card.onclick=()=>openSellPrompt(key,displayName,count,getFishSellPrice(fishKey,sizeKey));
+    inventoryPreviewList.appendChild(card);
+  }
+}
+
+function renderFishBookPreview(){
+  if(!fishBookPreview)return;
+  fishBookPreview.innerHTML="";
+  const discovered=fishing?.discovered||{};
+  const ownedCount=Object.keys(FISHES).filter(k=>discovered[k]).length;
+  if(bookProgressInline) bookProgressInline.textContent=`${ownedCount} / ${Object.keys(FISHES).length}`;
+  for(const [key,fish] of Object.entries(FISHES)){
+    const known=!!discovered[key];
+    const owned=Object.entries(fishing?.inventory||{}).reduce((sum,[invKey,count])=>{
+      const parsed=parseInventoryKey(invKey);
+      return sum+(parsed.fishKey===key?count:0);
+    },0);
+    const frame=RARITY_FRAMES[fish.rarity]||RARITY_FRAMES.common;
+    const card=document.createElement("div");
+    card.className=`fish-card ${known?"":"locked"}`;
+    card.innerHTML=`
+      <img class="frame" src="${frame}" alt="">
+      <img class="fish-img" src="${fish.img}" alt="${known?fish.name:"미발견"}">
+      ${known&&owned>0?`<div class="fish-count">x${owned}</div>`:""}
+      <div class="fish-name">${known?fish.name:"???"}</div>`;
+    fishBookPreview.appendChild(card);
   }
 }
 
