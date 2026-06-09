@@ -1770,6 +1770,26 @@ html,body{
 }
 
 </style>
+
+<style id="accessory11Css">
+.accessory-panel{margin:12px 0;background:rgba(2,6,23,.48);border:1px solid rgba(250,204,21,.18);border-radius:16px;padding:12px;text-align:left}
+.accessory-panel h3{margin:0 0 8px;color:#facc15;display:flex;align-items:center;gap:6px}
+.accessory-slots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0 12px}
+.accessory-slot{background:rgba(15,23,42,.72);border:1px solid rgba(148,163,184,.22);border-radius:14px;padding:9px;text-align:center;min-height:124px}
+.accessory-slot.equipped{border-color:rgba(250,204,21,.5);box-shadow:0 0 18px rgba(250,204,21,.12)}
+.accessory-slot img{width:46px;height:46px;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 8px 10px rgba(0,0,0,.45))}
+.accessory-slot b{display:block;margin-top:4px;color:#fff;font-size:13px}.accessory-slot small{display:block;color:#cbd5e1;font-size:11px;line-height:1.35;margin-top:3px}
+.accessory-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:8px;max-height:260px;overflow:auto;padding-right:2px}
+.accessory-card{position:relative;background:rgba(15,23,42,.72);border:1px solid rgba(148,163,184,.2);border-radius:14px;padding:9px;text-align:center;min-height:154px}
+.accessory-card.rare{box-shadow:0 0 12px rgba(59,130,246,.16)}.accessory-card.epic{box-shadow:0 0 14px rgba(168,85,247,.22)}.accessory-card.legend{box-shadow:0 0 16px rgba(250,204,21,.24)}.accessory-card.mythic{box-shadow:0 0 22px rgba(244,114,182,.32);border-color:rgba(244,114,182,.45)}
+.accessory-card img{width:52px;height:52px;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 8px 10px rgba(0,0,0,.5))}
+.accessory-card b{display:block;font-size:13px;color:#fff;margin:5px 0 2px}.accessory-card .acc-effect{font-size:11px;color:#93c5fd;line-height:1.35;min-height:30px}.accessory-card .acc-count{position:absolute;right:8px;top:8px;background:rgba(2,6,23,.7);border-radius:999px;padding:2px 6px;font-size:11px;font-weight:900;color:#fff}
+.accessory-card button,.accessory-slot button{height:30px;margin:6px 0 0;padding:0 8px;border-radius:9px;font-size:12px}.accessory-card button:disabled{opacity:.45}
+.accessory-summary{font-size:12px;color:#cbd5e1;line-height:1.55;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:8px;margin-top:8px}
+.boss-gacha-result.accessory{color:#d8b4fe;box-shadow:0 0 22px rgba(168,85,247,.22)}
+@media(max-width:720px){.accessory-slots{grid-template-columns:1fr}.accessory-list{grid-template-columns:1fr 1fr;max-height:none}}
+</style>
+
 </head>
 
 <body>
@@ -2960,7 +2980,7 @@ function pickFishByLocation(locationKey){
     const baitBonus=getEquippedBait();const rodEquip=getEquippedRod();
     if(fish.rarity==="rare")weight+=rodBonus*1.25+(baitBonus.rareBonus||0);
     if(fish.rarity==="epic")weight+=rodBonus*.7+(baitBonus.epicBonus||0);
-    if(fish.rarity==="legend")weight+=rodBonus*.25+(baitBonus.legendBonus||0)+(rodEquip.legendBonus||0);
+    if(fish.rarity==="legend")weight+=rodBonus*.25+(baitBonus.legendBonus||0)+(rodEquip.legendBonus||0)+getAccessoryLegendBonus();
     return [key,weight];
   });
 
@@ -2971,7 +2991,11 @@ function pickFishByLocation(locationKey){
 }
 
 function pickFishSize(){
-  const entries=Object.entries(FISH_SIZES);
+  const entries=Object.entries(FISH_SIZES).map(([key,size])=>{
+    const bonus=getAccessoryBigFishBonus();
+    const rate=size.rate*((key==='big'||key==='huge'||key==='monster')?(1+bonus):1);
+    return [key,{...size,rate}];
+  });
   const total=entries.reduce((sum,item)=>sum+item[1].rate,0);
   let r=Math.random()*total;
   for(const [key,size] of entries){r-=size.rate;if(r<=0)return key;}
@@ -3726,6 +3750,8 @@ installBossModule({
   get currentMultiTab(){return currentMultiTab;},
   getEquippedRod,
   getEquippedBait,
+  getAccessoryBossDamageMul,
+  getAccessoryPatternResist,
   hasAnyBait,
   consumeEquippedBait,
   getDefaultBoss,
@@ -4797,6 +4823,177 @@ async function renderBossRareDropLog(){
   };
   document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{ensure44();if(currentShopTab==='misc')renderShop20();},0));
 })();
+
+
+/* ===============================
+   11.0 Accessory System
+   - 장신구 인벤토리 / 3슬롯 장착
+   - 보스 상자 장신구 드롭
+   - 보스 딜/패턴 저항/전설/대형 확률 효과
+================================ */
+function ensureAccessoryState(){
+  if(!fishing)return;
+  fishing.accessories=fishing.accessories||{};
+  fishing.equipment=fishing.equipment||{};
+  fishing.equipment.accessories=fishing.equipment.accessories||{ring:null,necklace:null,relic:null};
+  for(const slot of ['ring','necklace','relic']){
+    const id=fishing.equipment.accessories[slot];
+    if(id && !hasAccessoryOwned(id))fishing.equipment.accessories[slot]=null;
+  }
+}
+function getAccessoryCount(id){const v=fishing?.accessories?.[id];return typeof v==='number'?v:Number(v?.count||0)}
+function hasAccessoryOwned(id){return getAccessoryCount(id)>0}
+function getAccessoryData(id){return ACCESSORY_ITEMS?.[id]||null}
+function getEquippedAccessoryIds(){ensureAccessoryState();return Object.values(fishing.equipment.accessories||{}).filter(Boolean)}
+function getEquippedAccessories(){return getEquippedAccessoryIds().map(getAccessoryData).filter(Boolean)}
+function getAccessoryEffectTotal(key){return getEquippedAccessories().reduce((sum,a)=>sum+Number(a.effects?.[key]||0),0)}
+function getAccessoryBossDamageMul(){return 1+getAccessoryEffectTotal('bossDamage')}
+function getAccessoryPatternResist(pattern){
+  const map={ink:'inkResist',storm:'stormResist',reverse:'reverseResist'};
+  return Math.max(0,Math.min(.85,getAccessoryEffectTotal(map[pattern]||'')));
+}
+function getAccessoryLegendBonus(){return getAccessoryEffectTotal('legendBonus')}
+function getAccessoryBigFishBonus(){return getAccessoryEffectTotal('bigFishBonus')}
+function getAccessoryGoldBonus(){return getAccessoryEffectTotal('goldBonus')}
+function getAccessoryRarityLabel(r){return ({rare:'레어',epic:'에픽',legend:'전설',mythic:'신화'}[r]||r||'일반')}
+function getAccessorySlotLabel(s){return ({ring:'💍 반지',necklace:'📿 목걸이',relic:'🧿 유물'}[s]||s)}
+function addAccessory(id,count=1){
+  ensureAccessoryState();
+  const a=getAccessoryData(id); if(!a)return null;
+  const cur=fishing.accessories[id];
+  if(typeof cur==='number')fishing.accessories[id]=cur+count;
+  else fishing.accessories[id]={id:a.id,name:a.name,icon:a.icon,rarity:a.rarity,slot:a.slot,set:a.set,marketPrice:a.marketPrice,count:Number(cur?.count||0)+count};
+  return a;
+}
+window.equipAccessory=function(id){
+  ensureAccessoryState();
+  const a=getAccessoryData(id);
+  if(!a||!hasAccessoryOwned(id)){shop20Toast('장착 불가','보유하지 않은 장신구입니다.');return}
+  fishing.equipment.accessories[a.slot]=id;
+  shop20Toast('장신구 장착 완료!',`${getAccessorySlotLabel(a.slot)} · ${a.name}`);
+  render();saveGame();
+}
+window.unequipAccessory=function(slot){
+  ensureAccessoryState();
+  fishing.equipment.accessories[slot]=null;
+  shop20Toast('장신구 해제 완료',getAccessorySlotLabel(slot));
+  render();saveGame();
+}
+function renderAccessorySlots(){
+  ensureAccessoryState();
+  return ['ring','necklace','relic'].map(slot=>{
+    const id=fishing.equipment.accessories?.[slot];
+    const a=id?getAccessoryData(id):null;
+    return `<div class="accessory-slot ${a?'equipped':''}">${a?`<img src="${a.icon}" alt="${a.name}"><b>${a.name}</b><small>${getAccessoryRarityLabel(a.rarity)} · ${a.effect}</small><button class="secondary" onclick="unequipAccessory('${slot}')">해제</button>`:`<div style="font-size:32px;margin:6px 0">${getAccessorySlotLabel(slot).split(' ')[0]}</div><b>${getAccessorySlotLabel(slot)}</b><small>비어있음</small>`}</div>`;
+  }).join('');
+}
+function renderAccessoryList(){
+  ensureAccessoryState();
+  const owned=Object.keys(ACCESSORY_ITEMS||{}).filter(id=>hasAccessoryOwned(id));
+  if(!owned.length)return '<div class="small">보유한 장신구가 없습니다. 보스 상자를 열어 획득하세요.</div>';
+  return owned.map(id=>{const a=getAccessoryData(id),cnt=getAccessoryCount(id),eq=fishing.equipment.accessories?.[a.slot]===id;return `<div class="accessory-card ${a.rarity}"><span class="acc-count">x${cnt}</span><img src="${a.icon}" alt="${a.name}"><b>${a.name}</b><div class="small">${getAccessorySlotLabel(a.slot)} · ${getAccessoryRarityLabel(a.rarity)}</div><div class="acc-effect">${a.effect}</div><button ${eq?'disabled':''} onclick="equipAccessory('${id}')">${eq?'장착중':'장착'}</button></div>`}).join('');
+}
+function getAccessorySummaryHtml(){
+  ensureAccessoryState();
+  const lines=[];
+  const boss=Math.round(getAccessoryEffectTotal('bossDamage')*100); if(boss)lines.push(`보스 딜 +${boss}%`);
+  const ink=Math.round(getAccessoryEffectTotal('inkResist')*100); if(ink)lines.push(`먹물 저항 ${ink}%`);
+  const storm=Math.round(getAccessoryEffectTotal('stormResist')*100); if(storm)lines.push(`폭풍 저항 ${storm}%`);
+  const rev=Math.round(getAccessoryEffectTotal('reverseResist')*100); if(rev)lines.push(`교란 저항 ${rev}%`);
+  const leg=getAccessoryEffectTotal('legendBonus'); if(leg)lines.push(`전설 확률 +${leg}%`);
+  const big=Math.round(getAccessoryEffectTotal('bigFishBonus')*100); if(big)lines.push(`대형 물고기 확률 +${big}%`);
+  const gold=Math.round(getAccessoryEffectTotal('goldBonus')*100); if(gold)lines.push(`골드 +${gold}%`);
+  return lines.length?lines.join(' · '):'장착 효과 없음';
+}
+function renderAccessoryPanel(){
+  ensureAccessoryState();
+  let panel=$('accessoryPanel11');
+  const anchor=document.querySelector('.equip-panel');
+  if(!anchor)return;
+  if(!panel){
+    panel=document.createElement('div');
+    panel.id='accessoryPanel11';
+    panel.className='accessory-panel';
+    anchor.insertAdjacentElement('afterend',panel);
+  }
+  panel.innerHTML=`<h3>💎 장신구</h3><div class="small">보스 상자에서 획득한 장신구를 장착할 수 있습니다. 11.5에서 세트 효과가 추가됩니다.</div><div class="accessory-slots">${renderAccessorySlots()}</div><div class="accessory-list">${renderAccessoryList()}</div><div class="accessory-summary"><b>현재 효과</b><br>${getAccessorySummaryHtml()}</div>`;
+}
+const renderEquipmentPanelBase11=renderEquipmentPanel;
+renderEquipmentPanel=function(){
+  renderEquipmentPanelBase11();
+  renderAccessoryPanel();
+};
+
+function pickBossAccessory(type,enhanced=false){
+  const pool=ACCESSORY_DROPS?.[type]||ACCESSORY_DROPS.kraken;
+  const list=pool.map(id=>ACCESSORY_ITEMS[id]).filter(Boolean);
+  const weight={rare:70,epic:24,legend:6,mythic:1};
+  const adjusted=list.map(a=>[a,weight[a.rarity]||20]);
+  if(enhanced){for(const x of adjusted){if(x[0].rarity==='legend')x[1]*=1.6;if(x[0].rarity==='mythic')x[1]*=1.8;}}
+  const total=adjusted.reduce((s,x)=>s+x[1],0);let r=Math.random()*total;
+  for(const [a,w] of adjusted){r-=w;if(r<=0)return a;}
+  return adjusted[0]?.[0];
+}
+function rollBossChest11Accessory(type,enhanced=false){
+  ensureBossRewardState();ensureAccessoryState();
+  const info=BOSS_CHEST_INFO[type]||BOSS_CHEST_INFO.kraken;
+  const kind=pickBossRewardKind(enhanced);
+  if(kind==='mythic'){
+    const a=pickBossAccessory(type,true);
+    if(a&&a.rarity==='mythic'){addAccessory(a.id,1);return {kind:'mythic',grade:'🌈 신화 장신구',text:`${a.name} 획득!`,accessory:a};}
+    fishing.ownedShopItems[info.rod]=true;fishing.cosmetics.owned[info.frame]=true;fishing.cosmetics.equippedProfile=info.frame;fishing.gems=(fishing.gems||0)+5;
+    return {kind:'mythic',grade:'🌈 신화',text:`${info.name}에서 신화 보상! ${EQUIP_RODS[info.rod].name} + ${COSMETIC_ITEMS[info.frame].name} + 보석 5개 획득!`};
+  }
+  if(kind==='legend'){
+    const a=Math.random()<.45?pickBossAccessory(type,true):null;
+    if(a&&(a.rarity==='legend'||a.rarity==='mythic')){addAccessory(a.id,1);return {kind:'legend',grade:'⭐⭐⭐⭐⭐ 전설 장신구',text:`${a.name} 획득!`,accessory:a};}
+    fishing.ownedShopItems[info.rod]=true;fishing.equipment=fishing.equipment||{};fishing.equipment.rod=info.rod;
+    return {kind:'legend',grade:'⭐⭐⭐⭐⭐ 전설',text:`${EQUIP_RODS[info.rod].name} 획득!`};
+  }
+  if(kind==='accessory'){
+    const a=pickBossAccessory(type,enhanced);
+    if(a){addAccessory(a.id,1);return {kind:'accessory',grade:`✨ ${getAccessoryRarityLabel(a.rarity)} 장신구`,text:`${a.name} 획득!`,accessory:a};}
+  }
+  if(kind==='equipment'){
+    const amount=randRange(info.tokenRange[0],info.tokenRange[1])+randRange(1,3);fishing.bossTokens[type]=(fishing.bossTokens[type]||0)+amount;
+    const bait=randRange(Math.floor(info.bait[0]/2),Math.floor(info.bait[1]/2));fishing.bait=(fishing.bait||0)+bait;
+    return {kind:'equipment',grade:'장비 재료',text:`${info.tokenName} ${amount}개 + 미끼 ${bait}개 획득`};
+  }
+  const gold=Math.floor(randRange(info.gold[0],info.gold[1])*(enhanced?2:1)*(1+getAccessoryEffectTotal('goldBonus')));fishing.gold=(fishing.gold||0)+gold;
+  return {kind:'gold',grade:'골드',text:`${formatNumber(gold)}G 획득`};
+}
+rollBossChest=rollBossChest11Accessory;
+
+const showBossGachaResultBase11=showBossGachaResult;
+showBossGachaResult=async function(type,reward,enhanced){
+  if(reward?.accessory){
+    const info=BOSS_CHEST_INFO[type]||BOSS_CHEST_INFO.kraken;
+    const modal=ensureBossGachaModal(),inner=document.getElementById('bossGachaInner'),card=modal.querySelector('.boss-gacha-card');
+    const rareClass=reward.accessory.rarity==='mythic'?'mythic':reward.accessory.rarity==='legend'?'legend':'accessory';
+    card.className='boss-gacha-card '+rareClass;
+    inner.innerHTML=`<div class="boss-gacha-title">${enhanced?'강화 개봉 성공!':'보스 상자 개봉'}</div><div class="boss-gacha-sub">${info.name}</div><img class="boss-chest-big shake" src="${info.icon}" alt="${info.name}"><div class="small">장신구가 빛나고 있습니다...</div>`;
+    await new Promise(r=>setTimeout(r,760));
+    const a=reward.accessory;
+    inner.innerHTML=`<div class="boss-gacha-title">${reward.grade}</div><div class="boss-gacha-sub">${getAccessorySlotLabel(a.slot)} · ${getAccessoryRarityLabel(a.rarity)}</div><img class="boss-chest-big" src="${a.icon}" alt="${a.name}"><div class="boss-gacha-result ${rareClass}">${a.name}<br><span class="small">${a.effect}</span></div><div class="boss-gacha-actions"><button onclick="closeBossGachaModal()">확인</button><button class="secondary" onclick="closeBossGachaModal(); openBossChest('${type}')" ${(fishing.bossChests[type]||0)<=0?'disabled':''}>한 번 더 열기</button></div>`;
+    shop20Toast('장신구 획득!',`${a.name} · ${a.effect}`);
+    if(a.rarity==='legend'||a.rarity==='mythic')await publishBossRareDrop({kind:a.rarity==='mythic'?'mythic':'legend',text:`${a.name} 획득!`},type,enhanced);
+    return;
+  }
+  return showBossGachaResultBase11(type,reward,enhanced);
+};
+
+const itemInfo44Base11=typeof itemInfo44==='function'?itemInfo44:null;
+if(itemInfo44Base11){
+  itemInfo44=function(t,k){
+    if(t==='accessory'){
+      const a=ACCESSORY_ITEMS[k]||fishing.accessories?.[k];
+      if(!a)return null;
+      return {itemType:t,itemKey:k,name:a.name||k,img:a.icon||'./assets/icons/star.png',rarity:a.rarity||'rare',marketPrice:Number(a.marketPrice||15000),payload:{accessory:a}};
+    }
+    return itemInfo44Base11(t,k);
+  };
+}
+
 
 </script>
 <script src="js/auction.js"></script>
