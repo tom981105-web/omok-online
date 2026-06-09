@@ -1315,7 +1315,7 @@ html,body{
    - 월드도감/대회/친구 숨김
    - 보스 이미지/타격감/랭킹 카드/경매 카드 개선
 ================================ */
-.bottom-tabs{grid-template-columns:repeat(5,1fr)!important}
+.bottom-tabs{grid-template-columns:repeat(6,1fr)!important}
 .multi10-tabs{grid-template-columns:repeat(4,1fr)!important;gap:8px!important}
 .multi10-tab[data-multi="worldDex"],
 .multi10-tab[data-multi="tournament"],
@@ -1778,6 +1778,22 @@ html,body{
 .accessory-card.max-enhanced{box-shadow:0 0 24px rgba(250,204,21,.32),inset 0 0 0 1px rgba(250,204,21,.28)}
 .accessory-enhance-help{margin:8px 0;padding:8px;border-radius:12px;background:rgba(124,58,237,.14);border:1px solid rgba(167,139,250,.24);color:#ddd6fe;font-size:12px;line-height:1.45}
 
+
+
+/* ===============================
+   Patch 13.1 Bottom Tab Restore
+   - 프로필 추가 후 사라진 멀티 탭 복구
+   - 하단 탭 6개 균등 배치
+================================ */
+.bottom-tabs{grid-template-columns:repeat(6,minmax(0,1fr))!important;}
+.bottom-tabs .tab-btn{min-width:0!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+.bottom-tabs .tab-btn .icon-img{width:22px!important;height:22px!important;}
+@media(max-width:720px){
+  .bottom-tabs{grid-template-columns:repeat(6,minmax(0,1fr))!important;left:4px!important;right:4px!important;}
+  .bottom-tabs .tab-btn{font-size:10px!important;padding:5px 1px!important;height:44px!important;line-height:1.12!important;}
+  .bottom-tabs .tab-btn .icon-img{width:18px!important;height:18px!important;}
+}
+
 </style>
 
 <style id="accessory11Css">
@@ -1808,6 +1824,22 @@ html,body{
 @media(max-width:720px){.accessory-set-list{grid-template-columns:1fr}.title-grid12{grid-template-columns:1fr 1fr}}
 
 @media(max-width:720px){.accessory-slots{grid-template-columns:1fr}.accessory-list{grid-template-columns:1fr 1fr;max-height:none}}
+
+
+/* ===============================
+   Patch 13.1 Bottom Tab Restore
+   - 프로필 추가 후 사라진 멀티 탭 복구
+   - 하단 탭 6개 균등 배치
+================================ */
+.bottom-tabs{grid-template-columns:repeat(6,minmax(0,1fr))!important;}
+.bottom-tabs .tab-btn{min-width:0!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+.bottom-tabs .tab-btn .icon-img{width:22px!important;height:22px!important;}
+@media(max-width:720px){
+  .bottom-tabs{grid-template-columns:repeat(6,minmax(0,1fr))!important;left:4px!important;right:4px!important;}
+  .bottom-tabs .tab-btn{font-size:10px!important;padding:5px 1px!important;height:44px!important;line-height:1.12!important;}
+  .bottom-tabs .tab-btn .icon-img{width:18px!important;height:18px!important;}
+}
+
 </style>
 
 
@@ -1823,6 +1855,22 @@ html,body{
 .profile13-summary{margin:8px 0 12px}.profile13-main-card{display:flex;align-items:center;gap:12px;background:rgba(2,6,23,.55);border:1px solid rgba(148,163,184,.2);border-radius:16px;padding:12px;text-align:left}.profile13-main-card img{width:56px;height:56px;border-radius:14px;object-fit:cover;image-rendering:pixelated;background:#020617}.profile13-main-card b{font-size:18px}.profile13-main-card small{display:block;color:#cbd5e1;margin-top:3px}
 .profile13-panel{margin:10px 0 12px}.profile13-wrap .accessory-panel{margin-top:12px}
 @media(max-width:720px){.shop13-tabs{grid-template-columns:repeat(2,1fr)}.profile13-header{display:block;text-align:center}.profile13-header button{width:100%;margin-top:8px}.profile13-main-card{justify-content:center;text-align:center;flex-direction:column}}
+
+
+/* ===============================
+   Patch 13.1 Bottom Tab Restore
+   - 프로필 추가 후 사라진 멀티 탭 복구
+   - 하단 탭 6개 균등 배치
+================================ */
+.bottom-tabs{grid-template-columns:repeat(6,minmax(0,1fr))!important;}
+.bottom-tabs .tab-btn{min-width:0!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+.bottom-tabs .tab-btn .icon-img{width:22px!important;height:22px!important;}
+@media(max-width:720px){
+  .bottom-tabs{grid-template-columns:repeat(6,minmax(0,1fr))!important;left:4px!important;right:4px!important;}
+  .bottom-tabs .tab-btn{font-size:10px!important;padding:5px 1px!important;height:44px!important;line-height:1.12!important;}
+  .bottom-tabs .tab-btn .icon-img{width:18px!important;height:18px!important;}
+}
+
 </style>
 </head>
 
@@ -2086,8 +2134,8 @@ html,body{
   <button class="tab-btn" data-tab="Bag"><img class="icon-img" src="./assets/icons/backpack.png" alt=""><br>가방</button>
   <button class="tab-btn" data-tab="Shop"><img class="icon-img" src="./assets/icons/shop.png" alt=""><br>상점</button>
   <button class="tab-btn" data-tab="Profile">👤<br>프로필</button>
-  <button class="tab-btn" data-tab="Book"><img class="icon-img" src="./assets/icons/book.png" alt=""><br>도감</button>
   <button class="tab-btn" data-tab="Multi">🌐<br>멀티</button>
+  <button class="tab-btn" data-tab="Book"><img class="icon-img" src="./assets/icons/book.png" alt=""><br>도감</button>
 </nav>
 
 
