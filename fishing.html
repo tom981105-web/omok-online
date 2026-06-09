@@ -1810,6 +1810,20 @@ html,body{
 @media(max-width:720px){.accessory-slots{grid-template-columns:1fr}.accessory-list{grid-template-columns:1fr 1fr;max-height:none}}
 </style>
 
+
+<style id="shop13ProfileCss">
+/* Patch 13.0: shop is purchase-only, profile handles equipment/cosmetics/accessories */
+.shop13-tabs{grid-template-columns:repeat(6,1fr)}
+.shop13-section-title{grid-column:1/-1;background:rgba(2,6,23,.55);border:1px solid rgba(250,204,21,.18);border-radius:16px;padding:12px;text-align:left;margin:0 0 4px}
+.shop13-section-title b{color:#facc15;font-size:17px}.shop13-section-title small{display:block;color:#cbd5e1;margin-top:4px}
+.shop20-card .shop13-buy-only{width:100%;margin-top:10px}
+.shop20-card .shop13-owned-note{font-size:11px;color:#cbd5e1;margin-top:7px;line-height:1.35}
+.profile13-wrap{background:linear-gradient(180deg,rgba(15,35,58,.9),rgba(2,12,27,.94));border:1px solid rgba(148,163,184,.28);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 18px 48px rgba(0,0,0,.22)}
+.profile13-header{display:flex;justify-content:space-between;align-items:center;gap:12px;text-align:left;margin-bottom:12px}.profile13-header h2{margin:0 0 4px;font-size:24px}.profile13-header button{white-space:nowrap}
+.profile13-summary{margin:8px 0 12px}.profile13-main-card{display:flex;align-items:center;gap:12px;background:rgba(2,6,23,.55);border:1px solid rgba(148,163,184,.2);border-radius:16px;padding:12px;text-align:left}.profile13-main-card img{width:56px;height:56px;border-radius:14px;object-fit:cover;image-rendering:pixelated;background:#020617}.profile13-main-card b{font-size:18px}.profile13-main-card small{display:block;color:#cbd5e1;margin-top:3px}
+.profile13-panel{margin:10px 0 12px}.profile13-wrap .accessory-panel{margin-top:12px}
+@media(max-width:720px){.shop13-tabs{grid-template-columns:repeat(2,1fr)}.profile13-header{display:block;text-align:center}.profile13-header button{width:100%;margin-top:8px}.profile13-main-card{justify-content:center;text-align:center;flex-direction:column}}
+</style>
 </head>
 
 <body>
@@ -1967,17 +1981,35 @@ html,body{
   <section id="tabShop" class="tab-page">
     <div class="box shop20-wrap">
       <div class="shop20-header">
-        <div><h2 id="shop20SecretTitle" onclick="tapShop20Secret()"><img class="icon-img" src="./assets/icons/shop.png" alt=""> 상점 2.0 <span id="adminModeBadge" class="admin-badge hidden">관리자</span></h2><div class="small">미끼, 낚싯대, 보물상자, 장식을 구매할 수 있습니다.</div></div>
+        <div><h2 id="shop20SecretTitle" onclick="tapShop20Secret()"><img class="icon-img" src="./assets/icons/shop.png" alt=""> 상점 3.0 <span id="adminModeBadge" class="admin-badge hidden">관리자</span></h2><div class="small">상점은 구매 전용입니다. 장착/칭호/장신구 관리는 프로필에서 할 수 있습니다.</div></div>
         <div class="shop20-wallet"><span><img src="./assets/icons/coin.png" alt=""> <b id="shopGoldText">0</b>G</span><span><img src="./assets/icons/gem.png" alt=""> <b id="shopGemText">0</b></span></div>
       </div>
       <div id="shopDealBox" class="shop20-deal"></div>
-      <div class="equip-panel"><div class="equip-card"><h3><img class="icon-img" src="./assets/icons/bait.png" alt=""> 현재 미끼</h3><div id="currentBaitBox" class="equip-current"></div><div id="baitEquipOptions" class="equip-options"></div></div><div class="equip-card"><h3><img class="icon-img" src="./assets/icons/rod.png" alt=""> 현재 낚싯대</h3><div id="currentRodBox" class="equip-current"></div><div id="rodEquipOptions" class="equip-options"></div></div></div>
-      <div class="cosmetic-panel"><div class="cosmetic-card"><h3><img class="icon-img" src="./assets/icons/crown.png" alt=""> 프로필 장식</h3><div id="currentProfileDecorBox" class="cosmetic-current"></div><div id="profileDecorOptions" class="cosmetic-options"></div></div><div class="cosmetic-card"><h3><img class="icon-img" src="./assets/icons/star.png" alt=""> 칭호 장식</h3><div id="currentTitleDecorBox" class="cosmetic-current"></div><div id="titleDecorOptions" class="cosmetic-options"></div></div></div>
-      <div class="shop20-tabs"><button class="shop20-tab active" data-shop="bait">미끼</button><button class="shop20-tab" data-shop="rod">낚싯대</button><button class="shop20-tab" data-shop="chest">상자</button><button class="shop20-tab" data-shop="cosmetic">장식</button><button class="shop20-tab" data-shop="misc">기타</button></div>
+
+      <div class="shop20-tabs shop13-tabs"><button class="shop20-tab active" data-shop="recommend">추천</button><button class="shop20-tab" data-shop="bait">미끼</button><button class="shop20-tab" data-shop="rod">낚싯대</button><button class="shop20-tab" data-shop="chest">상자</button><button class="shop20-tab" data-shop="cosmetic">프레임</button><button class="shop20-tab" data-shop="misc">특별상품</button></div>
       <div id="shopGrid" class="shop20-grid"></div>
     </div>
   </section>
 
+
+
+
+  <section id="tabProfile" class="tab-page">
+    <div class="box profile13-wrap">
+      <div class="profile13-header">
+        <div>
+          <h2>👤 프로필 / 장착 관리</h2>
+          <div class="small">구매한 미끼, 낚싯대, 프레임, 칭호, 장신구를 여기에서 장착합니다.</div>
+        </div>
+        <button class="secondary" onclick="openAvatarModal && openAvatarModal()">프로필 사진 변경</button>
+      </div>
+      <div class="profile13-summary">
+        <div id="profile13MainCard" class="profile13-main-card"></div>
+      </div>
+      <div class="equip-panel profile13-panel"><div class="equip-card"><h3><img class="icon-img" src="./assets/icons/bait.png" alt=""> 현재 미끼</h3><div id="currentBaitBox" class="equip-current"></div><div id="baitEquipOptions" class="equip-options"></div></div><div class="equip-card"><h3><img class="icon-img" src="./assets/icons/rod.png" alt=""> 현재 낚싯대</h3><div id="currentRodBox" class="equip-current"></div><div id="rodEquipOptions" class="equip-options"></div></div></div>
+      <div class="cosmetic-panel profile13-panel"><div class="cosmetic-card"><h3><img class="icon-img" src="./assets/icons/crown.png" alt=""> 프로필 프레임</h3><div id="currentProfileDecorBox" class="cosmetic-current"></div><div id="profileDecorOptions" class="cosmetic-options"></div></div><div class="cosmetic-card"><h3><img class="icon-img" src="./assets/icons/star.png" alt=""> 칭호 장식</h3><div id="currentTitleDecorBox" class="cosmetic-current"></div><div id="titleDecorOptions" class="cosmetic-options"></div></div></div>
+    </div>
+  </section>
 
   <section id="tabMulti" class="tab-page">
     <div class="box multi10-wrap">
@@ -2053,6 +2085,7 @@ html,body{
   <button class="tab-btn active" data-tab="Fishing"><img class="icon-img" src="./assets/icons/rod.png" alt=""> <br>낚시</button>
   <button class="tab-btn" data-tab="Bag"><img class="icon-img" src="./assets/icons/backpack.png" alt=""><br>가방</button>
   <button class="tab-btn" data-tab="Shop"><img class="icon-img" src="./assets/icons/shop.png" alt=""><br>상점</button>
+  <button class="tab-btn" data-tab="Profile">👤<br>프로필</button>
   <button class="tab-btn" data-tab="Book"><img class="icon-img" src="./assets/icons/book.png" alt=""><br>도감</button>
   <button class="tab-btn" data-tab="Multi">🌐<br>멀티</button>
 </nav>
@@ -5112,6 +5145,104 @@ if(itemInfo44Base11){
     return itemInfo44Base11(t,k);
   };
 }
+
+
+
+/* ===============================
+   Patch 13.0: Shop 3.0 + Profile Loadout
+   - 상점은 구매 전용
+   - 장착/칭호/장신구는 프로필 탭으로 이동
+================================ */
+(function(){
+  function setShop13Default(){
+    if(typeof currentShopTab==='string' && currentShopTab==='bait') currentShopTab='recommend';
+    const tabs=document.querySelectorAll('.shop20-tab');
+    if(tabs.length){
+      tabs.forEach(b=>b.classList.toggle('active',(b.dataset.shop||'')===currentShopTab));
+      if(!document.querySelector('.shop20-tab.active')){
+        const r=document.querySelector('.shop20-tab[data-shop="recommend"]')||tabs[0];
+        r.classList.add('active'); currentShopTab=r.dataset.shop||'recommend';
+      }
+    }
+  }
+  function getShop13Items(tab){
+    const all = typeof getShop20AllItems==='function' ? getShop20AllItems() : Object.values(SHOP20_ITEMS||{}).flat();
+    if(tab==='recommend'){
+      const deal = typeof getShop20TodayDeal==='function' ? getShop20TodayDeal() : null;
+      const pickIds=['bait_legend','bait_rare','rod_gold','rod_dragon','chest_kraken','chest_leviathan','chest_phoenix','auction_permit'];
+      const list=[];
+      if(deal)list.push(deal);
+      pickIds.forEach(id=>{const it=all.find(x=>x.id===id); if(it && !list.some(v=>v.id===it.id)) list.push(it);});
+      return list.filter(Boolean).slice(0,8);
+    }
+    return (SHOP20_ITEMS?.[tab]||[]);
+  }
+  function shop13Title(tab){
+    const map={recommend:['🛒 추천 상품','오늘의 특가와 자주 쓰는 상품입니다.'],bait:['🪱 미끼','낚시에 사용할 미끼를 구매합니다. 장착은 프로필에서 합니다.'],rod:['🎣 낚싯대','낚싯대를 구매합니다. 장착은 프로필에서 합니다.'],chest:['📦 상자','보스 보상 상자와 특수 상자를 구매합니다.'],cosmetic:['✨ 프레임','프로필 프레임/장식 상품을 구매합니다. 장착은 프로필에서 합니다.'],misc:['🏷️ 특별상품','거래소 보조 아이템 등 특수 상품입니다.']};
+    const v=map[tab]||map.recommend;
+    return `<div class="shop13-section-title"><b>${v[0]}</b><small>${v[1]}</small></div>`;
+  }
+  const oldCreate13 = typeof createShop20Card==='function' ? createShop20Card : null;
+  window.createShop20Card = createShop20Card = function(item){
+    if(!item && oldCreate13) return oldCreate13(item);
+    const card=document.createElement('div');
+    card.className=`shop20-card ${item.rarity||'common'}`;
+    const price=typeof getShop20Price==='function'?getShop20Price(item):Number(item.price||0);
+    const currency=item.currency||'gold';
+    const affordable=currency==='gem'?(fishing.gems||0)>=price:(fishing.gold||0)>=price;
+    const owned=item.level?hasRodOwned(item.id):!!fishing.ownedShopItems?.[item.id];
+    const currencyIcon=currency==='gem'?SHOP20_ASSETS.gem:SHOP20_ASSETS.coin;
+    const baitId=item.id==='bait_basic'?'basic':item.id==='bait_rare'?'rare':item.id==='bait_legend'?'legend':null;
+    const baitCount=baitId?getBaitCount(baitId):0;
+    const permitId=(typeof AUCTION_PERMIT_ID!=='undefined'?AUCTION_PERMIT_ID:'auction_permit');
+    let badge='';
+    if(item.id===permitId) badge=`<div class="shop20-ready">보유 ${formatNumber(fishing.auctionPermits||0)}</div>`;
+    else if(item.id===getShop20TodayDeal?.().id) badge='<div class="shop20-ready">특가</div>';
+    else if(owned) badge='<div class="shop20-owned">보유</div>';
+    let disabled=false, label='구매', note='';
+    if(owned && item.id!==permitId && !baitId){disabled=true; label='보유중'; note='장착과 관리는 프로필 탭에서 할 수 있습니다.';}
+    if(baitId){label='구매'; note=`보유 ${formatNumber(baitCount)}개 · 장착은 프로필 탭에서`;}
+    const action=`<button class="shop13-buy-only" ${(!affordable||disabled)?'disabled':''} onclick="buyShop20Item('${item.id}')">${label}</button>${note?`<div class="shop13-owned-note">${note}</div>`:''}`;
+    card.innerHTML=`${badge}<div class="shop20-icon"><img src="${item.icon}" alt="${item.name}" onerror="this.src='./assets/icons/star.png'"></div><div class="shop20-name">${item.name}</div><div class="shop20-desc">${item.desc||''}</div><div class="shop20-effect">${item.effect||''}</div><div class="shop20-bottom"><div class="shop20-price"><img src="${currencyIcon}" alt=""> ${formatNumber(price)}</div></div>${action}`;
+    return card;
+  };
+  const oldRender13 = typeof renderShop20==='function' ? renderShop20 : null;
+  window.renderShop20 = renderShop20 = function(){
+    if(!$('shopGrid')||!fishing)return;
+    if(!currentShopTab || currentShopTab==='bait') currentShopTab=currentShopTab||'recommend';
+    if($('shopGoldText'))$('shopGoldText').textContent=formatNumber(fishing.gold||0);
+    if($('shopGemText'))$('shopGemText').textContent=formatNumber(fishing.gems||0);
+    if($('shopDealBox')){
+      if(currentShopTab==='recommend') renderShop20Deal?.();
+      else $('shopDealBox').innerHTML=shop13Title(currentShopTab);
+    }
+    const grid=$('shopGrid'); grid.innerHTML='';
+    const items=getShop13Items(currentShopTab);
+    if(!items.length){grid.innerHTML='<div class="small">판매 중인 상품이 없습니다.</div>';return;}
+    items.forEach(item=>grid.appendChild(createShop20Card(item)));
+  };
+  function renderProfile13(){
+    if(!fishing)return;
+    const box=$('profile13MainCard');
+    if(box){
+      const avatar=fishing.profile?.avatar==='female'?'./assets/avatars/female_01.png':'./assets/avatars/male_01.png';
+      const name=fishing.profile?.nickname||getPlayerName?.()||'낚시꾼';
+      const title=fishing.title||fishing.titles?.equipped&&PLAYER_TITLES?.[fishing.titles.equipped]?.name||'별빛 낚시꾼';
+      const acc=typeof getAccessorySummaryHtml==='function'?getAccessorySummaryHtml():'장착 효과 없음';
+      box.innerHTML=`<img src="${avatar}" alt="프로필"><div><b>${name}</b><small>${title}</small><small>Lv.${fishing.level||1} · ${acc}</small></div>`;
+    }
+  }
+  const oldRender13All=render;
+  render=function(){
+    const r=oldRender13All.apply(this,arguments);
+    try{renderProfile13();}catch(e){console.warn('profile13 render failed',e)}
+    return r;
+  };
+  document.addEventListener('DOMContentLoaded',()=>{
+    setShop13Default();
+    document.querySelectorAll('.shop20-tab').forEach(btn=>{btn.onclick=()=>{document.querySelectorAll('.shop20-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');currentShopTab=btn.dataset.shop||'recommend';renderShop20();};});
+  });
+})();
 
 
 </script>
