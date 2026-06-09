@@ -1649,6 +1649,86 @@ html,body{
 .catch-size-line{font-size:16px;font-weight:900;color:#dbeafe;margin:6px 0 2px;text-shadow:0 2px 4px #000}
 .catch-new-record{display:inline-block;margin:8px 0 4px;padding:6px 12px;border-radius:999px;background:linear-gradient(180deg,#fde047,#f59e0b);color:#111827;font-size:14px;font-weight:1000;box-shadow:0 0 22px rgba(250,204,21,.55);animation:newRecordPulse .9s ease-in-out infinite}
 @keyframes newRecordPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+
+
+/* ===============================
+   Patch 36: Mobile catch popup hard fix
+   - 모바일에서 포획 결과 카드가 미니게임/하단탭 뒤에 가려지지 않도록 최상단 고정
+   - 작은 화면에서 카드/프레임/이미지 크기 보정
+================================ */
+#catchPopup.catch-popup-backdrop.show{
+  display:flex!important;
+  position:fixed!important;
+  inset:0!important;
+  z-index:99999!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:14px!important;
+  background:rgba(0,0,0,.72)!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
+#catchPopup .catch-popup-card{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  max-height:calc(100vh - 28px)!important;
+  overflow:auto!important;
+}
+.catch-size-line{
+  font-size:16px;
+  font-weight:900;
+  color:#dbeafe;
+  margin:6px 0;
+}
+.catch-new-record{
+  display:inline-block;
+  margin:4px 0 8px;
+  padding:6px 12px;
+  border-radius:999px;
+  background:linear-gradient(180deg,#fde047,#f59e0b);
+  color:#111827;
+  font-weight:1000;
+  box-shadow:0 0 18px rgba(250,204,21,.45);
+}
+@media(max-width:720px){
+  #catchPopup.catch-popup-backdrop.show{
+    padding:12px!important;
+    align-items:center!important;
+  }
+  #catchPopup .catch-popup-card{
+    width:min(94vw,390px)!important;
+    min-width:0!important;
+    padding:16px 14px!important;
+    border-radius:18px!important;
+  }
+  #catchPopup .detail-card-preview{
+    width:124px!important;
+    height:124px!important;
+    margin:0 auto 8px!important;
+  }
+  #catchPopup .detail-card-preview .fish-img{
+    width:72px!important;
+    height:54px!important;
+  }
+  #catchPopup .detail-title{
+    font-size:24px!important;
+    line-height:1.18!important;
+  }
+  #catchPopup .detail-rarity{
+    font-size:15px!important;
+  }
+  #catchPopup .catch-reward,
+  #catchPopup .catch-size-line{
+    font-size:15px!important;
+  }
+  #closeCatchPopupBtn{
+    width:100%!important;
+    height:44px!important;
+    margin-top:10px!important;
+  }
+}
+
 </style>
 </head>
 
@@ -2679,14 +2759,20 @@ function getCatchSizeCm(fishKey,sizeKey){
 
 function showCatchPopup(fishKey,sizeKey,treasureText='',options={}){
   const fish=FISHES[fishKey];
-  if(!fish||!catchPopup)return;
+  const popup=document.getElementById('catchPopup');
+  const card=document.getElementById('catchPopupCard');
+  const content=document.getElementById('catchPopupContent');
+  if(!fish||!popup||!card||!content){
+    console.warn('[catchPopup] missing element or fish', {fishKey, hasPopup:!!popup, hasCard:!!card, hasContent:!!content});
+    return;
+  }
   const frame=RARITY_FRAMES[fish.rarity]||RARITY_FRAMES.common;
   const sizedName=getSizedFishName(fishKey,sizeKey);
   const sizeCm=Number(options.sizeCm)||getCatchSizeCm(fishKey,sizeKey);
   const expText=options.expText||'';
   const isNewRecord=!!options.isNewRecord;
-  catchPopupCard.className=`catch-popup-card ${fish.rarity==='legend'?'legend':''}`;
-  catchPopupContent.innerHTML=`
+  card.className=`catch-popup-card ${fish.rarity==='legend'?'legend':''}`;
+  content.innerHTML=`
     <div class="detail-card-preview fish-card rarity-${fish.rarity}">
       <img class="frame" src="${frame}" alt="">
       <img class="fish-img" src="${fish.img}" alt="${sizedName}">
@@ -2697,7 +2783,13 @@ function showCatchPopup(fishKey,sizeKey,treasureText='',options={}){
     <div class="catch-size-line">크기 ${sizeCm}cm</div>
     <div class="catch-reward">판매가 ${getFishSellPrice(fishKey,sizeKey)}G${expText?` · ${expText}`:''}</div>
     ${treasureText?`<div class="catch-reward">${treasureText}</div>`:''}`;
-  catchPopup.classList.add('show');
+  popup.classList.add('show');
+  popup.style.display='flex';
+  popup.style.zIndex='99999';
+  popup.style.visibility='visible';
+  popup.style.opacity='1';
+  // 모바일 미니게임 화면에서도 결과 확인을 막지 않도록 버튼/탭보다 위에 고정
+  document.body.classList.remove('screen-shake');
   if(isNewRecord)shop20Toast('🏆 NEW RECORD!',`${sizedName} · ${sizeCm}cm`);
   if(fish.rarity==='legend'||fish.rarity==='epic'||isNewRecord){
     document.body.classList.add('screen-shake');
@@ -3319,8 +3411,8 @@ document.querySelectorAll('.avatar-choice').forEach(el=>{
 });
 if($('closeFishDetailBtn'))$('closeFishDetailBtn').onclick=()=>fishDetailModal.classList.remove('show');
 if(fishDetailModal)fishDetailModal.onclick=e=>{if(e.target===fishDetailModal)fishDetailModal.classList.remove('show')};
-if($('closeCatchPopupBtn'))$('closeCatchPopupBtn').onclick=()=>catchPopup.classList.remove('show');
-if(catchPopup)catchPopup.onclick=e=>{if(e.target===catchPopup)catchPopup.classList.remove('show')};
+if($('closeCatchPopupBtn'))$('closeCatchPopupBtn').onclick=()=>{const p=$('catchPopup'); if(p){p.classList.remove('show'); p.style.display='none';}};
+if(catchPopup)catchPopup.onclick=e=>{if(e.target===catchPopup){catchPopup.classList.remove('show'); catchPopup.style.display='none';}};
 $('avatarBtn').onclick=openProfileModal;
 $('profileCard').onclick=openProfileModal;
 $('closeProfileBtn').onclick=closeProfileModal;
