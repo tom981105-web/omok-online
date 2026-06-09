@@ -1749,6 +1749,117 @@ html,body{
 .auction20-confirm-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.68);display:none;align-items:center;justify-content:center;z-index:360;padding:16px}.auction20-confirm-backdrop.show{display:flex}.auction20-confirm-card{width:min(420px,100%);text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.55)}.auction20-confirm-card img{width:82px;height:62px;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 8px 12px rgba(0,0,0,.55))}.auction20-confirm-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.auction20-confirm-actions button{margin:0;height:42px}
 @media(max-width:720px){.auction20-form-card{grid-template-columns:1fr}.auction20-preview{width:100%;height:96px}.auction20-market{grid-template-columns:1fr 1fr}.auction20-grid{grid-template-columns:1fr}.auction20-card{grid-template-columns:70px 1fr;padding:10px}.auction20-price{font-size:22px}.auction20-form-card button{margin-top:0}}
 
+
+
+/* ===============================
+   Patch 41: catch popup compact + mini-game right fish-rate panel
+================================ */
+#catchPopup.catch-popup-backdrop.show{
+  padding:10px!important;
+  overflow:hidden!important;
+}
+#catchPopup .catch-popup-card,
+#catchPopup38Guaranteed .catch38-card,
+#mobileCatchPopupHard .catch-popup-card{
+  width:min(88vw,340px)!important;
+  max-height:min(86vh,430px)!important;
+  overflow:hidden!important;
+  padding:14px 14px 12px!important;
+  border-radius:18px!important;
+}
+#catchPopup .detail-card-preview,
+#mobileCatchPopupHard .detail-card-preview,
+#catchPopup38Guaranteed .catch38-preview{
+  width:104px!important;
+  height:104px!important;
+  margin:0 auto 6px!important;
+}
+#catchPopup .detail-card-preview .fish-img,
+#mobileCatchPopupHard .detail-card-preview .fish-img,
+#catchPopup38Guaranteed .catch38-fish{
+  width:62px!important;
+  height:46px!important;
+}
+#catchPopup .detail-title,
+#mobileCatchPopupHard .detail-title,
+#catchPopup38Guaranteed .catch38-title{
+  font-size:22px!important;
+  line-height:1.12!important;
+  margin:4px 0!important;
+}
+#catchPopup .detail-rarity,
+#mobileCatchPopupHard .detail-rarity,
+#catchPopup38Guaranteed .catch38-rarity{
+  font-size:15px!important;
+  margin:3px 0!important;
+}
+#catchPopup .catch-size-line,
+#mobileCatchPopupHard .catch-size-line,
+#catchPopup38Guaranteed .catch38-size{
+  font-size:15px!important;
+  margin:4px 0!important;
+}
+#catchPopup .catch-reward,
+#mobileCatchPopupHard .catch-reward,
+#catchPopup38Guaranteed .catch38-reward{
+  font-size:14px!important;
+  margin-top:5px!important;
+}
+#catchPopup .catch-new-record,
+#mobileCatchPopupHard .catch-new-record,
+#catchPopup38Guaranteed .catch38-record{
+  font-size:12px!important;
+  padding:4px 9px!important;
+  margin:3px 0 4px!important;
+}
+#catchPopup button,
+#mobileCatchPopupHard button,
+#catchPopup38Guaranteed button{
+  height:38px!important;
+  margin-top:8px!important;
+  border-radius:11px!important;
+}
+
+.mini-rate-panel{display:none;}
+body.playing-mini .bag-panel{display:none!important;}
+body.playing-mini .mini-rate-panel{
+  display:block!important;
+  min-height:auto!important;
+  max-height:calc(100vh - 170px)!important;
+  overflow:auto!important;
+  padding:12px!important;
+}
+.mini-rate-list{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
+.mini-rate-row{display:grid;grid-template-columns:54px 1fr auto;gap:10px;align-items:center;background:rgba(2,6,23,.42);border:1px solid rgba(148,163,184,.2);border-radius:14px;padding:8px;text-align:left;}
+.mini-rate-row .rate-img-wrap{position:relative;width:54px;height:54px;display:grid;place-items:center;background:rgba(15,23,42,.55);border-radius:12px;overflow:hidden;}
+.mini-rate-row img{max-width:44px;max-height:34px;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 4px 6px rgba(0,0,0,.45));}
+.mini-rate-row.unknown img{filter:brightness(0);opacity:.55;}
+.mini-rate-name{font-weight:1000;color:#fff;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mini-rate-meta{font-size:11px;color:#cbd5e1;margin-top:3px;}
+.mini-rate-percent{font-size:16px;font-weight:1000;color:#facc15;text-align:right;}
+.mini-rate-bar{grid-column:2/4;height:6px;background:rgba(148,163,184,.16);border-radius:999px;overflow:hidden;}
+.mini-rate-bar span{display:block;height:100%;background:linear-gradient(90deg,#22c55e,#facc15);border-radius:999px;}
+.mini-rate-note{font-size:12px;color:#cbd5e1;line-height:1.45;margin-top:8px;text-align:left;}
+@media(min-width:1100px){
+  body.playing-mini .fishing-layout{grid-template-columns:minmax(720px,980px) 430px!important;}
+}
+@media(max-width:1099px){
+  .mini-rate-panel{display:none!important;}
+  #catchPopup .catch-popup-card,
+  #catchPopup38Guaranteed .catch38-card,
+  #mobileCatchPopupHard .catch-popup-card{
+    width:min(90vw,330px)!important;
+    max-height:82vh!important;
+    padding:12px!important;
+  }
+  #catchPopup .detail-card-preview,
+  #mobileCatchPopupHard .detail-card-preview,
+  #catchPopup38Guaranteed .catch38-preview{width:96px!important;height:96px!important;}
+  #catchPopup .detail-title,
+  #mobileCatchPopupHard .detail-title,
+  #catchPopup38Guaranteed .catch38-title{font-size:20px!important;}
+}
+
 </style>
 </head>
 
@@ -1880,6 +1991,15 @@ html,body{
             <button id="sellAllPreviewBtn" class="sell-all" type="button">전체 판매</button>
           </div>
           <div id="inventoryPreviewList" class="fish-card-grid preview-grid"></div>
+        </aside>
+
+        <aside id="miniRatePanel" class="ui2-panel mini-rate-panel">
+          <div class="panel-head">
+            <h2>🎯 출현 확률</h2>
+            <span id="miniRateLocation" class="panel-count">-</span>
+          </div>
+          <div id="miniRateList" class="mini-rate-list"></div>
+          <div class="mini-rate-note">현재 낚시터 기준의 출현 확률입니다. 낚싯대/미끼 보너스가 반영되어 희귀 물고기 확률이 달라질 수 있습니다.</div>
         </aside>
       </div>
 
@@ -4467,6 +4587,99 @@ async function renderBossRareDropLog(){
       },80);
     }
   };
+})();
+
+
+
+/* ===============================
+   Patch 41 JS: mini-game rate panel + popup compact hard override
+================================ */
+(function(){
+  function safePct41(n){return Math.max(0,Math.min(100,Number(n)||0));}
+  function getLocationRateRows41(locationKey){
+    try{
+      const loc=(typeof LOCATIONS!=='undefined' && LOCATIONS[locationKey])?LOCATIONS[locationKey]:LOCATIONS.pond;
+      const rodBonus=Math.max(0,((window.fishing&&fishing.rodLevel)||1)-1);
+      const baitBonus=(typeof getEquippedBait==='function'?getEquippedBait():{})||{};
+      const rodEquip=(typeof getEquippedRod==='function'?getEquippedRod():{})||{};
+      const rows=(loc.fishes||[]).map(key=>{
+        const fish=FISHES[key];
+        if(!fish)return null;
+        let weight=Number(fish.rate)||1;
+        if(fish.rarity==='rare')weight+=rodBonus*1.25+(baitBonus.rareBonus||0);
+        if(fish.rarity==='epic')weight+=rodBonus*.7+(baitBonus.epicBonus||0);
+        if(fish.rarity==='legend')weight+=rodBonus*.25+(baitBonus.legendBonus||0)+(rodEquip.legendBonus||0);
+        return {key,fish,weight:Math.max(.01,weight)};
+      }).filter(Boolean);
+      const total=rows.reduce((s,r)=>s+r.weight,0)||1;
+      return rows.map(r=>({...r,pct:r.weight/total*100})).sort((a,b)=>b.pct-a.pct);
+    }catch(e){console.warn('[mini-rate] rows failed',e);return [];}
+  }
+  window.renderMiniRatePanel41=function(){
+    const panel=document.getElementById('miniRatePanel');
+    const list=document.getElementById('miniRateList');
+    const title=document.getElementById('miniRateLocation');
+    if(!panel||!list)return;
+    const loc=(typeof LOCATIONS!=='undefined' && LOCATIONS[selectedLocation])?LOCATIONS[selectedLocation]:LOCATIONS.pond;
+    if(title)title.textContent=(loc.emoji||'')+' '+(loc.name||'낚시터');
+    const rows=getLocationRateRows41(selectedLocation).slice(0,12);
+    list.innerHTML=rows.map(r=>{
+      const known=!!((window.fishing&&fishing.discovered)||{})[r.key];
+      const label=known?r.fish.name:'???';
+      const pct=r.pct>=10?Math.round(r.pct):Math.max(.1,Math.round(r.pct*10)/10);
+      const rarityLabel=(typeof RARITY_LABEL!=='undefined' && RARITY_LABEL[r.fish.rarity])?RARITY_LABEL[r.fish.rarity]:r.fish.rarity;
+      return `<div class="mini-rate-row ${known?'':'unknown'}">
+        <div class="rate-img-wrap"><img src="${r.fish.img}" alt="${label}"></div>
+        <div><div class="mini-rate-name">${label}</div><div class="mini-rate-meta">${rarityLabel} · 기본가 ${r.fish.price||0}G</div></div>
+        <div class="mini-rate-percent">${pct}%</div>
+        <div class="mini-rate-bar"><span style="width:${safePct41(r.pct)}%"></span></div>
+      </div>`;
+    }).join('') || '<div class="small">출현 정보를 불러오지 못했습니다.</div>';
+  };
+
+  // 미니게임 시작/렌더 시 확률 패널 갱신
+  if(typeof startMiniGameHiddenFish==='function'){
+    const prevStart41=startMiniGameHiddenFish;
+    startMiniGameHiddenFish=function(){
+      const result=prevStart41.apply(this,arguments);
+      setTimeout(()=>{try{window.renderMiniRatePanel41();}catch(e){}},0);
+      return result;
+    };
+  }
+  if(typeof renderAvailableFishes==='function'){
+    const prevAvail41=renderAvailableFishes;
+    renderAvailableFishes=function(){
+      const result=prevAvail41.apply(this,arguments);
+      try{window.renderMiniRatePanel41();}catch(e){}
+      return result;
+    };
+  }
+
+  // 기존 보장 팝업이 자체 style 태그를 만들기 때문에, 포획 후에도 다시 컴팩트 스타일을 덮어씁니다.
+  function injectCompactCatch41(){
+    let style=document.getElementById('catchPopupCompact41Runtime');
+    if(!style){style=document.createElement('style');style.id='catchPopupCompact41Runtime';document.head.appendChild(style);}
+    style.textContent=`
+      #catchPopup38Guaranteed .catch38-card{width:min(88vw,340px)!important;max-height:min(86vh,430px)!important;overflow:hidden!important;padding:14px 14px 12px!important;}
+      #catchPopup38Guaranteed .catch38-preview{width:104px!important;height:104px!important;margin:0 auto 6px!important;}
+      #catchPopup38Guaranteed .catch38-fish{width:62px!important;height:46px!important;}
+      #catchPopup38Guaranteed .catch38-title{font-size:22px!important;line-height:1.12!important;margin:4px 0!important;}
+      #catchPopup38Guaranteed .catch38-rarity{font-size:15px!important;margin:3px 0!important;}
+      #catchPopup38Guaranteed .catch38-size{font-size:15px!important;margin:4px 0!important;}
+      #catchPopup38Guaranteed .catch38-reward{font-size:14px!important;margin-top:5px!important;}
+      #catchPopup38Guaranteed .catch38-record{font-size:12px!important;padding:4px 9px!important;margin:3px 0 4px!important;}
+      #catchPopup38Guaranteed button{height:38px!important;margin-top:8px!important;border-radius:11px!important;}
+    `;
+  }
+  injectCompactCatch41();
+  if(typeof showCatchPopup==='function'){
+    const prevCatch41=showCatchPopup;
+    showCatchPopup=function(){
+      const result=prevCatch41.apply(this,arguments);
+      setTimeout(injectCompactCatch41,0);
+      return result;
+    };
+  }
 })();
 
 </script>
