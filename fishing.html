@@ -2762,8 +2762,8 @@ function showCatchPopup(fishKey,sizeKey,treasureText='',options={}){
   const popup=document.getElementById('catchPopup');
   const card=document.getElementById('catchPopupCard');
   const content=document.getElementById('catchPopupContent');
-  if(!fish||!popup||!card||!content){
-    console.warn('[catchPopup] missing element or fish', {fishKey, hasPopup:!!popup, hasCard:!!card, hasContent:!!content});
+  if(!fish){
+    console.warn('[catchPopup] missing fish', {fishKey});
     return;
   }
   const frame=RARITY_FRAMES[fish.rarity]||RARITY_FRAMES.common;
@@ -2771,8 +2771,7 @@ function showCatchPopup(fishKey,sizeKey,treasureText='',options={}){
   const sizeCm=Number(options.sizeCm)||getCatchSizeCm(fishKey,sizeKey);
   const expText=options.expText||'';
   const isNewRecord=!!options.isNewRecord;
-  card.className=`catch-popup-card ${fish.rarity==='legend'?'legend':''}`;
-  content.innerHTML=`
+  const popupHtml=`
     <div class="detail-card-preview fish-card rarity-${fish.rarity}">
       <img class="frame" src="${frame}" alt="">
       <img class="fish-img" src="${fish.img}" alt="${sizedName}">
@@ -2783,18 +2782,70 @@ function showCatchPopup(fishKey,sizeKey,treasureText='',options={}){
     <div class="catch-size-line">크기 ${sizeCm}cm</div>
     <div class="catch-reward">판매가 ${getFishSellPrice(fishKey,sizeKey)}G${expText?` · ${expText}`:''}</div>
     ${treasureText?`<div class="catch-reward">${treasureText}</div>`:''}`;
-  popup.classList.add('show');
-  popup.style.display='flex';
-  popup.style.zIndex='99999';
-  popup.style.visibility='visible';
-  popup.style.opacity='1';
-  // 모바일 미니게임 화면에서도 결과 확인을 막지 않도록 버튼/탭보다 위에 고정
+
+  // 모바일에서는 기존 레이아웃/미니게임 CSS의 영향을 안 받는 독립 팝업을 body 끝에 직접 띄웁니다.
+  if(window.matchMedia && window.matchMedia('(max-width: 720px)').matches){
+    showMobileCatchPopupHard(popupHtml, fish.rarity);
+  }else if(popup&&card&&content){
+    card.className=`catch-popup-card ${fish.rarity==='legend'?'legend':''}`;
+    content.innerHTML=popupHtml;
+    popup.classList.add('show');
+    popup.style.display='flex';
+    popup.style.zIndex='99999';
+    popup.style.visibility='visible';
+    popup.style.opacity='1';
+  }else{
+    showMobileCatchPopupHard(popupHtml, fish.rarity);
+  }
+
   document.body.classList.remove('screen-shake');
   if(isNewRecord)shop20Toast('🏆 NEW RECORD!',`${sizedName} · ${sizeCm}cm`);
   if(fish.rarity==='legend'||fish.rarity==='epic'||isNewRecord){
     document.body.classList.add('screen-shake');
     setTimeout(()=>document.body.classList.remove('screen-shake'),380);
   }
+}
+
+function showMobileCatchPopupHard(innerHtml,rarity='common'){
+  let overlay=document.getElementById('mobileCatchPopupHard');
+  if(!overlay){
+    overlay=document.createElement('div');
+    overlay.id='mobileCatchPopupHard';
+    document.body.appendChild(overlay);
+  }
+  overlay.innerHTML=`
+    <div id="mobileCatchPopupCardHard" class="catch-popup-card ${rarity==='legend'?'legend':''}">
+      <div>${innerHtml}</div>
+      <button id="mobileCatchPopupCloseHard" type="button">확인</button>
+    </div>`;
+  overlay.setAttribute('style',[
+    'display:flex','position:fixed','left:0','right:0','top:0','bottom:0','z-index:2147483647',
+    'align-items:center','justify-content:center','padding:12px','background:rgba(0,0,0,.74)',
+    'visibility:visible','opacity:1','pointer-events:auto'
+  ].join(';'));
+  const card=overlay.querySelector('#mobileCatchPopupCardHard');
+  if(card){
+    card.setAttribute('style',[
+      'display:block','width:min(94vw,390px)','max-height:calc(100vh - 24px)','overflow:auto',
+      'background:linear-gradient(180deg,#0f172a,#020617)','border:1px solid rgba(148,163,184,.42)',
+      'border-radius:20px','padding:16px 14px','text-align:center','box-shadow:0 24px 80px rgba(0,0,0,.72)',
+      'position:relative','visibility:visible','opacity:1'
+    ].join(';'));
+  }
+  const preview=overlay.querySelector('.detail-card-preview');
+  if(preview)preview.setAttribute('style','position:relative;width:124px;height:124px;margin:0 auto 8px;display:inline-flex;align-items:center;justify-content:center;');
+  const frame=overlay.querySelector('.detail-card-preview .frame');
+  if(frame)frame.setAttribute('style','position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;z-index:1;');
+  const img=overlay.querySelector('.detail-card-preview .fish-img');
+  if(img)img.setAttribute('style','position:absolute;left:50%;top:43%;transform:translate(-50%,-50%);width:72px;height:54px;object-fit:contain;image-rendering:pixelated;z-index:2;');
+  const title=overlay.querySelector('.detail-title');
+  if(title)title.setAttribute('style','font-size:24px;line-height:1.18;font-weight:900;color:white;text-shadow:0 2px 5px #000;margin:4px 0;');
+  const btn=overlay.querySelector('#mobileCatchPopupCloseHard');
+  if(btn){
+    btn.setAttribute('style','width:100%;height:44px;margin-top:10px;border:0;border-radius:12px;background:#f59e0b;color:#111827;font-weight:900;font-size:15px;');
+    btn.onclick=()=>{overlay.style.display='none';};
+  }
+  overlay.onclick=e=>{if(e.target===overlay)overlay.style.display='none';};
 }
 
 function openSellPrompt(key,displayName,count,sellPrice){
