@@ -4484,6 +4484,131 @@ window.addFriendMulti=async function(){const fid=$('friendUidInput')?.value?.tri
   };
 })();
 
+
+/* ===============================
+   Patch 45: Auction edit/cancel mail return
+   - 내 판매품 등록 수정 팝업
+   - 가격 변경
+   - 등록 취소 시 우편함으로 아이템 반환
+================================ */
+(function(){
+  function p45Esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+  function p45TypeLabel(t){return ({fish:'물고기',rod:'낚싯대',frame:'프레임',token:'토큰',chest:'상자',accessory:'장신구'}[t||'fish']||'아이템');}
+  function p45AuctionItemPayload(a){
+    const itemType=a.itemType||'fish';
+    const itemKey=a.itemKey||(typeof getInventoryKey==='function'?getInventoryKey(a.fishKey,a.sizeKey):`${a.fishKey||''}_${a.sizeKey||'normal'}`);
+    const payload=a.payload||{};
+    if(itemType==='fish'){
+      payload.fishKey=payload.fishKey||a.fishKey;
+      payload.sizeKey=payload.sizeKey||a.sizeKey;
+    }
+    return {
+      itemType,
+      itemKey,
+      itemName:a.itemName||a.fishName||'아이템',
+      img:a.img||a.icon||(a.fishKey&&typeof getAuctionFishImg==='function'?getAuctionFishImg(a.fishKey):'./assets/icons/fish_shadow.png'),
+      rarity:a.rarity||'common',
+      qty:Number(a.qty)||1,
+      payload
+    };
+  }
+  function p45OpenAuctionModal(html){
+    let m=(typeof ensureAuctionConfirmModal==='function')?ensureAuctionConfirmModal():document.getElementById('auctionBuyConfirm');
+    if(!m){
+      document.body.insertAdjacentHTML('beforeend',`<div id="auctionBuyConfirm" class="auction20-confirm-backdrop" onclick="if(event.target.id==='auctionBuyConfirm')closeAuctionConfirm()"><div class="auction20-confirm-card"><div id="auctionBuyConfirmBody"></div></div></div>`);
+      m=document.getElementById('auctionBuyConfirm');
+    }
+    const body=document.getElementById('auctionBuyConfirmBody');
+    if(body)body.innerHTML=html;
+    m.classList.add('show');
+  }
+  window.editAuctionItem=async function(id){
+    try{
+      const a=await dbGet(`multiplayer/auctions/${id}`);
+      if(!a||a.sellerUid!==uid||a.status!=='active'){
+        shop20Toast('수정 불가','내가 등록한 판매중 물품만 수정/취소할 수 있습니다.');
+        return;
+      }
+      const item=p45AuctionItemPayload(a);
+      const market=Number(a.marketPrice||0);
+      const feeRate=Number(a.feeRate??0.08);
+      const currentPrice=Number(a.price||0);
+      const net=Math.max(0,Math.floor(currentPrice*(1-feeRate)));
+      p45OpenAuctionModal(`
+        <img src="${p45Esc(item.img||'./assets/icons/fish_shadow.png')}" alt="">
+        <div class="ui-modal-title">등록 수정</div>
+        <div class="ui-modal-sub">${p45Esc(item.itemName)}</div>
+        <div class="small">종류 ${p45TypeLabel(item.itemType)} · 현재가 ${formatNumber(currentPrice)}G<br>권장가 ${formatNumber(market)}G · 판매 수수료 ${Math.round(feeRate*100)}% · 판매 시 실수령 ${formatNumber(net)}G</div>
+        <div style="margin:12px 0;text-align:left">
+          <label style="display:block;font-size:12px;color:#93c5fd;font-weight:900;margin-bottom:5px">새 판매가</label>
+          <input id="auctionEditPriceInput" type="number" value="${currentPrice}" style="width:100%;height:42px;background:#020617;color:white;border:1px solid rgba(148,163,184,.35);border-radius:12px;padding:0 10px;font-weight:900">
+        </div>
+        <div class="small" style="color:#fca5a5">등록 취소 시 물품은 즉시 가방으로 돌아오지 않고 우편함으로 발송됩니다. 우편함에서 받기를 눌러야 인벤토리에 들어옵니다.</div>
+        <div class="auction20-confirm-actions" style="grid-template-columns:1fr 1fr 1fr">
+          <button class="secondary" onclick="closeAuctionConfirm()">닫기</button>
+          <button onclick="updateAuctionItemPrice('${id}')">금액 수정</button>
+          <button style="background:#991b1b;color:#fee2e2" onclick="cancelAuctionItem('${id}')">등록 취소</button>
+        </div>`);
+    }catch(e){console.error(e);shop20Toast('수정창 열기 실패',getFirebaseErrorMessage(e));}
+  };
+  window.updateAuctionItemPrice=async function(id){
+    try{
+      const a=await dbGet(`multiplayer/auctions/${id}`);
+      if(!a||a.sellerUid!==uid||a.status!=='active'){
+        shop20Toast('수정 불가','내가 등록한 판매중 물품만 수정할 수 있습니다.');
+        return;
+      }
+      const price=Math.max(1,Math.floor(Number(document.getElementById('auctionEditPriceInput')?.value||0)));
+      if(!price){shop20Toast('가격을 확인해주세요.');return;}
+      const market=Number(a.marketPrice||0);
+      if(typeof getAuctionPriceStatus==='function'){
+        const status=getAuctionPriceStatus(price,market);
+        if(status.key==='low'&&!confirm(`시장가보다 낮습니다.\n권장가 ${formatNumber(market)}G\n수정가 ${formatNumber(price)}G\n그래도 수정할까요?`))return;
+      }
+      await dbPatch({
+        [`multiplayer/auctions/${id}/price`]:price,
+        [`multiplayer/auctions/${id}/marketPrice`]:market,
+        [`multiplayer/auctions/${id}/updatedAt`]:Date.now()
+      });
+      if(typeof closeAuctionConfirm==='function')closeAuctionConfirm();
+      shop20Toast('등록가 수정 완료',`${formatNumber(price)}G`);
+      await loadMulti();
+    }catch(e){console.error(e);shop20Toast('금액 수정 실패',getFirebaseErrorMessage(e));}
+  };
+  window.cancelAuctionItem=async function(id){
+    try{
+      const a=await dbGet(`multiplayer/auctions/${id}`);
+      if(!a||a.sellerUid!==uid||a.status!=='active'){
+        shop20Toast('취소 불가','내가 등록한 판매중 물품만 취소할 수 있습니다.');
+        return;
+      }
+      const item=p45AuctionItemPayload(a);
+      if(!confirm(`${item.itemName} 등록을 취소할까요?\n\n취소한 물품은 우편함으로 돌아오며, 받기를 눌러야 인벤토리에 지급됩니다.`))return;
+      const mailId=`auction_cancel_${id}_${Date.now()}`;
+      await dbPatch({
+        [`multiplayer/auctions/${id}/status`]:'cancelled',
+        [`multiplayer/auctions/${id}/cancelledAt`]:Date.now(),
+        [`multiplayer/auctions/${id}/returnMailId`]:mailId,
+        [`multiplayer/bossMailByUser/${uid}/${mailId}`]:{
+          id:mailId,
+          type:'auction_item',
+          auctionId:id,
+          item,
+          title:'거래소 등록 취소품 도착',
+          desc:`${item.itemName} x${item.qty||1} 수령 가능`,
+          createdAt:Date.now(),
+          claimed:false
+        }
+      });
+      if(typeof closeAuctionConfirm==='function')closeAuctionConfirm();
+      shop20Toast('등록 취소 완료',`${item.itemName}이 우편함으로 돌아왔습니다.`);
+      if(typeof importBossMailsFromFirebase==='function')await importBossMailsFromFirebase();
+      render();
+      await loadMulti();
+    }catch(e){console.error(e);shop20Toast('등록 취소 실패',getFirebaseErrorMessage(e));}
+  };
+})();
+
 $("fishBtn").onclick=castLine;
 $("biteBtn").onclick=reactBite;
 if($("sellAllBtn"))$("sellAllBtn").onclick=sellAllFish;
