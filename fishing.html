@@ -1828,10 +1828,50 @@ html,body{
   <button class="tab-btn" data-tab="Multi">🌐<br>멀티</button>
 </nav>
 
+
+<script>
+(function(){
+  window.__FISHING_APP_BOOTED__ = false;
+  window.__FISHING_APP_READY__ = false;
+  function showBootError(title, detail){
+    var box=document.getElementById('loadingBox');
+    var game=document.getElementById('gameBox');
+    if(!box || (game && !game.classList.contains('hidden'))) return;
+    box.classList.remove('hidden');
+    box.innerHTML = '<div class="box" style="max-width:620px;margin:34px auto;text-align:left">' +
+      '<h2 style="color:#facc15;margin-top:0">⚠️ '+title+'</h2>' +
+      '<div class="small" style="line-height:1.7;word-break:break-all">'+detail+'</div>' +
+      '<div style="text-align:center;margin-top:14px">' +
+      '<button onclick="location.reload()">새로고침</button>' +
+      '<button class="secondary" onclick="location.href='./index.html'">로그인 화면으로</button>' +
+      '</div></div>';
+  }
+  window.__showFishingBootError__ = showBootError;
+  window.__FISHING_BOOT_TIMER__ = setTimeout(function(){
+    if(!window.__FISHING_APP_BOOTED__ && !window.__FISHING_APP_READY__){
+      showBootError('게임 스크립트가 시작되지 않았습니다.', 'Firebase 모듈 로딩 또는 자바스크립트 시작 단계에서 멈췄습니다.<br>Ctrl+F5로 강력 새로고침 후에도 반복되면, 브라우저 개발자도구(F12) Console의 빨간 오류를 알려주세요.');
+    }
+  }, 5000);
+  window.addEventListener('error', function(e){
+    if(!window.__FISHING_APP_READY__){
+      showBootError('게임 시작 중 오류가 발생했습니다.', (e.message || '알 수 없는 오류') + (e.filename ? '<br>'+e.filename+':'+e.lineno : ''));
+    }
+  });
+  window.addEventListener('unhandledrejection', function(e){
+    if(!window.__FISHING_APP_READY__){
+      var r=e.reason;
+      showBootError('게임 데이터 로딩 중 오류가 발생했습니다.', (r && (r.stack || r.message)) ? (r.stack || r.message) : String(r || '알 수 없는 오류'));
+    }
+  });
+})();
+</script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js";
 import { getDatabase, ref, get, update, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-database.js";
+
+window.__FISHING_APP_BOOTED__ = true;
+if(window.__FISHING_BOOT_TIMER__) clearTimeout(window.__FISHING_BOOT_TIMER__);
 
 const firebaseConfig = {
   apiKey: "AIzaSyDTsFoSmI1oOS5XLXhhgqyeDmwr8RxEegE",
@@ -2069,6 +2109,7 @@ onAuthStateChanged(auth, async user=>{
     if(!user){location.href="./index.html";return;}
     uid=user.uid;
     await loadUser();
+    window.__FISHING_APP_READY__ = true;
     loadingBox.classList.add("hidden");
     gameBox.classList.remove("hidden");
     bottomTabs.classList.remove("hidden");
