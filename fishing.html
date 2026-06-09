@@ -1769,6 +1769,15 @@ html,body{
   .auction43-topline{grid-template-columns:1fr}
 }
 
+
+
+/* Patch 12.5 - Accessory Enhance */
+.accessory-enhance-badge{display:inline-block;margin-left:4px;padding:1px 6px;border-radius:999px;background:rgba(250,204,21,.16);border:1px solid rgba(250,204,21,.35);color:#fde68a;font-size:11px;font-weight:900}
+.accessory-enhance-line{margin-top:5px;color:#facc15;font-size:12px;font-weight:900}
+.accessory-card .enhance-btn{background:#7c3aed!important;color:white!important;margin-top:5px}
+.accessory-card.max-enhanced{box-shadow:0 0 24px rgba(250,204,21,.32),inset 0 0 0 1px rgba(250,204,21,.28)}
+.accessory-enhance-help{margin:8px 0;padding:8px;border-radius:12px;background:rgba(124,58,237,.14);border:1px solid rgba(167,139,250,.24);color:#ddd6fe;font-size:12px;line-height:1.45}
+
 </style>
 
 <style id="accessory11Css">
@@ -4845,6 +4854,7 @@ async function renderBossRareDropLog(){
 function ensureAccessoryState(){
   if(!fishing)return;
   fishing.accessories=fishing.accessories||{};
+  fishing.accessoryEnhance=fishing.accessoryEnhance||{};
   fishing.equipment=fishing.equipment||{};
   fishing.equipment.accessories=fishing.equipment.accessories||{ring:null,necklace:null,relic:null};
   for(const slot of ['ring','necklace','relic']){
@@ -4855,6 +4865,14 @@ function ensureAccessoryState(){
 function getAccessoryCount(id){const v=fishing?.accessories?.[id];return typeof v==='number'?v:Number(v?.count||0)}
 function hasAccessoryOwned(id){return getAccessoryCount(id)>0}
 function getAccessoryData(id){return ACCESSORY_ITEMS?.[id]||null}
+function getAccessoryLevel(id){ensureAccessoryState();return Math.max(0,Math.min(10,Number(fishing.accessoryEnhance?.[id]||0)))}
+function getAccessoryEnhanceMul(id){return 1+(getAccessoryLevel(id)*0.07)}
+function getAccessoryEnhancedEffectValue(id,key){const a=getAccessoryData(id);return Number(a?.effects?.[key]||0)*getAccessoryEnhanceMul(id)}
+function getAccessoryEnhanceCost(id){const a=getAccessoryData(id),lv=getAccessoryLevel(id),next=lv+1;if(!a||lv>=10)return null;const rarityMul={rare:1,epic:1.35,legend:1.9,mythic:2.7}[a.rarity]||1;let gold=Math.floor(4500*next*next*rarityMul);let token=0,tokenType=null;if(['kraken','leviathan','phoenix'].includes(a.set)){tokenType=a.set;token=Math.max(1,Math.ceil(next/2));}else{gold=Math.floor(gold*1.45)}const rate=[100,95,90,85,80,70,60,50,40,30][lv]||30;return {gold,token,tokenType,rate,next};}
+function getAccessoryTokenName(type){return ({kraken:'크라켄 토큰',leviathan:'레비아탄 토큰',phoenix:'심해룡 토큰'}[type]||'보스 토큰')}
+function getAccessoryEffectTextEnhanced(id){const a=getAccessoryData(id);if(!a)return '';const lv=getAccessoryLevel(id);if(!lv)return a.effect;const parts=[];for(const [k,v] of Object.entries(a.effects||{})){const val=v*(1+lv*.07);if(k==='bossDamage')parts.push(`보스 딜 +${Math.round(val*100)}%`);else if(k==='inkResist')parts.push(`먹물 지속시간 -${Math.round(val*100)}%`);else if(k==='stormResist')parts.push(`폭풍 효과 -${Math.round(val*100)}%`);else if(k==='reverseResist')parts.push(`교란 저항 +${Math.round(val*100)}%`);else if(k==='bigFishBonus')parts.push(`대형 물고기 확률 +${Math.round(val*100)}%`);else if(k==='goldBonus')parts.push(`골드 획득 +${Math.round(val*100)}%`);else if(k==='legendBonus')parts.push(`전설 확률 +${Number(val.toFixed(1))}%`);}
+  return parts.join(' / ')||a.effect;
+}
 function getEquippedAccessoryIds(){ensureAccessoryState();return Object.values(fishing.equipment.accessories||{}).filter(Boolean)}
 function getEquippedAccessories(){return getEquippedAccessoryIds().map(getAccessoryData).filter(Boolean)}
 function getAccessorySetCount(setId){return getEquippedAccessories().filter(a=>a.set===setId).length}
@@ -4871,7 +4889,7 @@ function hasAccessorySetImmune(pattern){
   return Object.entries(ACCESSORY_SETS||{}).some(([setId,set])=>set.immunePattern===pattern&&getAccessorySetCount(setId)>=3);
 }
 function getAccessoryEffectTotal(key){
-  const base=getEquippedAccessories().reduce((sum,a)=>sum+Number(a.effects?.[key]||0),0);
+  const base=getEquippedAccessoryIds().reduce((sum,id)=>sum+getAccessoryEnhancedEffectValue(id,key),0);
   const setBonus=getAccessorySetBonusEffects()[key]||0;
   return base+setBonus;
 }
@@ -4916,6 +4934,7 @@ function checkTitleUnlocks(toast=true){
   if(getAccessorySetCount('leviathan')>=3)unlockTitle('leviathan_conqueror',toast);
   if(getAccessorySetCount('phoenix')>=3)unlockTitle('abyss_lord',toast);
   if(ownedAccessories>=6)unlockTitle('accessory_master',toast);
+  if(Object.keys(fishing.accessoryEnhance||{}).some(id=>getAccessoryLevel(id)>=10))unlockTitle('enhance_master',toast);
   fishing.title=getEquippedTitleName();
 }
 function getEquippedTitleName(){ensureTitleState();return PLAYER_TITLES?.[fishing.titles.equipped]?.name||fishing.title||'초보 낚시꾼'}
@@ -4965,15 +4984,31 @@ function renderAccessorySlots(){
   return ['ring','necklace','relic'].map(slot=>{
     const id=fishing.equipment.accessories?.[slot];
     const a=id?getAccessoryData(id):null;
-    return `<div class="accessory-slot ${a?'equipped':''}">${a?`<img src="${a.icon}" alt="${a.name}"><b>${a.name}</b><small>${getAccessoryRarityLabel(a.rarity)} · ${a.effect}</small><button class="secondary" onclick="unequipAccessory('${slot}')">해제</button>`:`<div style="font-size:32px;margin:6px 0">${getAccessorySlotLabel(slot).split(' ')[0]}</div><b>${getAccessorySlotLabel(slot)}</b><small>비어있음</small>`}</div>`;
+    return `<div class="accessory-slot ${a?'equipped':''}">${a?`<img src="${a.icon}" alt="${a.name}"><b>${a.name}${getAccessoryLevel(id)?` <span class="accessory-enhance-badge">+${getAccessoryLevel(id)}</span>`:''}</b><small>${getAccessoryRarityLabel(a.rarity)} · ${getAccessoryEffectTextEnhanced(id)}</small><button class="secondary" onclick="unequipAccessory('${slot}')">해제</button>`:`<div style="font-size:32px;margin:6px 0">${getAccessorySlotLabel(slot).split(' ')[0]}</div><b>${getAccessorySlotLabel(slot)}</b><small>비어있음</small>`}</div>`;
   }).join('');
 }
 function renderAccessoryList(){
   ensureAccessoryState();
   const owned=Object.keys(ACCESSORY_ITEMS||{}).filter(id=>hasAccessoryOwned(id));
   if(!owned.length)return '<div class="small">보유한 장신구가 없습니다. 보스 상자를 열어 획득하세요.</div>';
-  return owned.map(id=>{const a=getAccessoryData(id),cnt=getAccessoryCount(id),eq=fishing.equipment.accessories?.[a.slot]===id;return `<div class="accessory-card ${a.rarity}"><span class="acc-count">x${cnt}</span><img src="${a.icon}" alt="${a.name}"><b>${a.name}</b><div class="small">${getAccessorySlotLabel(a.slot)} · ${getAccessoryRarityLabel(a.rarity)}</div><div class="acc-effect">${a.effect}</div><button ${eq?'disabled':''} onclick="equipAccessory('${id}')">${eq?'장착중':'장착'}</button></div>`}).join('');
+  return owned.map(id=>{const a=getAccessoryData(id),cnt=getAccessoryCount(id),eq=fishing.equipment.accessories?.[a.slot]===id,lv=getAccessoryLevel(id),cost=getAccessoryEnhanceCost(id);const costText=cost?`${formatNumber(cost.gold)}G${cost.token?` + ${getAccessoryTokenName(cost.tokenType)} ${cost.token}개`:''} · 성공률 ${cost.rate}%`:'최대 강화';return `<div class="accessory-card ${a.rarity} ${lv>=10?'max-enhanced':''}"><span class="acc-count">x${cnt}</span><img src="${a.icon}" alt="${a.name}"><b>${a.name}${lv?` <span class="accessory-enhance-badge">+${lv}</span>`:''}</b><div class="small">${getAccessorySlotLabel(a.slot)} · ${getAccessoryRarityLabel(a.rarity)}</div><div class="acc-effect">${getAccessoryEffectTextEnhanced(id)}</div><div class="accessory-enhance-line">강화 ${lv}/10<br><small>${costText}</small></div><button ${eq?'disabled':''} onclick="equipAccessory('${id}')">${eq?'장착중':'장착'}</button><button class="enhance-btn" ${!cost?'disabled':''} onclick="enhanceAccessory('${id}')">${cost?'강화':'MAX'}</button></div>`}).join('');
 }
+window.enhanceAccessory=function(id){
+  ensureAccessoryState();
+  const a=getAccessoryData(id);
+  if(!a||!hasAccessoryOwned(id)){shop20Toast('강화 불가','보유하지 않은 장신구입니다.');return}
+  const cost=getAccessoryEnhanceCost(id);
+  if(!cost){shop20Toast('최대 강화','이미 +10 강화입니다.');return}
+  if((fishing.gold||0)<cost.gold){shop20Toast('골드 부족',`${formatNumber(cost.gold)}G가 필요합니다.`);return}
+  if(cost.token){fishing.bossTokens=fishing.bossTokens||{};if((fishing.bossTokens[cost.tokenType]||0)<cost.token){shop20Toast('토큰 부족',`${getAccessoryTokenName(cost.tokenType)} ${cost.token}개가 필요합니다.`);return}}
+  fishing.gold-=cost.gold;
+  if(cost.token)fishing.bossTokens[cost.tokenType]-=cost.token;
+  const ok=Math.random()*100<cost.rate;
+  if(ok){fishing.accessoryEnhance[id]=cost.next;shop20Toast('강화 성공!',`${a.name} +${cost.next}`);if(cost.next>=10)unlockTitle('enhance_master',true);}
+  else shop20Toast('강화 실패',`${a.name}은(는) +${getAccessoryLevel(id)} 유지`);
+  render();saveGame();
+}
+
 function getAccessorySummaryHtml(){
   ensureAccessoryState();
   const lines=[];
@@ -5000,7 +5035,7 @@ function renderAccessoryPanel(){
     panel.className='accessory-panel';
     anchor.insertAdjacentElement('afterend',panel);
   }
-  panel.innerHTML=`<h3>💎 장신구</h3><div class="small">보스 상자에서 획득한 장신구를 장착하고, 세트 효과와 칭호를 활성화할 수 있습니다.</div><div class="accessory-slots">${renderAccessorySlots()}</div><div class="accessory-list">${renderAccessoryList()}</div><div class="accessory-summary"><b>현재 효과</b><br>${getAccessorySummaryHtml()}</div>${renderAccessorySetPanel()}${renderTitlePanel()}`;
+  panel.innerHTML=`<h3>💎 장신구</h3><div class="small">보스 상자에서 획득한 장신구를 장착하고 강화할 수 있습니다.<br>강화 실패 시 파괴/하락 없이 단계가 유지됩니다.</div><div class="accessory-enhance-help">강화 효과: 장신구 기본 효과가 강화 단계마다 약 7%씩 증가합니다. 최대 +10.</div><div class="accessory-slots">${renderAccessorySlots()}</div><div class="accessory-list">${renderAccessoryList()}</div><div class="accessory-summary"><b>현재 효과</b><br>${getAccessorySummaryHtml()}</div>${renderAccessorySetPanel()}${renderTitlePanel()}`;
 }
 const renderEquipmentPanelBase11=renderEquipmentPanel;
 renderEquipmentPanel=function(){
