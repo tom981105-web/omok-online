@@ -2268,7 +2268,7 @@ async function loadUser(){
   fishing.treasureOpened=fishing.treasureOpened||0;
   fishing.gems=fishing.gems||0;fishing.premiumBait=fishing.premiumBait||{rare:0,legend:0};fishing.ownedShopItems=fishing.ownedShopItems||{};fishing.cosmetics=fishing.cosmetics||{};fishing.cosmetics.owned=fishing.cosmetics.owned||{};fishing.bossMailbox=fishing.bossMailbox||[];fishing.adminMode=!!fishing.adminMode;if(fishing.cosmetics.profileGold)fishing.cosmetics.owned.profile_gold=true;if(fishing.title==="별빛 낚시꾼")fishing.cosmetics.owned.name_star=true;fishing.cosmetics.equippedProfile=fishing.cosmetics.equippedProfile||(fishing.cosmetics.owned.profile_gold?"profile_gold":"profile_none");fishing.cosmetics.equippedTitle=fishing.cosmetics.equippedTitle||(fishing.cosmetics.owned.name_star?"name_star":"title_none");fishing.equipment=fishing.equipment||{bait:"basic",rod:getBestOwnedRodId()};fishing.bossChests=fishing.bossChests||{kraken:0,leviathan:0,phoenix:0};fishing.bossTokens=fishing.bossTokens||{kraken:0,leviathan:0,phoenix:0};fishing.bossKills=fishing.bossKills||{};fishing.profile=fishing.profile||{avatar:"male",nickname:(userData.nickname||auth.currentUser.email.split("@")[0])};ensureAccessoryState();ensureTitleState();checkTitleUnlocks(false);fishing.title=getEquippedTitleName();
 
-  for(const key of Object.keys(fishing.inventory)){
+  for(const key of Object.keys(fishing?.inventory||{})){
     const parsed=parseInventoryKey(key);
     if(FISHES[parsed.fishKey]) fishing.discovered[parsed.fishKey]=true;
     else if(FISHES[key]) fishing.discovered[key]=true;
@@ -2280,6 +2280,7 @@ async function loadUser(){
 }
 
 async function saveGame(){
+  if(!fishing||!uid)return;
   fishing.updatedAt=Date.now();
   await update(ref(db,`users/${uid}`),{fishing,lastPlayedAt:serverTimestamp()});
   if(typeof syncMultiplayer==='function')await syncMultiplayer();
@@ -2389,6 +2390,7 @@ async function syncMultiProfileOnly(){
 }
 
 function render(){
+  if(!fishing)return;
   goldText.textContent=formatNumber(fishing.gold||0);
   rodText.textContent=fishing.rodLevel||1;
   baitText.textContent=fishing.bait||0;
@@ -2494,7 +2496,7 @@ function renderFishBook(){
   grid.className="fish-card-grid";
 
   for(const [key,fish] of Object.entries(FISHES)){
-    const owned=Object.entries(fishing.inventory||{}).reduce((sum,[invKey,count])=>{
+    const owned=Object.entries(fishing?.inventory||{}).reduce((sum,[invKey,count])=>{
       const parsed=parseInventoryKey(invKey);
       return sum+(parsed.fishKey===key?count:0);
     },0);
@@ -2555,7 +2557,7 @@ function makeFishCardElement({key,fishKey,sizeKey='normal',count=0,known=true,cl
 function getTopLocationFishes(locationKey,limit=5){const loc=LOCATIONS[locationKey]||LOCATIONS.pond;return [...(loc.fishes||[])].filter(k=>FISHES[k]).sort((a,b)=>{const fa=FISHES[a],fb=FISHES[b];const rd=getRarityRank(fb.rarity)-getRarityRank(fa.rarity);return rd||((fb.price||0)-(fa.price||0));}).slice(0,limit);}
 
 function getSortedInventoryEntries(){
-  const entries=Object.entries(fishing.inventory||{}).filter(([key,count])=>count>0);
+  const entries=Object.entries(fishing?.inventory||{}).filter(([key,count])=>count>0);
   const mode=$('bagSortSelect')?.value||'recent';
   const mapped=entries.map(([key,count])=>{
     const parsed=parseInventoryKey(key);
@@ -2626,7 +2628,7 @@ function renderFishBookPreview(){
     hudTrophy.textContent=achievements;
   }
   for(const [key,fish] of Object.entries(FISHES)){
-    const owned=Object.entries(fishing.inventory||{}).reduce((sum,[invKey,count])=>{
+    const owned=Object.entries(fishing?.inventory||{}).reduce((sum,[invKey,count])=>{
       const parsed=parseInventoryKey(invKey);
       return sum+(parsed.fishKey===key?count:0);
     },0);
@@ -2723,7 +2725,7 @@ function openFishDetail(fishKey,known=true){
   const fish=FISHES[fishKey];
   if(!fish||!fishDetailModal)return;
   const frame=RARITY_FRAMES[fish.rarity]||RARITY_FRAMES.common;
-  const owned=Object.entries(fishing.inventory||{}).reduce((sum,[invKey,count])=>{
+  const owned=Object.entries(fishing?.inventory||{}).reduce((sum,[invKey,count])=>{
     const parsed=parseInventoryKey(invKey);
     return sum+(parsed.fishKey===fishKey?count:0);
   },0);
@@ -3302,7 +3304,7 @@ function clearTimers(){
 }
 
 async function sellAllFish(){
-  const inv=fishing.inventory||{};
+  const inv=fishing?.inventory||{};
   let earn=0;
 
   for(const [key,count] of Object.entries(inv)){
@@ -3323,7 +3325,7 @@ async function sellAllFish(){
 
 
 async function sellCommonFish(){
-  const inv=fishing.inventory||{};
+  const inv=fishing?.inventory||{};
   let earn=0;
   let sold=0;
   for(const [key,count] of Object.entries({...inv})){
@@ -3505,7 +3507,7 @@ function addBoss11LocalLog(text,damage){
 function getBoss11LocalHp(boss){return Math.max(0,(boss.hp||boss.maxHp||1)-pendingBossDamage)}
 
 /* Firebase helpers moved to js/firebase.js */
-function getWeekKey(){const d=new Date(),onejan=new Date(d.getFullYear(),0,1);return `${d.getFullYear()}-W${Math.ceil((((d-onejan)/86400000)+onejan.getDay()+1)/7)}`}function getPlayerName(){return fishing?.profile?.nickname||userData?.nickname||auth.currentUser?.email?.split('@')[0]||'낚시꾼'}function calcMultiScore(){const rank={common:1,uncommon:5,rare:20,epic:50,legend:100};let score=0;for(const [k,c] of Object.entries(fishing.inventory||{})){const p=parseInventoryKey(k),f=FISHES[p.fishKey];if(f)score+=(rank[f.rarity]||1)*c}return score+(fishing.totalCaught||0)}function ensureBossRewardState(){fishing.bossChests=fishing.bossChests||{kraken:0,leviathan:0,phoenix:0};fishing.bossTokens=fishing.bossTokens||{kraken:0,leviathan:0,phoenix:0};fishing.bossKills=fishing.bossKills||{};fishing.bossMailbox=fishing.bossMailbox||[];fishing.claimedBossMail=fishing.claimedBossMail||{};fishing.cosmetics=fishing.cosmetics||{};fishing.cosmetics.owned=fishing.cosmetics.owned||{};fishing.ownedShopItems=fishing.ownedShopItems||{};fishing.adminMode=!!fishing.adminMode}
+function getWeekKey(){const d=new Date(),onejan=new Date(d.getFullYear(),0,1);return `${d.getFullYear()}-W${Math.ceil((((d-onejan)/86400000)+onejan.getDay()+1)/7)}`}function getPlayerName(){return fishing?.profile?.nickname||userData?.nickname||auth.currentUser?.email?.split('@')[0]||'낚시꾼'}function calcMultiScore(){if(!fishing)return 0;const rank={common:1,uncommon:5,rare:20,epic:50,legend:100};let score=0;for(const [k,c] of Object.entries(fishing?.inventory||{})){const p=parseInventoryKey(k),f=FISHES[p.fishKey];if(f)score+=(rank[f.rarity]||1)*c}return score+(fishing?.totalCaught||0)}function ensureBossRewardState(){if(!fishing)return;fishing.bossChests=fishing.bossChests||{kraken:0,leviathan:0,phoenix:0};fishing.bossTokens=fishing.bossTokens||{kraken:0,leviathan:0,phoenix:0};fishing.bossKills=fishing.bossKills||{};fishing.bossMailbox=fishing.bossMailbox||[];fishing.claimedBossMail=fishing.claimedBossMail||{};fishing.cosmetics=fishing.cosmetics||{};fishing.cosmetics.owned=fishing.cosmetics.owned||{};fishing.ownedShopItems=fishing.ownedShopItems||{};fishing.adminMode=!!fishing.adminMode}
 function getBossRewardType(id){if((id||'').includes('leviathan'))return 'leviathan';if((id||'').includes('phoenix'))return 'phoenix';return 'kraken'}
 function getBossChestRates(enhanced){
   return enhanced
@@ -3863,8 +3865,8 @@ async function renderMultiBoss(box){
   const allList=Object.entries(data).map(([id,a])=>({id,...a}));
   window.__auctionListCache=allList;
   const activeList=allList.filter(a=>a.status==='active'&&a.expiresAt>now).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,80);
-  const options=Object.entries(fishing.inventory||{}).filter(([k,c])=>c>0).map(([k,c])=>{const p=parseInventoryKey(k),f=FISHES[p.fishKey];return f?`<option value="${k}">${getSizedFishName(p.fishKey,p.sizeKey)} x${c}</option>`:''}).join('');
-  const firstKey=Object.entries(fishing.inventory||{}).find(([k,c])=>c>0)?.[0]||'';
+  const options=Object.entries(fishing?.inventory||{}).filter(([k,c])=>c>0).map(([k,c])=>{const p=parseInventoryKey(k),f=FISHES[p.fishKey];return f?`<option value="${k}">${getSizedFishName(p.fishKey,p.sizeKey)} x${c}</option>`:''}).join('');
+  const firstKey=Object.entries(fishing?.inventory||{}).find(([k,c])=>c>0)?.[0]||'';
   const firstP=firstKey?parseInventoryKey(firstKey):null;
   const firstMarket=firstKey?getAuctionMarketPrice(firstKey):0;
   const formHtml=options ? `<div class="auction20-form-card"><div class="auction20-preview"><img id="auctionPreviewImg" src="${firstP?getAuctionFishImg(firstP.fishKey):'./assets/icons/fish_shadow.png'}" alt="물고기"></div><div class="auction20-field"><label>판매할 물고기</label><select id="auctionFishSelect" onchange="updateAuctionMarketPrice()">${options}</select></div><div class="auction20-field"><label>판매가</label><input id="auctionPriceInput" type="number" placeholder="${firstMarket||'가격'}" oninput="updateAuctionMarketPrice()"></div><button onclick="createAuctionItem()">등록</button></div><div id="auctionMarketBox" class="auction-market-box"><div class="small">판매할 물고기를 선택하면 권장 시장가가 표시됩니다.</div></div>` : `<div class="auction20-form-card"><div class="small">등록할 수 있는 물고기가 없습니다. 먼저 물고기를 낚아주세요.</div></div>`;
@@ -3962,7 +3964,7 @@ window.addFriendMulti=async function(){const fid=$('friendUidInput')?.value?.tri
     ensureAuction43State();
     const out=[];
     if(type==='fish'){
-      for(const [k,c] of Object.entries(fishing.inventory||{})){
+      for(const [k,c] of Object.entries(fishing?.inventory||{})){
         if(Number(c)>0){const info=auction43ItemInfo('fish',k); if(info)out.push({...info,ownedCount:Number(c)});}
       }
     }else if(type==='rod'){
@@ -4618,7 +4620,7 @@ document.querySelectorAll(".tab-btn").forEach(btn=>{
 
   function patchInventoryCardsUi31(){
     ensureUi31State();
-    const entries=typeof getSortedInventoryEntries==='function'?getSortedInventoryEntries():Object.entries(fishing.inventory||{}).map(([key,count])=>({key,count}));
+    const entries=typeof getSortedInventoryEntries==='function'?getSortedInventoryEntries():Object.entries(fishing?.inventory||{}).map(([key,count])=>({key,count}));
     const bind=(selector)=>{
       document.querySelectorAll(selector).forEach((card,idx)=>{
         const item=entries[idx];
@@ -4659,7 +4661,7 @@ document.querySelectorAll(".tab-btn").forEach(btn=>{
     sellAllFish=async function(){
       ensureUi31State();
       let earn=0,sold=0;
-      for(const [key,count] of Object.entries({...fishing.inventory})){
+      for(const [key,count] of Object.entries({...((fishing&&fishing.inventory)||{})})){
         if(fishing.lockedFish?.[key])continue;
         const parsed=parseInventoryKey(key);
         earn+=getFishSellPrice(parsed.fishKey,parsed.sizeKey)*count;
@@ -4895,7 +4897,7 @@ async function renderBossRareDropLog(){
   }
   function entries44(type){
     ensure44(); const out=[];
-    if(type==='fish')Object.entries(fishing.inventory||{}).forEach(([k,c])=>{if(Number(c)>0){const i=itemInfo44('fish',k);if(i)out.push({...i,ownedCount:Number(c)});}});
+    if(type==='fish')Object.entries(fishing?.inventory||{}).forEach(([k,c])=>{if(Number(c)>0){const i=itemInfo44('fish',k);if(i)out.push({...i,ownedCount:Number(c)});}});
     if(type==='rod')['rod_kraken','rod_leviathan','rod_phoenix'].forEach(k=>{if(fishing.ownedShopItems?.[k]){const i=itemInfo44('rod',k);if(i)out.push({...i,ownedCount:1,equipped:fishing.equipment?.rod===k});}});
     if(type==='frame')['frame_kraken','frame_leviathan','frame_phoenix'].forEach(k=>{if(fishing.cosmetics?.owned?.[k]||fishing.ownedShopItems?.[k]){const i=itemInfo44('frame',k);if(i)out.push({...i,ownedCount:1,equipped:fishing.cosmetics?.equippedProfile===k});}});
     if(type==='token')Object.entries(fishing.bossTokens||{}).forEach(([k,c])=>{if(Number(c)>0){const i=itemInfo44('token',k);if(i)out.push({...i,ownedCount:Number(c)});}});
@@ -5424,6 +5426,30 @@ if(itemInfo44Base11){
   },true);
 })();
 
+
+/* ===============================
+   Patch 13.2.2 Startup Inventory Null Hardfix
+   - fishing 초기화 전 inventory 참조 차단
+   - 렌더/필터/멀티 점수 계산 안전화
+================================ */
+(function(){
+  const safeRun=(fn,fallback)=>function(){
+    if(!window.fishing && typeof fishing==='undefined') return fallback;
+    if(typeof fishing!=='undefined' && !fishing) return fallback;
+    try{return fn&&fn.apply(this,arguments);}catch(e){
+      if(String(e?.message||'').includes('inventory')){console.warn('inventory null guard',e);return fallback;}
+      throw e;
+    }
+  };
+  if(typeof calcMultiScore==='function'){
+    const baseCalc=calcMultiScore;
+    calcMultiScore=function(){if(!fishing)return 0;return baseCalc();};
+  }
+  if(typeof render==='function'){
+    const baseRender=render;
+    render=function(){if(!fishing)return;return baseRender.apply(this,arguments);};
+  }
+})();
 
 </script>
 <script src="js/auction.js"></script>
