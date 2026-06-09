@@ -5324,6 +5324,107 @@ if(itemInfo44Base11){
 })();
 
 
+/* ===============================
+   Patch 13.2.1 Hotfix
+   - 시작 오류: fishing null 상태에서 장신구/인벤토리 참조 방지
+   - 가방/경매장 필터 버튼 이벤트 강제 복구
+================================ */
+(function(){
+  const _getAccessoryLevel = typeof getAccessoryLevel==='function' ? getAccessoryLevel : null;
+  getAccessoryLevel = function(id){
+    if(!fishing) return 0;
+    ensureAccessoryState?.();
+    return Math.max(0,Math.min(10,Number(fishing.accessoryEnhance?.[id]||0)));
+  };
+
+  getEquippedAccessoryIds = function(){
+    if(!fishing) return [];
+    ensureAccessoryState?.();
+    return Object.values(fishing.equipment?.accessories||{}).filter(Boolean);
+  };
+
+  getEquippedAccessories = function(){
+    return getEquippedAccessoryIds().map(id=>ACCESSORY_ITEMS?.[id]).filter(Boolean);
+  };
+
+  getAccessorySetCount = function(setId){
+    if(!fishing) return 0;
+    return getEquippedAccessories().filter(a=>a?.set===setId).length;
+  };
+
+  getAccessorySetBonusEffects = function(){
+    if(!fishing) return {};
+    const bonus={};
+    for(const [setId,set] of Object.entries(ACCESSORY_SETS||{})){
+      if(getAccessorySetCount(setId)>=2){
+        for(const [k,v] of Object.entries(set.twoEffects||{})) bonus[k]=(bonus[k]||0)+Number(v||0);
+      }
+    }
+    return bonus;
+  };
+
+  hasAccessorySetImmune = function(pattern){
+    if(!fishing) return false;
+    return Object.entries(ACCESSORY_SETS||{}).some(([setId,set])=>set.immunePattern===pattern&&getAccessorySetCount(setId)>=3);
+  };
+
+  getAccessoryEffectTotal = function(key){
+    if(!fishing) return 0;
+    const base=getEquippedAccessoryIds().reduce((sum,id)=>sum+(typeof getAccessoryEnhancedEffectValue==='function'?getAccessoryEnhancedEffectValue(id,key):0),0);
+    const setBonus=getAccessorySetBonusEffects()[key]||0;
+    return base+setBonus;
+  };
+
+  const _getAccessorySummaryHtml = typeof getAccessorySummaryHtml==='function' ? getAccessorySummaryHtml : null;
+  getAccessorySummaryHtml = function(){
+    if(!fishing) return '장착 효과 없음';
+    try{return _getAccessorySummaryHtml ? _getAccessorySummaryHtml() : '장착 효과 없음';}
+    catch(e){console.warn('accessory summary failed',e);return '장착 효과 없음';}
+  };
+
+  const _renderInventory = typeof renderInventory==='function' ? renderInventory : null;
+  renderInventory = function(){
+    if(!fishing) return;
+    try{return _renderInventory && _renderInventory.apply(this,arguments);}catch(e){console.error('가방 렌더 오류',e);}
+  };
+
+  const _renderInventoryPreview = typeof renderInventoryPreview==='function' ? renderInventoryPreview : null;
+  renderInventoryPreview = function(){
+    if(!fishing) return;
+    try{return _renderInventoryPreview && _renderInventoryPreview.apply(this,arguments);}catch(e){console.error('가방 미리보기 렌더 오류',e);}
+  };
+
+  document.addEventListener('click',function(e){
+    const bagBtn=e.target.closest?.('[data-bag-filter]');
+    if(bagBtn){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      const type=bagBtn.dataset.bagFilter||'all';
+      currentBagPreviewFilter=type;
+      document.querySelectorAll('[data-bag-filter]').forEach(b=>b.classList.toggle('active',b.dataset.bagFilter===type));
+      renderInventoryPreview?.();
+      renderInventory?.();
+      return;
+    }
+
+    const auctionBtn=e.target.closest?.('.auction43-type-tabs button');
+    if(auctionBtn){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      const txt=(auctionBtn.textContent||'').trim();
+      const map={'전체':'all','물고기':'fish','낚싯대':'rod','프레임':'frame','토큰':'token','상자':'chest','장신구':'accessory'};
+      const type=map[txt]||auctionBtn.dataset?.auctionFilter||'all';
+      window.__auction43Filter=type;
+      window.__auction44Filter=type;
+      document.querySelectorAll('.auction43-type-tabs button').forEach(b=>b.classList.toggle('active',b===auctionBtn));
+      if(typeof loadMulti==='function') loadMulti();
+      else if(typeof window.loadMulti==='function') window.loadMulti();
+      return;
+    }
+  },true);
+})();
+
+
 </script>
 <script src="js/auction.js"></script>
 <script src="js/mailbox.js"></script>
