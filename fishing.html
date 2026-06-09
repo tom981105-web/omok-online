@@ -1473,6 +1473,85 @@ html,body{
 @media(min-width:1100px){.hud-avatar-slot{flex-basis:58px;width:58px;height:58px}.hud-profile-frame{width:96px;height:96px}.hud-profile.has-boss-frame .hud-avatar-slot{flex-basis:78px;width:78px;height:78px}.hud-profile.has-boss-frame .hud-avatar{width:52px!important;height:52px!important}.hud-profile.has-boss-frame .hud-exp{left:102px!important}}
 @media(max-width:1099px){.hud-avatar-slot{flex-basis:70px;width:70px;height:70px}.hud-profile-frame{width:108px;height:108px}.hud-avatar-slot .hud-avatar{width:58px!important;height:58px!important}.hud-profile.has-boss-frame .hud-avatar-slot{flex-basis:92px;width:92px;height:92px}.hud-profile.has-boss-frame .hud-avatar{width:60px!important;height:60px!important}.hud-profile.has-boss-frame .hud-info{max-width:calc(100% - 150px)!important}.hud-profile.has-boss-frame .hud-exp{left:118px!important}}
 
+
+
+/* UI 3.8 frame fit + all-list profile frame patch */
+:root{
+  --rank-frame-box:84px;
+  --rank-frame-img:96px;
+  --rank-avatar-img:50px;
+  --mini-frame-box:46px;
+  --mini-frame-img:54px;
+  --mini-avatar-img:28px;
+}
+.rank-profile{
+  position:relative!important;
+  width:var(--rank-frame-box)!important;
+  height:var(--rank-frame-box)!important;
+  flex:0 0 var(--rank-frame-box)!important;
+  display:grid!important;
+  place-items:center!important;
+  overflow:visible!important;
+}
+.rank-profile .rank-avatar{
+  position:relative!important;
+  z-index:2!important;
+  width:var(--rank-avatar-img)!important;
+  height:var(--rank-avatar-img)!important;
+  border-radius:50%!important;
+  object-fit:cover!important;
+  image-rendering:pixelated!important;
+  background:#020617!important;
+  border:0!important;
+  box-shadow:0 0 10px rgba(0,0,0,.62)!important;
+}
+.rank-profile .rank-frame{
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  width:var(--rank-frame-img)!important;
+  height:var(--rank-frame-img)!important;
+  transform:translate(-50%,-50%)!important;
+  object-fit:contain!important;
+  image-rendering:pixelated!important;
+  z-index:4!important;
+  pointer-events:none!important;
+  filter:drop-shadow(0 4px 7px rgba(0,0,0,.62))!important;
+}
+.multi11-rank-card.with-profile,.multi11-record-card.with-profile{
+  min-height:104px!important;
+  padding:14px 18px!important;
+  gap:12px!important;
+  overflow:visible!important;
+  align-items:center!important;
+}
+.multi11-rank-card.with-profile .multi11-medal{
+  left:24px!important;
+  bottom:18px!important;
+  z-index:8!important;
+  font-size:20px!important;
+}
+.multi11-record-card.with-profile .rank-profile,
+.multi11-rank-card.with-profile .rank-profile{margin-right:0!important;}
+.multi10-row .rank-profile,
+.boss11-log-item.with-profile .rank-profile,
+.boss-broadcast-row.with-profile .rank-profile,
+.rank-user-line .rank-profile{
+  --rank-frame-box:var(--mini-frame-box);
+  --rank-frame-img:var(--mini-frame-img);
+  --rank-avatar-img:var(--mini-avatar-img);
+  margin-right:2px!important;
+}
+.multi10-row,.boss11-log-item.with-profile,.boss-broadcast-row.with-profile{overflow:visible!important;}
+.rank-user-line{overflow:visible!important;align-items:center!important;}
+.boss11-log-item.with-profile span{overflow:visible!important;}
+.boss-broadcast-text{min-width:0!important;}
+@media(max-width:720px){
+  :root{--rank-frame-box:74px;--rank-frame-img:86px;--rank-avatar-img:44px;--mini-frame-box:42px;--mini-frame-img:50px;--mini-avatar-img:26px;}
+  .multi11-rank-card.with-profile,.multi11-record-card.with-profile{min-height:96px!important;padding:12px!important;gap:9px!important;}
+  .multi11-rank-card.with-profile .multi11-medal{left:18px!important;bottom:16px!important;font-size:18px!important;}
+}
+
 </style>
 </head>
 
@@ -3865,6 +3944,34 @@ document.querySelectorAll(".tab-btn").forEach(btn=>{
     }
   };
 })();
+
+
+/* UI 3.8 frame fit + all-list profile frame patch */
+function profileRowFromFriend(id,f){
+  const row={uid:id,...(f||{})};
+  if(!row.avatar && f?.profile?.avatar) row.avatar=f.profile.avatar;
+  return row;
+}
+async function renderMultiTournament(box){
+  const raw=await dbGet(`multiplayer/weeklyTournament/${getWeekKey()}`)||{};
+  const rows=await enrichRowsWithUserProfiles(sortTop(raw).slice(0,20));
+  const html=rows.map((r,i)=>`<div class="multi10-row"><span class="rank-user-line">${renderMiniProfile(r,r.name||'프로필')}<span>${i+1}. ${r.name||'낚시꾼'}<br><small>${r.title||'낚시꾼'}</small></span></span><b>${formatNumber(r.score||0)}점</b></div>`).join('');
+  box.innerHTML=`<div class="multi10-card">${multi10Title("tournament","주간 낚시대회")}${html||'<div class="small">이번 주 기록 없음</div>'}</div>`;
+}
+async function renderMultiFriends(box){
+  const friends=await dbGet(`multiplayer/friends/${uid}`)||{};
+  const entries=Object.entries(friends).map(([id,f])=>profileRowFromFriend(id,f));
+  const rows=await enrichRowsWithUserProfiles(entries);
+  box.innerHTML=`<div class="multi10-card">${multi10Title("friends","친구")}<div class="multi10-form"><input id="friendUidInput" placeholder="친구 UID"><button onclick="addFriendMulti()">추가</button></div>${rows.map((f)=>`<div class="multi10-row"><span class="rank-user-line">${renderMiniProfile(f,f.name||f.uid)}<span>${f.name||f.uid}<br><small>${f.title||'낚시꾼'}</small></span></span><b>${String(f.uid||'').slice(0,6)}</b></div>`).join('')||'<div class="small">친구 없음</div>'}</div>`;
+}
+async function renderBossRareDropLog(){
+  try{
+    const data=await dbGet('multiplayer/bossRareDrops')||{};
+    const list=await enrichRowsWithUserProfiles(Object.values(data).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,8));
+    const rows=list.map(x=>`<div class="boss-broadcast-row with-profile">${renderMiniProfile(x,x.name||'프로필')}<div class="boss-broadcast-text">📢 <b>${x.name||'낚시꾼'}</b> · ${x.grade==='mythic'?'🌈 신화':'⭐⭐⭐⭐⭐ 전설'} · ${x.text||''}<br><span class="small">${x.title||'낚시꾼'} · ${x.boxName||'보스 상자'} · ${x.createdAt?new Date(x.createdAt).toLocaleString():'-'}</span></div></div>`).join('');
+    return `<div class="boss-broadcast-box"><h4>최근 전설/신화 획득</h4>${rows||'<div class="small">아직 전설/신화 획득 기록이 없습니다.</div>'}</div>`;
+  }catch(e){return `<div class="boss-broadcast-box"><h4>최근 전설/신화 획득</h4><div class="small">방송 로그를 불러오지 못했습니다.</div></div>`}
+}
 
 </script>
 </body>
