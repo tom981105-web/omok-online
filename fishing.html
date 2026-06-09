@@ -1787,6 +1787,17 @@ html,body{
 .accessory-card button,.accessory-slot button{height:30px;margin:6px 0 0;padding:0 8px;border-radius:9px;font-size:12px}.accessory-card button:disabled{opacity:.45}
 .accessory-summary{font-size:12px;color:#cbd5e1;line-height:1.55;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:8px;margin-top:8px}
 .boss-gacha-result.accessory{color:#d8b4fe;box-shadow:0 0 22px rgba(168,85,247,.22)}
+
+.accessory-set-list{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.accessory-set-card{background:rgba(15,23,42,.72);border:1px solid rgba(148,163,184,.2);border-radius:14px;padding:9px;text-align:left;min-height:118px}
+.accessory-set-card.active{border-color:rgba(34,197,94,.55);box-shadow:0 0 18px rgba(34,197,94,.16)}
+.accessory-set-card.partial{border-color:rgba(250,204,21,.38)}
+.accessory-set-card b{display:block;color:#fff;font-size:13px;margin-bottom:4px}.accessory-set-card small{display:block;color:#cbd5e1;line-height:1.45;font-size:11px}
+.accessory-set-count{display:inline-flex;border-radius:999px;padding:2px 7px;background:rgba(2,6,23,.7);border:1px solid rgba(255,255,255,.1);font-size:11px;color:#facc15;font-weight:900;margin-bottom:5px}
+.title-panel12{margin-top:12px;background:rgba(2,6,23,.45);border:1px solid rgba(96,165,250,.18);border-radius:16px;padding:12px;text-align:left}
+.title-panel12 h3{margin:0 0 8px;color:#93c5fd}.title-grid12{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.title-card12{background:rgba(15,23,42,.72);border:1px solid rgba(148,163,184,.2);border-radius:14px;padding:9px;min-height:110px}.title-card12.owned{border-color:rgba(96,165,250,.45)}.title-card12.equipped{border-color:rgba(250,204,21,.58);box-shadow:0 0 16px rgba(250,204,21,.14)}.title-card12.locked{opacity:.5;filter:grayscale(.5)}.title-card12 b{display:block;color:#fff}.title-card12 small{display:block;color:#cbd5e1;font-size:11px;line-height:1.4;margin-top:4px}.title-card12 button{height:30px;margin:7px 0 0;padding:0 8px;border-radius:9px;font-size:12px}
+@media(max-width:720px){.accessory-set-list{grid-template-columns:1fr}.title-grid12{grid-template-columns:1fr 1fr}}
+
 @media(max-width:720px){.accessory-slots{grid-template-columns:1fr}.accessory-list{grid-template-columns:1fr 1fr;max-height:none}}
 </style>
 
@@ -2165,7 +2176,7 @@ async function loadUser(){
   fishing.inventory=fishing.inventory||{};
   fishing.discovered=fishing.discovered||{};
   fishing.treasureOpened=fishing.treasureOpened||0;
-  fishing.gems=fishing.gems||0;fishing.premiumBait=fishing.premiumBait||{rare:0,legend:0};fishing.ownedShopItems=fishing.ownedShopItems||{};fishing.cosmetics=fishing.cosmetics||{};fishing.cosmetics.owned=fishing.cosmetics.owned||{};fishing.bossMailbox=fishing.bossMailbox||[];fishing.adminMode=!!fishing.adminMode;if(fishing.cosmetics.profileGold)fishing.cosmetics.owned.profile_gold=true;if(fishing.title==="별빛 낚시꾼")fishing.cosmetics.owned.name_star=true;fishing.cosmetics.equippedProfile=fishing.cosmetics.equippedProfile||(fishing.cosmetics.owned.profile_gold?"profile_gold":"profile_none");fishing.cosmetics.equippedTitle=fishing.cosmetics.equippedTitle||(fishing.cosmetics.owned.name_star?"name_star":"title_none");fishing.equipment=fishing.equipment||{bait:"basic",rod:getBestOwnedRodId()};fishing.bossChests=fishing.bossChests||{kraken:0,leviathan:0,phoenix:0};fishing.bossTokens=fishing.bossTokens||{kraken:0,leviathan:0,phoenix:0};fishing.bossKills=fishing.bossKills||{};fishing.profile=fishing.profile||{avatar:"male",nickname:(userData.nickname||auth.currentUser.email.split("@")[0])};
+  fishing.gems=fishing.gems||0;fishing.premiumBait=fishing.premiumBait||{rare:0,legend:0};fishing.ownedShopItems=fishing.ownedShopItems||{};fishing.cosmetics=fishing.cosmetics||{};fishing.cosmetics.owned=fishing.cosmetics.owned||{};fishing.bossMailbox=fishing.bossMailbox||[];fishing.adminMode=!!fishing.adminMode;if(fishing.cosmetics.profileGold)fishing.cosmetics.owned.profile_gold=true;if(fishing.title==="별빛 낚시꾼")fishing.cosmetics.owned.name_star=true;fishing.cosmetics.equippedProfile=fishing.cosmetics.equippedProfile||(fishing.cosmetics.owned.profile_gold?"profile_gold":"profile_none");fishing.cosmetics.equippedTitle=fishing.cosmetics.equippedTitle||(fishing.cosmetics.owned.name_star?"name_star":"title_none");fishing.equipment=fishing.equipment||{bait:"basic",rod:getBestOwnedRodId()};fishing.bossChests=fishing.bossChests||{kraken:0,leviathan:0,phoenix:0};fishing.bossTokens=fishing.bossTokens||{kraken:0,leviathan:0,phoenix:0};fishing.bossKills=fishing.bossKills||{};fishing.profile=fishing.profile||{avatar:"male",nickname:(userData.nickname||auth.currentUser.email.split("@")[0])};ensureAccessoryState();ensureTitleState();checkTitleUnlocks(false);fishing.title=getEquippedTitleName();
 
   for(const key of Object.keys(fishing.inventory)){
     const parsed=parseInventoryKey(key);
@@ -2230,7 +2241,7 @@ function getPlayerProfileSnapshot(){
     avatar:profile.avatar||'male',
     equippedProfile:cosmetics.equippedProfile||'profile_none',
     equippedTitle:cosmetics.equippedTitle||'title_none',
-    title:fishing?.title||getPlayerTitle?.()||'낚시꾼'
+    title:(typeof getEquippedTitleName==='function'?getEquippedTitleName():(fishing?.title||getPlayerTitle?.()||'낚시꾼'))
   };
 }
 function getMiniProfileAvatar(row){return getAvatarPath(row?.avatar||row?.profile?.avatar||'male')}
@@ -2298,7 +2309,7 @@ function render(){
   if($("upgradeRodBtn")) $("upgradeRodBtn").disabled=fishing.gold<upgradeCost;
   if($("buyBaitBtn")) $("buyBaitBtn").disabled=fishing.gold<30;
   if($("fishBtn")) $("fishBtn").disabled=!hasAnyBait()||isCasting||miniRunning;
-  renderShop20();renderEquipmentPanel();renderCosmeticPanel();updateAdminBadge();
+  if(typeof checkTitleUnlocks==='function')checkTitleUnlocks(false);renderShop20();renderEquipmentPanel();renderCosmeticPanel();updateAdminBadge();
 
   renderLocations();
   renderInventory();
@@ -2538,7 +2549,7 @@ function updateProfileProgress(){
   const title=$('playerTitle');
   if(fill)fill.style.width=pct+'%';
   if(text)text.textContent=pct+'%';
-  if(title)title.textContent=fishing.title||getPlayerTitle();
+  if(title)title.textContent=(typeof getEquippedTitleName==='function'?getEquippedTitleName():(fishing.title||getPlayerTitle()));
 }
 
 function getPlayerTitle(){
@@ -4846,9 +4857,27 @@ function hasAccessoryOwned(id){return getAccessoryCount(id)>0}
 function getAccessoryData(id){return ACCESSORY_ITEMS?.[id]||null}
 function getEquippedAccessoryIds(){ensureAccessoryState();return Object.values(fishing.equipment.accessories||{}).filter(Boolean)}
 function getEquippedAccessories(){return getEquippedAccessoryIds().map(getAccessoryData).filter(Boolean)}
-function getAccessoryEffectTotal(key){return getEquippedAccessories().reduce((sum,a)=>sum+Number(a.effects?.[key]||0),0)}
+function getAccessorySetCount(setId){return getEquippedAccessories().filter(a=>a.set===setId).length}
+function getAccessorySetBonusEffects(){
+  const bonus={};
+  for(const [setId,set] of Object.entries(ACCESSORY_SETS||{})){
+    if(getAccessorySetCount(setId)>=2){
+      for(const [k,v] of Object.entries(set.twoEffects||{}))bonus[k]=(bonus[k]||0)+Number(v||0);
+    }
+  }
+  return bonus;
+}
+function hasAccessorySetImmune(pattern){
+  return Object.entries(ACCESSORY_SETS||{}).some(([setId,set])=>set.immunePattern===pattern&&getAccessorySetCount(setId)>=3);
+}
+function getAccessoryEffectTotal(key){
+  const base=getEquippedAccessories().reduce((sum,a)=>sum+Number(a.effects?.[key]||0),0);
+  const setBonus=getAccessorySetBonusEffects()[key]||0;
+  return base+setBonus;
+}
 function getAccessoryBossDamageMul(){return 1+getAccessoryEffectTotal('bossDamage')}
 function getAccessoryPatternResist(pattern){
+  if(hasAccessorySetImmune(pattern))return 1;
   const map={ink:'inkResist',storm:'stormResist',reverse:'reverseResist'};
   return Math.max(0,Math.min(.85,getAccessoryEffectTotal(map[pattern]||'')));
 }
@@ -4857,12 +4886,63 @@ function getAccessoryBigFishBonus(){return getAccessoryEffectTotal('bigFishBonus
 function getAccessoryGoldBonus(){return getAccessoryEffectTotal('goldBonus')}
 function getAccessoryRarityLabel(r){return ({rare:'레어',epic:'에픽',legend:'전설',mythic:'신화'}[r]||r||'일반')}
 function getAccessorySlotLabel(s){return ({ring:'💍 반지',necklace:'📿 목걸이',relic:'🧿 유물'}[s]||s)}
+
+function ensureTitleState(){
+  if(!fishing)return;
+  fishing.titles=fishing.titles||{owned:{rookie:true},equipped:'rookie'};
+  fishing.titles.owned=fishing.titles.owned||{rookie:true};
+  fishing.titles.owned.rookie=true;
+  fishing.titles.equipped=fishing.titles.equipped||'rookie';
+  if(!PLAYER_TITLES?.[fishing.titles.equipped])fishing.titles.equipped='rookie';
+}
+function unlockTitle(id,toast=true){
+  ensureTitleState();
+  if(!PLAYER_TITLES?.[id])return false;
+  if(fishing.titles.owned[id])return false;
+  fishing.titles.owned[id]=true;
+  if(toast)shop20Toast('칭호 획득!',PLAYER_TITLES[id].name);
+  return true;
+}
+function checkTitleUnlocks(toast=true){
+  if(!fishing)return;
+  ensureTitleState();
+  const caught=Number(fishing.totalCaught||0);
+  const discovered=Object.keys(fishing.discovered||{}).length;
+  const ownedAccessories=Object.keys(ACCESSORY_ITEMS||{}).filter(id=>hasAccessoryOwned(id)).length;
+  if(caught>=30)unlockTitle('river_angler',toast);
+  if(caught>=100)unlockTitle('veteran_angler',toast);
+  if(discovered>=50)unlockTitle('legendary_collector',toast);
+  if(getAccessorySetCount('kraken')>=3)unlockTitle('kraken_slayer',toast);
+  if(getAccessorySetCount('leviathan')>=3)unlockTitle('leviathan_conqueror',toast);
+  if(getAccessorySetCount('phoenix')>=3)unlockTitle('abyss_lord',toast);
+  if(ownedAccessories>=6)unlockTitle('accessory_master',toast);
+  fishing.title=getEquippedTitleName();
+}
+function getEquippedTitleName(){ensureTitleState();return PLAYER_TITLES?.[fishing.titles.equipped]?.name||fishing.title||'초보 낚시꾼'}
+window.equipPlayerTitle=function(id){
+  ensureTitleState();
+  if(!fishing.titles.owned[id]){shop20Toast('칭호 장착 불가','아직 획득하지 않은 칭호입니다.');return}
+  fishing.titles.equipped=id;
+  fishing.title=getEquippedTitleName();
+  shop20Toast('칭호 장착 완료!',fishing.title);
+  applyProfileUI();render();saveGame();
+}
+function renderTitlePanel(){
+  ensureTitleState();checkTitleUnlocks(false);
+  return `<div class="title-panel12"><h3>🏷️ 칭호</h3><div class="small">조건을 달성해 칭호를 획득하고 프로필에 표시할 수 있습니다.</div><div class="title-grid12">${Object.values(PLAYER_TITLES||{}).map(t=>{const owned=!!fishing.titles.owned[t.id],eq=fishing.titles.equipped===t.id;return `<div class="title-card12 ${owned?'owned':'locked'} ${eq?'equipped':''}"><b>${owned?t.name:'???'}</b><small>${owned?t.desc:t.condition}</small><button ${!owned||eq?'disabled':''} onclick="equipPlayerTitle('${t.id}')">${eq?'장착중':owned?'장착':'미획득'}</button></div>`}).join('')}</div></div>`;
+}
+function renderAccessorySetPanel(){
+  const cards=Object.values(ACCESSORY_SETS||{}).map(set=>{const count=getAccessorySetCount(set.id);const cls=count>=3?'active':count>=2?'partial':'';return `<div class="accessory-set-card ${cls}"><span class="accessory-set-count">${count}/3</span><b>${set.name}</b><small>${set.twoText} ${count>=2?'✅':'🔒'}<br>${set.threeText} ${count>=3?'✅':'🔒'}</small></div>`}).join('');
+  return `<div class="accessory-summary"><b>세트 효과</b><div class="accessory-set-list">${cards}</div></div>`;
+}
+
 function addAccessory(id,count=1){
   ensureAccessoryState();
   const a=getAccessoryData(id); if(!a)return null;
   const cur=fishing.accessories[id];
   if(typeof cur==='number')fishing.accessories[id]=cur+count;
   else fishing.accessories[id]={id:a.id,name:a.name,icon:a.icon,rarity:a.rarity,slot:a.slot,set:a.set,marketPrice:a.marketPrice,count:Number(cur?.count||0)+count};
+  if(typeof checkTitleUnlocks==='function')checkTitleUnlocks(true);
   return a;
 }
 window.equipAccessory=function(id){
@@ -4871,6 +4951,7 @@ window.equipAccessory=function(id){
   if(!a||!hasAccessoryOwned(id)){shop20Toast('장착 불가','보유하지 않은 장신구입니다.');return}
   fishing.equipment.accessories[a.slot]=id;
   shop20Toast('장신구 장착 완료!',`${getAccessorySlotLabel(a.slot)} · ${a.name}`);
+  if(typeof checkTitleUnlocks==='function')checkTitleUnlocks(true);
   render();saveGame();
 }
 window.unequipAccessory=function(slot){
@@ -4897,9 +4978,12 @@ function getAccessorySummaryHtml(){
   ensureAccessoryState();
   const lines=[];
   const boss=Math.round(getAccessoryEffectTotal('bossDamage')*100); if(boss)lines.push(`보스 딜 +${boss}%`);
-  const ink=Math.round(getAccessoryEffectTotal('inkResist')*100); if(ink)lines.push(`먹물 저항 ${ink}%`);
-  const storm=Math.round(getAccessoryEffectTotal('stormResist')*100); if(storm)lines.push(`폭풍 저항 ${storm}%`);
-  const rev=Math.round(getAccessoryEffectTotal('reverseResist')*100); if(rev)lines.push(`교란 저항 ${rev}%`);
+  if(hasAccessorySetImmune('ink'))lines.push('먹물 면역');
+  else {const ink=Math.round(getAccessoryEffectTotal('inkResist')*100); if(ink)lines.push(`먹물 저항 ${ink}%`);}
+  if(hasAccessorySetImmune('storm'))lines.push('폭풍 면역');
+  else {const storm=Math.round(getAccessoryEffectTotal('stormResist')*100); if(storm)lines.push(`폭풍 저항 ${storm}%`);}
+  if(hasAccessorySetImmune('reverse'))lines.push('교란 면역');
+  else {const rev=Math.round(getAccessoryEffectTotal('reverseResist')*100); if(rev)lines.push(`교란 저항 ${rev}%`);}
   const leg=getAccessoryEffectTotal('legendBonus'); if(leg)lines.push(`전설 확률 +${leg}%`);
   const big=Math.round(getAccessoryEffectTotal('bigFishBonus')*100); if(big)lines.push(`대형 물고기 확률 +${big}%`);
   const gold=Math.round(getAccessoryEffectTotal('goldBonus')*100); if(gold)lines.push(`골드 +${gold}%`);
@@ -4916,7 +5000,7 @@ function renderAccessoryPanel(){
     panel.className='accessory-panel';
     anchor.insertAdjacentElement('afterend',panel);
   }
-  panel.innerHTML=`<h3>💎 장신구</h3><div class="small">보스 상자에서 획득한 장신구를 장착할 수 있습니다. 11.5에서 세트 효과가 추가됩니다.</div><div class="accessory-slots">${renderAccessorySlots()}</div><div class="accessory-list">${renderAccessoryList()}</div><div class="accessory-summary"><b>현재 효과</b><br>${getAccessorySummaryHtml()}</div>`;
+  panel.innerHTML=`<h3>💎 장신구</h3><div class="small">보스 상자에서 획득한 장신구를 장착하고, 세트 효과와 칭호를 활성화할 수 있습니다.</div><div class="accessory-slots">${renderAccessorySlots()}</div><div class="accessory-list">${renderAccessoryList()}</div><div class="accessory-summary"><b>현재 효과</b><br>${getAccessorySummaryHtml()}</div>${renderAccessorySetPanel()}${renderTitlePanel()}`;
 }
 const renderEquipmentPanelBase11=renderEquipmentPanel;
 renderEquipmentPanel=function(){
