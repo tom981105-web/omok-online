@@ -1580,6 +1580,75 @@ html,body{
   .rank-user-line .rank-frame{width:40px!important;height:40px!important;}
 }
 
+
+/* UI 4.0 unified mini profile frame for all multiplayer lists */
+.multi10-row,
+.boss11-log-item.with-profile,
+.boss-broadcast-row.with-profile,
+.multi11-rank-card.with-profile,
+.multi11-record-card.with-profile{
+  overflow:visible!important;
+}
+.rank-user-line,
+.boss11-log-item.with-profile > span{
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important;
+  min-width:0!important;
+  overflow:visible!important;
+}
+.multi10-row .rank-profile,
+.boss11-log-item.with-profile .rank-profile,
+.boss-broadcast-row.with-profile .rank-profile,
+.rank-user-line .rank-profile{
+  width:46px!important;
+  height:46px!important;
+  flex:0 0 46px!important;
+}
+.multi10-row .rank-avatar,
+.boss11-log-item.with-profile .rank-avatar,
+.boss-broadcast-row.with-profile .rank-avatar,
+.rank-user-line .rank-avatar{
+  width:28px!important;
+  height:28px!important;
+}
+.multi10-row .rank-frame,
+.boss11-log-item.with-profile .rank-frame,
+.boss-broadcast-row.with-profile .rank-frame,
+.rank-user-line .rank-frame{
+  width:40px!important;
+  height:40px!important;
+}
+.multi11-rank-card.with-profile .rank-profile,
+.multi11-record-card.with-profile .rank-profile{
+  width:78px!important;
+  height:78px!important;
+  flex:0 0 78px!important;
+}
+.multi11-rank-card.with-profile .rank-avatar,
+.multi11-record-card.with-profile .rank-avatar{
+  width:50px!important;
+  height:50px!important;
+}
+.multi11-rank-card.with-profile .rank-frame,
+.multi11-record-card.with-profile .rank-frame{
+  width:74px!important;
+  height:74px!important;
+}
+@media(max-width:720px){
+  .multi11-rank-card.with-profile .rank-profile,
+  .multi11-record-card.with-profile .rank-profile{width:70px!important;height:70px!important;flex-basis:70px!important;}
+  .multi11-rank-card.with-profile .rank-avatar,
+  .multi11-record-card.with-profile .rank-avatar{width:44px!important;height:44px!important;}
+  .multi11-rank-card.with-profile .rank-frame,
+  .multi11-record-card.with-profile .rank-frame{width:66px!important;height:66px!important;}
+}
+
+
+/* UI 3.9 catch popup cleanup: size + new record */
+.catch-size-line{font-size:16px;font-weight:900;color:#dbeafe;margin:6px 0 2px;text-shadow:0 2px 4px #000}
+.catch-new-record{display:inline-block;margin:8px 0 4px;padding:6px 12px;border-radius:999px;background:linear-gradient(180deg,#fde047,#f59e0b);color:#111827;font-size:14px;font-weight:1000;box-shadow:0 0 22px rgba(250,204,21,.55);animation:newRecordPulse .9s ease-in-out infinite}
+@keyframes newRecordPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
 </style>
 </head>
 
@@ -2602,11 +2671,20 @@ function openFishDetail(fishKey,known=true){
   fishDetailModal.classList.add('show');
 }
 
-function showCatchPopup(fishKey,sizeKey,treasureText=''){
+function getCatchSizeCm(fishKey,sizeKey){
+  const fish=FISHES[fishKey]||{price:20};
+  const size=FISH_SIZES[sizeKey]||FISH_SIZES.normal;
+  return Math.round((20+fish.price/4)*((size.priceMul)||1));
+}
+
+function showCatchPopup(fishKey,sizeKey,treasureText='',options={}){
   const fish=FISHES[fishKey];
   if(!fish||!catchPopup)return;
   const frame=RARITY_FRAMES[fish.rarity]||RARITY_FRAMES.common;
   const sizedName=getSizedFishName(fishKey,sizeKey);
+  const sizeCm=Number(options.sizeCm)||getCatchSizeCm(fishKey,sizeKey);
+  const expText=options.expText||'';
+  const isNewRecord=!!options.isNewRecord;
   catchPopupCard.className=`catch-popup-card ${fish.rarity==='legend'?'legend':''}`;
   catchPopupContent.innerHTML=`
     <div class="detail-card-preview fish-card rarity-${fish.rarity}">
@@ -2614,11 +2692,14 @@ function showCatchPopup(fishKey,sizeKey,treasureText=''){
       <img class="fish-img" src="${fish.img}" alt="${sizedName}">
     </div>
     <div class="detail-title">${sizedName}</div>
+    ${isNewRecord?`<div class="catch-new-record">🏆 NEW RECORD!</div>`:''}
     <div class="detail-rarity r-${fish.rarity}">${fish.rarity.toUpperCase()}</div>
-    <div class="catch-reward">판매가 ${getFishSellPrice(fishKey,sizeKey)}G</div>
+    <div class="catch-size-line">크기 ${sizeCm}cm</div>
+    <div class="catch-reward">판매가 ${getFishSellPrice(fishKey,sizeKey)}G${expText?` · ${expText}`:''}</div>
     ${treasureText?`<div class="catch-reward">${treasureText}</div>`:''}`;
   catchPopup.classList.add('show');
-  if(fish.rarity==='legend'||fish.rarity==='epic'){
+  if(isNewRecord)shop20Toast('🏆 NEW RECORD!',`${sizedName} · ${sizeCm}cm`);
+  if(fish.rarity==='legend'||fish.rarity==='epic'||isNewRecord){
     document.body.classList.add('screen-shake');
     setTimeout(()=>document.body.classList.remove('screen-shake'),380);
   }
@@ -3021,20 +3102,23 @@ async function finishFishing(success){
     fishing.discovered[targetFishKey]=true;
     fishing.totalCaught=(fishing.totalCaught||0)+1;
     pendingBossDamage+=(getRarityRank(fish.rarity)*10);
-    const sizeCm=Math.round((20+fish.price/4)*((FISH_SIZES[targetSizeKey]||FISH_SIZES.normal).priceMul||1));
+    const sizeCm=getCatchSizeCm(targetFishKey,targetSizeKey);
+    const prevBest=Number(fishing.bestCatchSizeCm||fishing.personalBestSizeCm||0);
+    const isNewRecord=sizeCm>prevBest;
+    if(isNewRecord){
+      fishing.bestCatchSizeCm=sizeCm;
+      fishing.personalBestSizeCm=sizeCm;
+    }
     // 최대어 기록 1인 1개 패치: 유저별 최고 기록만 저장하고, 더 큰 물고기를 잡았을 때만 교체
     updatePersonalBiggestRecord(targetFishKey,targetSizeKey,sizeCm);
-    addExp(12 + Math.round(fish.price/8));
+    const expGain=12 + Math.round(fish.price/8);
+    addExp(expGain);
 
     const treasureText=applyTreasureReward();
 
-    catchResult.innerHTML=`
-      <img src="${fish.img}" alt="${fish.name}">
-      <b class="r-${fish.rarity}">${sizedName}</b> 획득!
-      ${treasureText ? `<div class="status">${treasureText}</div>` : ""}
-    `;
+    catchResult.innerHTML="";
     mainStatus.textContent=`정체는 ${sizedName}이었습니다!`;
-    showCatchPopup(targetFishKey,targetSizeKey,treasureText);
+    showCatchPopup(targetFishKey,targetSizeKey,treasureText,{sizeCm,isNewRecord,expText:`+${expGain} EXP`});
   }else{
     catchResult.innerHTML="";
     mainStatus.textContent="물고기가 도망갔습니다. 정체는 알 수 없습니다.";
@@ -3513,7 +3597,25 @@ async function syncMultiplayer(){
   await dbPatch(updates);
 }
 function getDefaultBoss(excludeId){return createRandomBoss(excludeId)}
-async function loadMulti(){if(!$('multiContent'))return;const box=$('multiContent');box.innerHTML='<div class="small">불러오는 중...</div>';try{await syncMultiProfileOnly();if(['worldDex','tournament','friends'].includes(currentMultiTab))currentMultiTab='ranking';if(currentMultiTab==='ranking')await renderMultiRanking(box);else if(currentMultiTab==='records')await renderMultiRecords(box);else if(currentMultiTab==='boss')await renderMultiBoss(box);else if(currentMultiTab==='auction')await renderMultiAuction(box)}catch(e){console.error('멀티 로딩 실패',e);box.innerHTML=renderFirebaseErrorBox('멀티 정보를 불러오지 못했습니다.',e,e.dbPath||(currentMultiTab==='auction'?'multiplayer/auctions':`multiplayer/${currentMultiTab}`))}}function sortTop(obj,key='score'){return Object.values(obj||{}).sort((a,b)=>(b[key]||0)-(a[key]||0)).slice(0,20)}async function renderMultiRanking(box){
+async function loadMulti(){
+  if(!$('multiContent'))return;
+  const box=$('multiContent');
+  box.innerHTML='<div class="small">불러오는 중...</div>';
+  try{
+    await syncMultiProfileOnly();
+    if(currentMultiTab==='ranking')await renderMultiRanking(box);
+    else if(currentMultiTab==='records')await renderMultiRecords(box);
+    else if(currentMultiTab==='worldDex')await renderMultiDex(box);
+    else if(currentMultiTab==='tournament')await renderMultiTournament(box);
+    else if(currentMultiTab==='boss')await renderMultiBoss(box);
+    else if(currentMultiTab==='auction')await renderMultiAuction(box);
+    else if(currentMultiTab==='friends')await renderMultiFriends(box);
+    else{currentMultiTab='ranking';await renderMultiRanking(box);}
+  }catch(e){
+    console.error('멀티 로딩 실패',e);
+    box.innerHTML=renderFirebaseErrorBox('멀티 정보를 불러오지 못했습니다.',e,e.dbPath||(currentMultiTab==='auction'?'multiplayer/auctions':`multiplayer/${currentMultiTab}`));
+  }
+}function sortTop(obj,key='score'){return Object.values(obj||{}).sort((a,b)=>(b[key]||0)-(a[key]||0)).slice(0,20)}async function renderMultiRanking(box){
   const data=await dbGet('multiplayer/ranking');
   const list=await enrichRowsWithUserProfiles(sortTop(data).slice(0,12));
   const medals=['🥇','🥈','🥉'];
@@ -3522,10 +3624,19 @@ async function loadMulti(){if(!$('multiContent'))return;const box=$('multiConten
 }
 
 function updatePersonalBiggestRecord(fishKey,sizeKey,sizeCm){
+  const numericSize=Number(sizeCm)||0;
+  if(numericSize>Number(fishing?.bestCatchSizeCm||0)){
+    fishing.bestCatchSizeCm=numericSize;
+    fishing.personalBestSizeCm=numericSize;
+  }
   if(!db||!uid)return;
   const path=`multiplayer/recordsByUser/${uid}`;
   get(ref(db,path)).then(snap=>{
     const old=snap.val();
+    if(old && Number(old.size||0)>Number(fishing?.bestCatchSizeCm||0)){
+      fishing.bestCatchSizeCm=Number(old.size)||0;
+      fishing.personalBestSizeCm=Number(old.size)||0;
+    }
     if(!old || Number(sizeCm) > Number(old.size||0)){
       const fish=FISHES[fishKey]||{};
       const payload={
@@ -4051,7 +4162,7 @@ document.querySelectorAll(".tab-btn").forEach(btn=>{
       addRecentLog(getSizedFishName(fishKey,sizeKey),expText);
       if(!beforeDiscovered[fishKey])toast('📖 신규 도감 등록!',fish.name);
       checkAchievementsUi31(fish);
-      showCatchRewardUi31(fishKey,sizeKey,expText);
+      // 기본 포획 팝업(showCatchPopup)만 사용합니다. 중복 보상 팝업은 표시하지 않습니다.
       updateHudUi31();
       await saveGame();
     }
