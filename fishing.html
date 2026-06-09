@@ -1417,6 +1417,51 @@ html,body{
 .multi11-rank-main{min-width:0;flex:1}.boss11-log-item.with-profile{align-items:center;gap:8px}.boss11-log-item.with-profile span{display:flex;align-items:center;gap:8px;min-width:0}.boss11-log-item.with-profile .rank-profile{width:42px;height:42px;flex-basis:42px}.boss11-log-item.with-profile .rank-avatar{width:30px;height:30px}.boss11-log-item.with-profile .rank-frame{width:60px;height:60px}.boss-broadcast-row.with-profile{display:flex;gap:9px;align-items:center}.boss-broadcast-row.with-profile .rank-profile{width:42px;height:42px;flex-basis:42px}.boss-broadcast-row.with-profile .rank-avatar{width:30px;height:30px}.boss-broadcast-row.with-profile .rank-frame{width:60px;height:60px}.boss-broadcast-text{min-width:0;line-height:1.35}
 @media(max-width:720px){.multi11-rank-card.with-profile,.multi11-record-card.with-profile{gap:8px}.rank-profile{width:50px;height:50px;flex-basis:50px}.rank-profile .rank-avatar{width:36px;height:36px}.rank-profile .rank-frame{width:72px;height:72px}}
 
+
+/* UI 3.7 ranking frame visibility fix */
+.multi11-rank-card.with-profile,.multi11-record-card.with-profile{
+  overflow:visible!important;
+  min-height:128px;
+  padding:18px 18px 18px 20px!important;
+}
+.multi11-rank-card.with-profile{align-items:center!important;}
+.multi11-rank-card.with-profile .multi11-medal{
+  position:absolute!important;
+  left:18px!important;
+  bottom:14px!important;
+  z-index:9!important;
+  font-size:24px!important;
+  filter:drop-shadow(0 4px 6px rgba(0,0,0,.7));
+}
+.multi11-rank-card.with-profile .rank-profile,
+.multi11-record-card.with-profile .rank-profile{
+  width:92px!important;
+  height:92px!important;
+  flex:0 0 92px!important;
+  margin-right:4px;
+}
+.multi11-rank-card.with-profile .rank-avatar,
+.multi11-record-card.with-profile .rank-avatar{
+  width:54px!important;
+  height:54px!important;
+  border-radius:50%!important;
+  border:0!important;
+}
+.multi11-rank-card.with-profile .rank-frame,
+.multi11-record-card.with-profile .rank-frame{
+  width:122px!important;
+  height:122px!important;
+}
+.multi11-rank-card.with-profile .multi11-rank-main{padding-left:2px;}
+.boss11-log-item.with-profile .rank-frame,.boss-broadcast-row.with-profile .rank-frame{width:72px!important;height:72px!important;}
+.boss11-log-item.with-profile .rank-avatar,.boss-broadcast-row.with-profile .rank-avatar{width:36px!important;height:36px!important;border:0!important;}
+@media(max-width:720px){
+  .multi11-rank-card.with-profile,.multi11-record-card.with-profile{min-height:112px!important;padding:14px!important;}
+  .multi11-rank-card.with-profile .rank-profile,.multi11-record-card.with-profile .rank-profile{width:76px!important;height:76px!important;flex-basis:76px!important;}
+  .multi11-rank-card.with-profile .rank-avatar,.multi11-record-card.with-profile .rank-avatar{width:46px!important;height:46px!important;}
+  .multi11-rank-card.with-profile .rank-frame,.multi11-record-card.with-profile .rank-frame{width:104px!important;height:104px!important;}
+}
+
 /* UI 3.5 boss profile frame display patch */
 .hud-avatar-slot{position:relative;flex:0 0 54px;width:54px;height:54px;display:grid;place-items:center;overflow:visible}
 .hud-profile-frame{display:none;position:absolute;left:50%;top:50%;width:88px;height:88px;transform:translate(-50%,-50%);object-fit:contain;image-rendering:pixelated;z-index:4;pointer-events:none;filter:drop-shadow(0 4px 8px rgba(0,0,0,.55))}
@@ -1965,18 +2010,57 @@ function getPlayerProfileSnapshot(){
   };
 }
 function getMiniProfileAvatar(row){return getAvatarPath(row?.avatar||row?.profile?.avatar||'male')}
+function normalizeFrameId(ep){
+  if(!ep)return 'profile_none';
+  if(ep==='kraken'||ep==='boss_kraken')return 'frame_kraken';
+  if(ep==='leviathan'||ep==='boss_leviathan')return 'frame_leviathan';
+  if(ep==='phoenix'||ep==='dragon'||ep==='boss_dragon')return 'frame_phoenix';
+  return ep;
+}
 function getMiniProfileFrame(row){
-  const ep=row?.equippedProfile||row?.profileFrame||row?.frame||row?.profile?.equippedProfile||'profile_none';
+  let ep=row?.equippedProfile||row?.profileFrame||row?.equippedFrame||row?.frame||row?.profile?.equippedProfile||row?.cosmetics?.equippedProfile||'profile_none';
+  if((!ep||ep==='profile_none')&&row?.uid&&row.uid===uid){
+    ep=fishing?.cosmetics?.equippedProfile||'profile_none';
+  }
+  ep=normalizeFrameId(ep);
   if(ep==='frame_kraken'||ep==='frame_leviathan'||ep==='frame_phoenix')return COSMETIC_ITEMS?.[ep]?.icon||'';
   return '';
 }
 function renderMiniProfile(row,alt='프로필'){
   const frame=getMiniProfileFrame(row);
-  return `<div class="rank-profile ${frame?'':'no-frame'}"><img class="rank-avatar" src="${getMiniProfileAvatar(row)}" alt="${alt}">${frame?`<img class="rank-frame" src="${frame}" alt="프레임">`:''}</div>`;
+  return `<div class="rank-profile ${frame?'has-frame':'no-frame'}"><img class="rank-avatar" src="${getMiniProfileAvatar(row)}" alt="${alt}">${frame?`<img class="rank-frame" src="${frame}" alt="프레임">`:''}</div>`;
 }
 function profileFieldsForMulti(){
   const snap=getPlayerProfileSnapshot();
-  return {avatar:snap.avatar,equippedProfile:snap.equippedProfile,equippedTitle:snap.equippedTitle,title:snap.title};
+  return {avatar:snap.avatar,equippedProfile:snap.equippedProfile,equippedFrame:snap.equippedProfile,equippedTitle:snap.equippedTitle,title:snap.title};
+}
+async function enrichRowsWithUserProfiles(rows){
+  if(!Array.isArray(rows)||!db)return rows||[];
+  return Promise.all(rows.map(async row=>{
+    if(!row||!row.uid)return row;
+    if(row.uid===uid){
+      return {...row,...profileFieldsForMulti()};
+    }
+    if(row.equippedProfile||row.equippedFrame||row.profileFrame)return row;
+    try{
+      const userFishing=await dbGet(`users/${row.uid}/fishing`);
+      const prof=userFishing?.profile||{};
+      const cos=userFishing?.cosmetics||{};
+      return {...row,avatar:row.avatar||prof.avatar,equippedProfile:cos.equippedProfile||row.equippedProfile,equippedFrame:cos.equippedProfile||row.equippedFrame,equippedTitle:cos.equippedTitle||row.equippedTitle,title:row.title||userFishing?.title};
+    }catch(e){
+      return row;
+    }
+  }));
+}
+async function syncMultiProfileOnly(){
+  if(!uid||!db||!fishing)return;
+  const week=getWeekKey(),score=calcMultiScore(),profile=profileFieldsForMulti();
+  try{
+    await dbPatch({
+      [`multiplayer/ranking/${uid}`]:{uid,name:getPlayerName(),...profile,score,totalCaught:fishing.totalCaught||0,updatedAt:Date.now()},
+      [`multiplayer/weeklyTournament/${week}/${uid}`]:{uid,name:getPlayerName(),...profile,score,totalCaught:fishing.totalCaught||0,updatedAt:Date.now()}
+    });
+  }catch(e){console.warn('멀티 프로필 동기화 실패',e)}
 }
 
 function render(){
@@ -3238,11 +3322,11 @@ async function syncMultiplayer(){
   await dbPatch(updates);
 }
 function getDefaultBoss(excludeId){return createRandomBoss(excludeId)}
-async function loadMulti(){if(!$('multiContent'))return;const box=$('multiContent');box.innerHTML='<div class="small">불러오는 중...</div>';try{if(['worldDex','tournament','friends'].includes(currentMultiTab))currentMultiTab='ranking';if(currentMultiTab==='ranking')await renderMultiRanking(box);else if(currentMultiTab==='records')await renderMultiRecords(box);else if(currentMultiTab==='boss')await renderMultiBoss(box);else if(currentMultiTab==='auction')await renderMultiAuction(box)}catch(e){console.error('멀티 로딩 실패',e);box.innerHTML=renderFirebaseErrorBox('멀티 정보를 불러오지 못했습니다.',e,e.dbPath||(currentMultiTab==='auction'?'multiplayer/auctions':`multiplayer/${currentMultiTab}`))}}function sortTop(obj,key='score'){return Object.values(obj||{}).sort((a,b)=>(b[key]||0)-(a[key]||0)).slice(0,20)}async function renderMultiRanking(box){
+async function loadMulti(){if(!$('multiContent'))return;const box=$('multiContent');box.innerHTML='<div class="small">불러오는 중...</div>';try{await syncMultiProfileOnly();if(['worldDex','tournament','friends'].includes(currentMultiTab))currentMultiTab='ranking';if(currentMultiTab==='ranking')await renderMultiRanking(box);else if(currentMultiTab==='records')await renderMultiRecords(box);else if(currentMultiTab==='boss')await renderMultiBoss(box);else if(currentMultiTab==='auction')await renderMultiAuction(box)}catch(e){console.error('멀티 로딩 실패',e);box.innerHTML=renderFirebaseErrorBox('멀티 정보를 불러오지 못했습니다.',e,e.dbPath||(currentMultiTab==='auction'?'multiplayer/auctions':`multiplayer/${currentMultiTab}`))}}function sortTop(obj,key='score'){return Object.values(obj||{}).sort((a,b)=>(b[key]||0)-(a[key]||0)).slice(0,20)}async function renderMultiRanking(box){
   const data=await dbGet('multiplayer/ranking');
-  const list=sortTop(data).slice(0,12);
+  const list=await enrichRowsWithUserProfiles(sortTop(data).slice(0,12));
   const medals=['🥇','🥈','🥉'];
-  const cards=list.map((r,i)=>`<div class="multi11-rank-card with-profile ${i===0?'top1':''}"><div class="multi11-medal">${medals[i]||'🏅'}</div>${renderMiniProfile(r,r.name||'프로필')}<div class="multi11-rank-main"><div class="multi11-name">${i+1}. ${r.name||'낚시꾼'}</div><div class="multi11-score">${formatNumber(r.score||0)}점</div><div class="multi11-sub">${r.title||'낚시꾼'}<br>포획 ${formatNumber(r.totalCaught||0)}마리 · 최근 ${r.updatedAt?new Date(r.updatedAt).toLocaleDateString():'-'}</div></div></div>`).join('');
+  const cards=list.map((r,i)=>`<div class="multi11-rank-card with-profile ${i===0?'top1':''}">${renderMiniProfile(r,r.name||'프로필')}<div class="multi11-medal">${medals[i]||'🏅'}</div><div class="multi11-rank-main"><div class="multi11-name">${i+1}. ${r.name||'낚시꾼'}</div><div class="multi11-score">${formatNumber(r.score||0)}점</div><div class="multi11-sub">${r.title||'낚시꾼'}<br>포획 ${formatNumber(r.totalCaught||0)}마리 · 최근 ${r.updatedAt?new Date(r.updatedAt).toLocaleDateString():'-'}</div></div></div>`).join('');
   box.innerHTML=`<div class="multi10-card">${multi10Title("ranking","글로벌 랭킹")}<div class="multi11-board">${cards||'<div class="small">기록 없음</div>'}</div></div>`
 }
 
@@ -3271,7 +3355,8 @@ function updatePersonalBiggestRecord(fishKey,sizeKey,sizeCm){
 
 async function renderMultiRecords(box){
   const data=await dbGet('multiplayer/recordsByUser')||{};
-  const rows=Object.values(data).sort((a,b)=>(b.size||0)-(a.size||0)).slice(0,24).map((r,i)=>{
+  const recordList=await enrichRowsWithUserProfiles(Object.values(data).sort((a,b)=>(b.size||0)-(a.size||0)).slice(0,24));
+  const rows=recordList.map((r,i)=>{
     const f=FISHES[r.fishKey]||{};
     const sizeLabel=FISH_SIZES?.[r.sizeKey]?.label?` · ${FISH_SIZES[r.sizeKey].label}`:'';
     return `<div class="multi11-record-card with-profile">${renderMiniProfile(r,r.ownerName||'프로필')}<div class="multi11-rank-main"><div class="multi11-record-fish"><img src="${f.img||'./assets/icons/fish_shadow.png'}" alt=""><div><div class="multi11-name">${i+1}. ${r.ownerName||'낚시꾼'}</div><div class="multi11-sub">${r.title||'낚시꾼'} · ${f.name||r.fishName||r.fishKey||'물고기'}${sizeLabel}</div></div></div><div class="multi11-score">${r.size||0}cm</div></div></div>`
@@ -3311,7 +3396,7 @@ async function renderMultiBoss(box){
   let damageRankHtml='<div class="small">아직 반영된 보스 피해 기록이 없습니다. 친구도 같은 보스에서 “누적 피해 반영”을 누르면 순위에 표시됩니다.</div>';
   try{
     const rankData=await dbGet(`multiplayer/bossParticipants/${bossKey}`)||{};
-    const rankList=Object.values(rankData).sort((a,b)=>(b.damage||0)-(a.damage||0)).slice(0,10);
+    const rankList=await enrichRowsWithUserProfiles(Object.values(rankData).sort((a,b)=>(b.damage||0)-(a.damage||0)).slice(0,10));
     if(rankList.length){
       damageRankHtml=rankList.map((r,i)=>`<div class="boss11-log-item with-profile"><span>${renderMiniProfile(r,r.name||'프로필')}<span>${i+1}위 · ${r.name||'낚시꾼'}<br><small>${r.title||'낚시꾼'}</small></span></span><b>${formatNumber(r.damage||0)}</b></div>`).join('');
     }
