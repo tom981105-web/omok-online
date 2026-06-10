@@ -1756,7 +1756,7 @@ html,body{
 .auction43-type-tabs button.active{background:linear-gradient(180deg,#fbbf24,#f59e0b);color:#111827}
 .auction43-topline{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin:8px 0}
 .auction43-permit{background:rgba(59,130,246,.12);border:1px solid rgba(96,165,250,.28);border-radius:12px;padding:8px 10px;color:#dbeafe;font-weight:900;text-align:left}
-.auction43-select-row{display:grid;grid-template-columns:150px 1fr 140px auto;gap:8px;align-items:end}
+.auction43-select-row{display:grid;grid-template-columns:150px 1fr 110px 140px auto;gap:8px;align-items:end}
 .auction43-card-img{width:70px;height:70px;border-radius:14px;background:rgba(2,6,23,.55);border:1px solid rgba(148,163,184,.2);display:grid;place-items:center;overflow:hidden}
 .auction43-card-img img{max-width:58px;max-height:58px;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 6px 8px rgba(0,0,0,.5))}
 .auction43-chip{display:inline-flex;align-items:center;border-radius:999px;padding:3px 8px;background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.28);font-size:11px;font-weight:900;color:#bfdbfe;margin-right:4px}
@@ -1793,6 +1793,39 @@ html,body{
   .bottom-tabs .tab-btn{font-size:10px!important;padding:5px 1px!important;height:44px!important;line-height:1.12!important;}
   .bottom-tabs .tab-btn .icon-img{width:18px!important;height:18px!important;}
 }
+
+
+
+/* ===============================
+   14.0 Fishing Lab Prototype
+   - 관리자 전용 낚시 2.0 실험실
+================================ */
+.admin-lab-tab.hidden{display:none!important}
+#tabLab{padding-bottom:18px}
+.lab14-wrap{max-width:980px;margin:0 auto;text-align:left}
+.lab14-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.lab14-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:rgba(250,204,21,.14);border:1px solid rgba(250,204,21,.35);color:#fde68a;font-weight:900;font-size:13px}
+.lab14-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:12px 0}
+.lab14-grid button{margin:0;min-height:42px}
+.lab14-arena{position:relative;overflow:hidden;border:2px solid rgba(148,163,184,.35);border-radius:20px;background:linear-gradient(180deg,#0f172a,#082f49);min-height:320px;padding:16px;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 18px 40px rgba(0,0,0,.26)}
+.lab14-water{position:absolute;inset:0;opacity:.45;background:radial-gradient(circle at 20% 80%,rgba(56,189,248,.22),transparent 22%),radial-gradient(circle at 70% 20%,rgba(125,211,252,.18),transparent 24%),linear-gradient(90deg,rgba(255,255,255,.05),transparent,rgba(255,255,255,.05));animation:labWaterMove 4s linear infinite;pointer-events:none}
+@keyframes labWaterMove{0%{transform:translateX(-20px)}100%{transform:translateX(20px)}}
+.lab14-track{position:relative;height:86px;margin:42px 0 16px;border-radius:999px;background:rgba(2,6,23,.68);border:1px solid rgba(255,255,255,.16);overflow:hidden;z-index:2}
+.lab14-fish{position:absolute;left:72%;top:50%;transform:translate(-50%,-50%);font-size:44px;filter:drop-shadow(0 6px 8px rgba(0,0,0,.55));transition:left .16s linear, transform .16s linear}
+.lab14-hook{position:absolute;left:18%;top:50%;transform:translate(-50%,-50%);font-size:34px;filter:drop-shadow(0 4px 7px rgba(0,0,0,.45));animation:labHookPulse .8s ease-in-out infinite}
+@keyframes labHookPulse{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.08)}}
+.lab14-progress{position:relative;z-index:2;background:rgba(2,6,23,.7);border:1px solid rgba(255,255,255,.18);border-radius:999px;height:24px;overflow:hidden;margin:12px 0}
+.lab14-progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#22c55e,#facc15,#ef4444);box-shadow:0 0 18px rgba(250,204,21,.42);transition:width .08s linear}
+.lab14-stats{position:relative;z-index:2;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.lab14-stat{background:rgba(2,6,23,.6);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:9px;text-align:center;font-size:13px;color:#cbd5e1}
+.lab14-stat b{display:block;color:white;font-size:18px;margin-top:2px}
+.lab14-message{position:relative;z-index:2;text-align:center;font-weight:900;color:#facc15;background:rgba(2,6,23,.64);border:1px solid rgba(250,204,21,.25);border-radius:14px;padding:10px;margin:10px 0;min-height:42px}
+.lab14-actions{position:relative;z-index:2;display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-top:10px}
+.lab14-actions button{margin:0;height:54px;font-size:18px}
+.lab14-result{position:relative;z-index:2;text-align:center;font-size:22px;font-weight:900;margin-top:10px;min-height:32px;text-shadow:0 2px 4px #000}
+.lab14-arena.lab14-danger{animation:labDangerShake .2s linear 2}
+@keyframes labDangerShake{0%,100%{transform:translate(0,0)}25%{transform:translate(-3px,2px)}50%{transform:translate(3px,-2px)}75%{transform:translate(-2px,-1px)}}
+@media(max-width:720px){.lab14-grid{grid-template-columns:1fr 1fr}.lab14-stats{grid-template-columns:1fr}.lab14-actions{grid-template-columns:1fr}.lab14-fish{font-size:36px}.lab14-hook{font-size:28px}.lab14-track{height:76px}}
 
 </style>
 
@@ -1872,6 +1905,12 @@ html,body{
 }
 
 </style>
+
+<style id="auction1323HotfixStyle">
+.auction43-select-row{grid-template-columns:150px minmax(220px,1fr) 110px 140px auto!important;align-items:end}
+.auction20-field input#auction44Qty{width:100%;height:38px;border-radius:10px;border:1px solid rgba(148,163,184,.28);background:rgba(2,6,23,.75);color:#fff;font-weight:900;padding:0 10px;text-align:center}
+</style>
+
 </head>
 
 <body>
@@ -2135,6 +2174,7 @@ html,body{
   <button class="tab-btn" data-tab="Shop"><img class="icon-img" src="./assets/icons/shop.png" alt=""><br>상점</button>
   <button class="tab-btn" data-tab="Profile">👤<br>프로필</button>
   <button class="tab-btn" data-tab="Multi">🌐<br>멀티</button>
+  <button id="adminLabTab" class="tab-btn admin-lab-tab hidden" data-tab="Lab">🧪<br>실험실</button>
   <button class="tab-btn" data-tab="Book"><img class="icon-img" src="./assets/icons/book.png" alt=""><br>도감</button>
 </nav>
 
@@ -2159,7 +2199,7 @@ html,body{
   window.__showFishingBootError__ = showBootError;
   window.__FISHING_BOOT_TIMER__ = setTimeout(function(){
     if(!window.__FISHING_APP_BOOTED__ && !window.__FISHING_APP_READY__){
-      showBootError('게임 스크립트가 시작되지 않았습니다.', 'Firebase 모듈 로딩 또는 자바스크립트 시작 단계에서 멈췄습니다.<br>Ctrl+F5로 강력 새로고침 후에도 반복되면, 브라우저 개발자도구(F12) Console의 빨간 오류를 알려주세요.');
+      console.warn('[Fishing boot timer notice hidden] 게임 스크립트 시작 지연');
     }
   }, 5000);
   window.addEventListener('error', function(e){
@@ -2205,21 +2245,7 @@ const floatBobber=$("floatBobber"), bobberRipple=$("bobberRipple"), splashEffect
 const inventoryList=$("inventoryList"), fishBook=$("fishBook"), upgradeCostText=$("upgradeCostText"), bookProgress=$("bookProgress");
 const timingPointerEl=$("timingPointer"), timingSuccessZone=$("timingSuccessZone"), timingHitText=$("timingHitText"), timingMissText=$("timingMissText"), timingFishLabel=$("timingFishLabel");
 
-function showStartupError(title,err){
-  console.error(title,err);
-  const msg=(err&&err.message)?err.message:String(err||'알 수 없는 오류');
-  if(loadingBox){
-    loadingBox.innerHTML=`
-      <div class="box" style="max-width:560px;margin:40px auto;text-align:left">
-        <h2 style="color:#facc15;margin-top:0">⚠️ ${title}</h2>
-        <div class="small" style="word-break:break-all;line-height:1.6">${msg}</div>
-        <div style="text-align:center;margin-top:14px">
-          <button onclick="location.reload()">새로고침</button>
-          <button class="secondary" onclick="location.href='./index.html'">로그인 화면으로</button>
-        </div>
-      </div>`;
-  }
-}
+function showStartupError(title,err){ console.error(title,err); }
 
 window.addEventListener('error',e=>{
   if(loadingBox&&!loadingBox.classList.contains('hidden'))showStartupError('게임 시작 중 오류가 발생했습니다.',e.error||e.message);
@@ -3413,7 +3439,7 @@ function renderShop20Deal(){const box=$('shopDealBox');if(!box)return;const item
 function createShop20Card(item){const card=document.createElement('div');card.className=`shop20-card ${item.rarity||'common'}`;const price=getShop20Price(item),affordable=(fishing.gold||0)>=price,owned=item.level?hasRodOwned(item.id):!!fishing.ownedShopItems?.[item.id];const currencyIcon=item.currency==='gem'?SHOP20_ASSETS.gem:SHOP20_ASSETS.coin;const baitId=item.id==='bait_basic'?'basic':item.id==='bait_rare'?'rare':item.id==='bait_legend'?'legend':null;const cosmetic=COSMETIC_ITEMS[item.id];let badge='';if(item.id===fishing.equipment?.rod||baitId===fishing.equipment?.bait||(cosmetic&&((cosmetic.type==='profile'&&fishing.cosmetics?.equippedProfile===item.id)||(cosmetic.type==='title'&&fishing.cosmetics?.equippedTitle===item.id))))badge='<div class="shop20-equipped">장착중</div>';else if(owned)badge='<div class="shop20-owned">보유</div>';else if(item.id===getShop20TodayDeal().id)badge='<div class="shop20-ready">특가</div>';let action=`<button ${owned||!affordable?'disabled':''} onclick="buyShop20Item('${item.id}')">${currentShopTab==='chest'?'열기':'구매'}</button>`;if(item.id.startsWith('bait_'))action=`<div class="equip-inline"><button ${!affordable?'disabled':''} onclick="buyShop20Item('${item.id}')">구매</button><button ${getBaitCount(baitId)<=0?'disabled':''} onclick="equipBait('${baitId}')">${baitId===fishing.equipment?.bait?'장착중':'장착'}</button></div>`;else if(item.id.startsWith('rod_'))action=`<div class="equip-inline"><button ${owned||!affordable?'disabled':''} onclick="buyShop20Item('${item.id}')">${owned?'보유중':'구매'}</button><button ${!owned?'disabled':''} onclick="equipRod('${item.id}')">${item.id===fishing.equipment?.rod?'장착중':'장착'}</button></div>`;else if(cosmetic)action=`<div class="cosmetic-inline"><button ${owned||!affordable?'disabled':''} onclick="buyShop20Item('${item.id}')">${owned?'보유중':'구매'}</button><button ${!owned?'disabled':''} onclick="equipCosmetic('${item.id}')">장착</button></div>`;card.innerHTML=`${badge}<div class="shop20-icon"><img src="${item.icon}" alt="${item.name}"></div><div class="shop20-name">${item.name}</div><div class="shop20-desc">${item.desc||''}</div><div class="shop20-effect">${item.effect||''}</div><div class="shop20-bottom"><div class="shop20-price"><img src="${currencyIcon}" alt=""> ${formatNumber(price)}</div></div>${action}`;return card}
 function renderEquipmentPanel(){if(!$('currentBaitBox')||!fishing)return;ensureShop20State();const b=getEquippedBait(),r=getEquippedRod();$('currentBaitBox').innerHTML=`<img src="${b.icon}" alt=""><div><div class="equip-name">${b.name}</div><div class="equip-effect">${b.effect}<br>보유 ${getBaitCount(b.id)}개</div></div>`;$('currentRodBox').innerHTML=`<img src="${r.icon}" alt=""><div><div class="equip-name">${r.name}</div><div class="equip-effect">${r.effect}<br>판매가 x${getRodSellMultiplier()}</div></div>`;const bt=$('baitEquipOptions');bt.innerHTML='';for(const x of Object.values(EQUIP_BAITS)){const btn=document.createElement('button');btn.className=`equip-option ${x.id===b.id?'active':''}`;btn.disabled=getBaitCount(x.id)<=0;btn.innerHTML=`<img src="${x.icon}" alt=""><span>${x.name.replace(' 미끼','')}</span><span class="equip-count">x${getBaitCount(x.id)}</span>`;btn.onclick=()=>equipBait(x.id);bt.appendChild(btn)}const rt=$('rodEquipOptions');rt.innerHTML='';for(const x of Object.values(EQUIP_RODS)){const btn=document.createElement('button');btn.className=`equip-option ${x.id===r.id?'active':''}`;btn.disabled=!hasRodOwned(x.id);btn.innerHTML=`<img src="${x.icon}" alt=""><span>${x.name.replace(' 낚싯대','')}</span><span class="equip-count">Lv.${x.level}</span>`;btn.onclick=()=>equipRod(x.id);rt.appendChild(btn)}}
 function hasCosmeticOwned(id){if(id==='profile_none'||id==='title_none')return true;return !!fishing?.cosmetics?.owned?.[id]||!!fishing?.ownedShopItems?.[id]}function getEquippedCosmetic(type){return type==='profile'?(COSMETIC_ITEMS[fishing?.cosmetics?.equippedProfile||'profile_none']||COSMETIC_ITEMS.profile_none):(COSMETIC_ITEMS[fishing?.cosmetics?.equippedTitle||'title_none']||COSMETIC_ITEMS.title_none)}function renderCosmeticPanel(){if(!$('currentProfileDecorBox')||!fishing)return;ensureShop20State();const p=getEquippedCosmetic('profile'),t=getEquippedCosmetic('title');$('currentProfileDecorBox').innerHTML=`<img src="${p.icon}" alt=""><div><div class="cosmetic-name">${p.name}</div><div class="cosmetic-effect">${p.effect}</div></div>`;$('currentTitleDecorBox').innerHTML=`<img src="${t.icon}" alt=""><div><div class="cosmetic-name">${t.name}</div><div class="cosmetic-effect">${t.effect}</div></div>`;const pt=$('profileDecorOptions');pt.innerHTML='';for(const x of [COSMETIC_ITEMS.profile_none,COSMETIC_ITEMS.profile_gold,COSMETIC_ITEMS.frame_kraken,COSMETIC_ITEMS.frame_leviathan,COSMETIC_ITEMS.frame_phoenix]){const btn=document.createElement('button');btn.className=`cosmetic-option ${p.id===x.id?'active':''}`;btn.disabled=!hasCosmeticOwned(x.id);btn.innerHTML=`<img src="${x.icon}" alt=""><span>${x.id==='profile_none'?'기본':'골드'}</span>`;btn.onclick=()=>equipCosmetic(x.id);pt.appendChild(btn)}const tt=$('titleDecorOptions');tt.innerHTML='';for(const x of [COSMETIC_ITEMS.title_none,COSMETIC_ITEMS.name_star]){const btn=document.createElement('button');btn.className=`cosmetic-option ${t.id===x.id?'active':''}`;btn.disabled=!hasCosmeticOwned(x.id);btn.innerHTML=`<img src="${x.icon}" alt=""><span>${x.id==='title_none'?'기본':'별빛'}</span>`;btn.onclick=()=>equipCosmetic(x.id);tt.appendChild(btn)}}
-window.equipBait=function(id){if(getBaitCount(id)<=0){shop20Toast('미끼가 없습니다.',EQUIP_BAITS[id]?.name||'');return}fishing.equipment.bait=id;shop20Toast('미끼 장착 완료!',EQUIP_BAITS[id].name);render();saveGame()};window.equipRod=function(id){if(!hasRodOwned(id)){shop20Toast('보유하지 않은 낚싯대입니다.',EQUIP_RODS[id]?.name||'');return}fishing.equipment.rod=id;shop20Toast('낚싯대 장착 완료!',EQUIP_RODS[id].name);render();saveGame()};window.equipCosmetic=function(id){const item=COSMETIC_ITEMS[id];if(!item||!hasCosmeticOwned(id)){shop20Toast('보유하지 않은 장식입니다.',item?.name||'');return}if(item.type==='profile')fishing.cosmetics.equippedProfile=id;if(item.type==='title'){fishing.cosmetics.equippedTitle=id;fishing.title=id==='name_star'?'별빛 낚시꾼':getPlayerTitle()}shop20Toast('장식 장착 완료!',item.name);applyProfileUI();render();saveGame()};window.buyShop20Item=async function(id){ensureShop20State();const item=getShop20ItemById(id);if(!item)return;const price=getShop20Price(item);if((fishing.gold||0)<price){shop20Toast('골드가 부족합니다.',`${formatNumber(price)}G 필요`);return}if(item.level&&hasRodOwned(id)){shop20Toast('이미 보유 중입니다.',item.name);return}fishing.gold-=price;if(id.startsWith('bait_')){if(id==='bait_basic')fishing.bait=(fishing.bait||0)+(item.qty||0);else if(id==='bait_rare')fishing.premiumBait.rare=(fishing.premiumBait.rare||0)+(item.qty||0);else fishing.premiumBait.legend=(fishing.premiumBait.legend||0)+(item.qty||0);fishing.equipment.bait=id==='bait_basic'?'basic':id==='bait_rare'?'rare':'legend';shop20Toast('구매 및 장착 완료!',`${item.name} x${item.qty}`)}else if(id.startsWith('rod_')){fishing.rodLevel=Math.max(fishing.rodLevel||1,item.level||1);fishing.ownedShopItems[id]=true;fishing.equipment.rod=id;shop20Toast('구매 및 장착 완료!',item.name)}else if(id.startsWith('chest_')){openShop20Chest(item)}else{fishing.ownedShopItems[id]=true;fishing.cosmetics.owned[id]=true;const c=COSMETIC_ITEMS[id];if(c){if(c.type==='profile')fishing.cosmetics.equippedProfile=id;if(c.type==='title'){fishing.cosmetics.equippedTitle=id;fishing.title='별빛 낚시꾼'}}shop20Toast('장식 구매 및 장착 완료!',item.name)}render();await saveGame()};function openShop20Chest(item){const tier={chest_wood:1,chest_silver:2,chest_gold:3,chest_legend:4}[item.id]||1;const r=Math.random();if(r<.36){const g=50*tier+Math.floor(Math.random()*120*tier);fishing.gold+=g;shop20Toast('상자 보상!',`${g}G 획득`)}else if(r<.68){const b=3*tier+Math.floor(Math.random()*5*tier);fishing.bait+=b;shop20Toast('상자 보상!',`미끼 ${b}개 획득`)}else if(r<.9){fishing.gems=(fishing.gems||0)+tier;shop20Toast('상자 보상!',`보석 ${tier}개 획득`)}else{const pool=Object.keys(FISHES).filter(k=>tier>=4||FISHES[k].rarity!=='legend');const fk=pool[Math.floor(Math.random()*pool.length)],sk=tier>=3?'big':'normal',ik=getInventoryKey(fk,sk);fishing.inventory[ik]=(fishing.inventory[ik]||0)+1;fishing.discovered[fk]=true;shop20Toast('상자 보상!',`${getSizedFishName(fk,sk)} 획득`)}}
+window.equipBait=function(id){if(getBaitCount(id)<=0){shop20Toast('미끼가 없습니다.',EQUIP_BAITS[id]?.name||'');return}fishing.equipment.bait=id;shop20Toast('미끼 장착 완료!',EQUIP_BAITS[id].name);render();saveGame()};window.equipRod=function(id){if(!hasRodOwned(id)){shop20Toast('보유하지 않은 낚싯대입니다.',EQUIP_RODS[id]?.name||'');return}fishing.equipment.rod=id;shop20Toast('낚싯대 장착 완료!',EQUIP_RODS[id].name);render();saveGame()};window.equipCosmetic=function(id){const item=COSMETIC_ITEMS[id];if(!item||!hasCosmeticOwned(id)){shop20Toast('보유하지 않은 장식입니다.',item?.name||'');return}if(item.type==='profile')fishing.cosmetics.equippedProfile=id;if(item.type==='title'){fishing.cosmetics.equippedTitle=id;fishing.title=id==='name_star'?'별빛 낚시꾼':getPlayerTitle()}shop20Toast('장식 장착 완료!',item.name);applyProfileUI();render();saveGame()};window.buyShop20Item=async function(id){ensureShop20State();const item=getShop20ItemById(id);if(!item)return;const price=getShop20Price(item);if((fishing.gold||0)<price){shop20Toast('골드가 부족합니다.',`${formatNumber(price)}G 필요`);return}if(item.level&&hasRodOwned(id)){shop20Toast('이미 보유 중입니다.',item.name);return}fishing.gold-=price;if(id.startsWith('bait_')){if(id==='bait_basic')fishing.bait=(fishing.bait||0)+(item.qty||0);else if(id==='bait_rare')fishing.premiumBait.rare=(fishing.premiumBait.rare||0)+(item.qty||0);else fishing.premiumBait.legend=(fishing.premiumBait.legend||0)+(item.qty||0);fishing.equipment.bait=id==='bait_basic'?'basic':id==='bait_rare'?'rare':'legend';shop20Toast('구매 및 장착 완료!',`${item.name} x${item.qty}`)}else if(id.startsWith('rod_')){fishing.rodLevel=Math.max(fishing.rodLevel||1,item.level||1);fishing.ownedShopItems[id]=true;fishing.equipment.rod=id;shop20Toast('구매 및 장착 완료!',item.name)}else if(id.startsWith('chest_')){openShop20Chest(item)}else{fishing.ownedShopItems[id]=true;fishing.cosmetics.owned[id]=true;const c=COSMETIC_ITEMS[id];if(c){if(c.type==='profile')fishing.cosmetics.equippedProfile=id;if(c.type==='title'){fishing.cosmetics.equippedTitle=id;fishing.title='별빛 낚시꾼'}}shop20Toast('장식 구매 및 장착 완료!',item.name)}render();await saveGame()};function openShop20Chest(item){const tier={chest_wood:1,chest_silver:2,chest_gold:3,chest_legend:4}[item.id]||1;const r=Math.random();if(r<.36){const g=50*tier+Math.floor(Math.random()*120*tier);fishing.gold+=g;shop20Toast('상자 보상!',`${g}G 획득`)}else if(r<.68){const b=3*tier+Math.floor(Math.random()*5*tier);fishing.bait+=b;shop20Toast('상자 보상!',`미끼 ${b}개 획득`)}else if(r<.9){fishing.gems=(fishing.gems||0)+tier;shop20Toast('상자 보상!',`보석 ${tier}개 획득`)}else{const pool=Object.keys(FISHES).filter(k=>tier>=4||FISHES[k].rarity!=='legend');const fk=pool[Math.floor(Math.random()*pool.length)],sk=tier>=3?'big':'normal',ik=getInventoryKey(fk,sk);fishing.inventory[ik]=(fishing.inventory[ik]||0)+qty;fishing.discovered[fk]=true;shop20Toast('상자 보상!',`${getSizedFishName(fk,sk)} 획득`)}}
 
 function getUpgradeCost(){return 100+((fishing.rodLevel||1)-1)*120;}
 
@@ -3648,7 +3674,7 @@ function renderBossRewardPanel(boss){ensureBossRewardState();const type=getBossR
 function renderAdminBossPanel(boss){if(!fishing?.adminMode)return '';return `<div class="admin-boss-panel"><h3>🛠 관리자 모드 · 보스 HP 조절</h3><div class="small">현재 보스 HP를 직접 수정합니다. 테스트용으로만 사용하세요.</div><div class="admin-boss-form"><input id="adminBossHpInput" type="number" min="0" placeholder="현재 HP" value="${Math.max(0,Number(boss?.hp||0))}"><input id="adminBossMaxHpInput" type="number" min="1" placeholder="최대 HP" value="${Math.max(1,Number(boss?.maxHp||1))}"><button onclick="adminSetBossHp()">적용</button></div><div class="admin-boss-form" style="margin-top:8px"><button onclick="adminSetBossQuick(1)">HP 1로</button><button onclick="adminSetBossQuick(0)">즉시 처치 상태</button><button onclick="adminSpawnRandomBoss()">랜덤 보스 교체</button></div></div>`}
 let shop20SecretTapCount=0,shop20SecretTapTimer=null;
 window.tapShop20Secret=function(){shop20SecretTapCount++;clearTimeout(shop20SecretTapTimer);shop20SecretTapTimer=setTimeout(()=>{shop20SecretTapCount=0},1600);if(shop20SecretTapCount>=7){shop20SecretTapCount=0;const pw=prompt('관리자 비밀번호를 입력하세요.');if(pw==='1105'){ensureBossRewardState();fishing.adminMode=!fishing.adminMode;updateAdminBadge();shop20Toast(fishing.adminMode?'관리자 모드 ON':'관리자 모드 OFF',fishing.adminMode?'보스 HP 조절이 활성화되었습니다.':'일반 모드로 돌아왔습니다.');saveGame();if(currentMultiTab==='boss')loadMulti();}else if(pw!==null){shop20Toast('비밀번호가 틀렸습니다.');}}}
-function updateAdminBadge(){const b=$('adminModeBadge');if(!b)return;b.classList.toggle('hidden',!fishing?.adminMode)}
+function updateAdminBadge(){const isAdmin=!!fishing?.adminMode;const b=$('adminModeBadge');if(b)b.classList.toggle('hidden',!isAdmin);const lab=$('adminLabTab');if(lab)lab.classList.toggle('hidden',!isAdmin);const labPage=$('tabLab');if(labPage)labPage.classList.toggle('hidden',!isAdmin);const tabs=$('bottomTabs');if(tabs)tabs.style.gridTemplateColumns=isAdmin?'repeat(7,minmax(0,1fr))':'repeat(6,minmax(0,1fr))';if(!isAdmin&&document.querySelector('.tab-btn.active')?.dataset?.tab==='Lab'){const btn=document.querySelector('.tab-btn[data-tab="Fishing"]');if(btn)btn.click();}}
 window.adminSetBossHp=async function(){if(!fishing?.adminMode)return;try{let boss=await dbGet('multiplayer/worldBoss/current')||getDefaultBoss();const hp=Math.max(0,Math.floor(Number($('adminBossHpInput')?.value||0)));const maxHp=Math.max(1,Math.floor(Number($('adminBossMaxHpInput')?.value||boss.maxHp||1)));boss={...boss,hp:Math.min(hp,maxHp),maxHp,updatedAt:Date.now(),endsAt:boss.endsAt||Date.now()+7200000};await dbPatch({'multiplayer/worldBoss/current':boss});currentBossCache=boss;shop20Toast('보스 HP 수정 완료',`${formatNumber(boss.hp)} / ${formatNumber(boss.maxHp)}`);await loadMulti();}catch(e){console.error(e);shop20Toast('보스 HP 수정 실패',e.code||e.name||'오류')}}
 window.adminSetBossQuick=async function(hp){if(!fishing?.adminMode)return;try{let boss=await dbGet('multiplayer/worldBoss/current')||getDefaultBoss();boss={...boss,hp:Math.max(0,Number(hp)||0),updatedAt:Date.now()};await dbPatch({'multiplayer/worldBoss/current':boss});currentBossCache=boss;shop20Toast('보스 HP 빠른 수정 완료',`HP ${boss.hp}`);await loadMulti();}catch(e){console.error(e);shop20Toast('수정 실패',e.code||e.name||'오류')}}
 window.adminSpawnRandomBoss=async function(){if(!fishing?.adminMode)return;try{const old=await dbGet('multiplayer/worldBoss/current');const next=getDefaultBoss(old?.id);await dbPatch({'multiplayer/worldBoss/current':next});currentBossCache=next;shop20Toast('랜덤 보스 교체 완료',next.name);await loadMulti();}catch(e){console.error(e);shop20Toast('보스 교체 실패',e.code||e.name||'오류')}}
@@ -3906,7 +3932,7 @@ window.confirmBuyAuctionItem=async function(id){try{const a=await dbGet(`multipl
 window.editAuctionItem=async function(id){try{const a=await dbGet(`multiplayer/auctions/${id}`);if(!a||a.sellerUid!==uid||a.status!=='active'){shop20Toast('수정 불가','내가 등록한 판매중 물품만 수정할 수 있습니다.');return}const next=prompt('새 판매가를 입력하세요.',String(a.price||''));if(next===null)return;const price=Math.max(1,Math.floor(Number(next)||0));if(!price){shop20Toast('가격을 확인해주세요.');return}const market=a.marketPrice||getAuctionMarketPrice(getInventoryKey(a.fishKey,a.sizeKey));const status=getAuctionPriceStatus(price,market);if(status.key==='low'&&!confirm(`시장가보다 낮습니다.
 권장가 ${formatNumber(market)}G
 그래도 수정할까요?`))return;await dbPatch({[`multiplayer/auctions/${id}/price`]:price,[`multiplayer/auctions/${id}/marketPrice`]:market,[`multiplayer/auctions/${id}/updatedAt`]:Date.now()});shop20Toast('등록가 수정 완료',`${formatNumber(price)}G`);await loadMulti()}catch(e){console.error(e);shop20Toast('수정 실패',getFirebaseErrorMessage(e))}}
-window.buyAuctionItem=async function(id){try{const a=await dbGet(`multiplayer/auctions/${id}`);if(!a||a.status!=='active'||a.expiresAt<Date.now()){shop20Toast('구매 불가','이미 판매되었거나 만료된 경매입니다.');closeAuctionConfirm();await loadMulti();return}if(a.sellerUid===uid){shop20Toast('구매 불가','내가 올린 물품은 등록 수정만 가능합니다.');return}if((fishing.gold||0)<a.price){shop20Toast('골드가 부족합니다.');return}const feeRate=Number(a.feeRate??0.08);const fee=Math.max(0,Math.floor(Number(a.price||0)*feeRate));const net=Math.max(0,Number(a.price||0)-fee);fishing.gold-=a.price;const ik=getInventoryKey(a.fishKey,a.sizeKey);fishing.inventory[ik]=(fishing.inventory[ik]||0)+1;fishing.discovered[a.fishKey]=true;const mailId=`auction_${id}_${Date.now()}`;await dbPatch({[`multiplayer/auctions/${id}/status`]:'sold',[`multiplayer/auctions/${id}/buyerUid`]:uid,[`multiplayer/auctions/${id}/buyerName`]:getPlayerName(),[`multiplayer/auctions/${id}/soldAt`]:Date.now(),[`multiplayer/auctions/${id}/fee`]:fee,[`multiplayer/auctions/${id}/netGold`]:net,[`multiplayer/bossMailByUser/${a.sellerUid}/${mailId}`]:{id:mailId,type:'gold',auctionId:id,gold:net,gross:a.price,fee,title:'경매 판매 정산',desc:`${a.fishName||'물고기'} 판매 완료 · ${formatNumber(a.price)}G - 수수료 ${formatNumber(fee)}G = ${formatNumber(net)}G`,createdAt:Date.now(),claimed:false}});fishing.updatedAt=Date.now();await update(ref(db,`users/${uid}`),{fishing,lastPlayedAt:serverTimestamp()});closeAuctionConfirm();shop20Toast('경매 구매 완료!',`${a.fishName} 획득`);render();await loadMulti()}catch(e){console.error('경매 구매 실패',e);shop20Toast('경매 구매 실패',`${e.dbPath||'multiplayer/auctions'} · ${getFirebaseErrorMessage(e)}`)}};
+window.buyAuctionItem=async function(id){try{const a=await dbGet(`multiplayer/auctions/${id}`);if(!a||a.status!=='active'||a.expiresAt<Date.now()){shop20Toast('구매 불가','이미 판매되었거나 만료된 경매입니다.');closeAuctionConfirm();await loadMulti();return}if(a.sellerUid===uid){shop20Toast('구매 불가','내가 올린 물품은 등록 수정만 가능합니다.');return}if((fishing.gold||0)<a.price){shop20Toast('골드가 부족합니다.');return}const feeRate=Number(a.feeRate??0.08);const fee=Math.max(0,Math.floor(Number(a.price||0)*feeRate));const net=Math.max(0,Number(a.price||0)-fee);fishing.gold-=a.price;const ik=getInventoryKey(a.fishKey,a.sizeKey);fishing.inventory[ik]=(fishing.inventory[ik]||0)+qty;fishing.discovered[a.fishKey]=true;const mailId=`auction_${id}_${Date.now()}`;await dbPatch({[`multiplayer/auctions/${id}/status`]:'sold',[`multiplayer/auctions/${id}/buyerUid`]:uid,[`multiplayer/auctions/${id}/buyerName`]:getPlayerName(),[`multiplayer/auctions/${id}/soldAt`]:Date.now(),[`multiplayer/auctions/${id}/fee`]:fee,[`multiplayer/auctions/${id}/netGold`]:net,[`multiplayer/bossMailByUser/${a.sellerUid}/${mailId}`]:{id:mailId,type:'gold',auctionId:id,gold:net,gross:a.price,fee,title:'경매 판매 정산',desc:`${a.fishName||'물고기'} 판매 완료 · ${formatNumber(a.price)}G - 수수료 ${formatNumber(fee)}G = ${formatNumber(net)}G`,createdAt:Date.now(),claimed:false}});fishing.updatedAt=Date.now();await update(ref(db,`users/${uid}`),{fishing,lastPlayedAt:serverTimestamp()});closeAuctionConfirm();shop20Toast('경매 구매 완료!',`${a.fishName} 획득`);render();await loadMulti()}catch(e){console.error('경매 구매 실패',e);shop20Toast('경매 구매 실패',`${e.dbPath||'multiplayer/auctions'} · ${getFirebaseErrorMessage(e)}`)}};
 renderMultiFriends = async function(box){const friends=await dbGet(`multiplayer/friends/${uid}`)||{};box.innerHTML=`<div class="multi10-card">${multi10Title("friends","친구")}<div class="multi10-form"><input id="friendUidInput" placeholder="친구 UID"><button onclick="addFriendMulti()">추가</button></div>${Object.entries(friends).map(([id,f])=>`<div class="multi10-row"><span class="rank-user-line">${renderMiniProfile(f,f.name||id)}<span>${f.name||id}<br><small>${f.title||'낚시꾼'}</small></span></span><b>${id.slice(0,6)}</b></div>`).join('')||'<div class="small">친구 없음</div>'}</div>`;};
 window.addFriendMulti=async function(){const fid=$('friendUidInput')?.value?.trim();if(!fid)return;await dbPatch({[`multiplayer/friends/${uid}/${fid}`]:{name:fid,addedAt:Date.now()}});loadMulti()};
 
@@ -4001,9 +4027,10 @@ window.addFriendMulti=async function(){const fid=$('friendUidInput')?.value?.tri
     }
     return {ok:true};
   }
-  function auction43RemoveOne(entry,usePermit=false){
+  function auction43RemoveOne(entry,usePermit=false,qty=1){
+    qty=Math.max(1,Math.floor(Number(qty)||1));
     if(entry.itemType==='fish'){
-      fishing.inventory[entry.itemKey]=Math.max(0,Number(fishing.inventory[entry.itemKey]||0)-1);
+      fishing.inventory[entry.itemKey]=Math.max(0,Number(fishing.inventory[entry.itemKey]||0)-qty);
       if(fishing.inventory[entry.itemKey]<=0)delete fishing.inventory[entry.itemKey];
     }else if(entry.itemType==='rod'){
       if(usePermit)fishing.auctionPermits=Math.max(0,Number(fishing.auctionPermits||0)-1);
@@ -4015,30 +4042,30 @@ window.addFriendMulti=async function(){const fid=$('friendUidInput')?.value?.tri
       if(fishing.cosmetics?.owned)delete fishing.cosmetics.owned[entry.itemKey];
       delete fishing.ownedShopItems[entry.itemKey];
     }else if(entry.itemType==='token'){
-      fishing.bossTokens[entry.itemKey]=Math.max(0,Number(fishing.bossTokens[entry.itemKey]||0)-1);
+      fishing.bossTokens[entry.itemKey]=Math.max(0,Number(fishing.bossTokens[entry.itemKey]||0)-qty);
     }else if(entry.itemType==='chest'){
-      fishing.bossChests[entry.itemKey]=Math.max(0,Number(fishing.bossChests[entry.itemKey]||0)-1);
+      fishing.bossChests[entry.itemKey]=Math.max(0,Number(fishing.bossChests[entry.itemKey]||0)-qty);
     }else if(entry.itemType==='accessory'){
       const cur=fishing.accessories[entry.itemKey];
-      if(typeof cur==='number')fishing.accessories[entry.itemKey]=Math.max(0,cur-1);
-      else if(cur)cur.count=Math.max(0,Number(cur.count||0)-1);
+      if(typeof cur==='number')fishing.accessories[entry.itemKey]=Math.max(0,cur-qty);
+      else if(cur)cur.count=Math.max(0,Number(cur.count||0)-qty);
     }
   }
   function auction43GrantItem(item){
     ensureAuction43State();
-    const t=item.itemType, k=item.itemKey;
+    const t=item.itemType, k=item.itemKey, qty=Math.max(1,Math.floor(Number(item.qty)||1));
     if(t==='fish'){
       const p=item.payload||parseInventoryKey(k);
       const ik=getInventoryKey(p.fishKey,p.sizeKey);
-      fishing.inventory[ik]=(fishing.inventory[ik]||0)+1;
+      fishing.inventory[ik]=(fishing.inventory[ik]||0)+qty;
       if(p.fishKey)fishing.discovered[p.fishKey]=true;
       return item.itemName||item.name||getSizedFishName(p.fishKey,p.sizeKey);
     }
     if(t==='rod'){fishing.ownedShopItems[k]=true;return item.itemName||EQUIP_RODS[k]?.name||k;}
     if(t==='frame'){fishing.cosmetics.owned[k]=true;fishing.ownedShopItems[k]=true;return item.itemName||COSMETIC_ITEMS[k]?.name||k;}
-    if(t==='token'){fishing.bossTokens[k]=(fishing.bossTokens[k]||0)+1;return item.itemName||(BOSS_CHEST_INFO[k]?.tokenName||k);}
-    if(t==='chest'){fishing.bossChests[k]=(fishing.bossChests[k]||0)+1;return item.itemName||(BOSS_CHEST_INFO[k]?.name||k);}
-    if(t==='accessory'){fishing.accessories[k]=fishing.accessories[k]||{name:item.itemName||k,icon:item.img,rarity:item.rarity,count:0};fishing.accessories[k].count=Number(fishing.accessories[k].count||0)+1;return item.itemName||k;}
+    if(t==='token'){fishing.bossTokens[k]=(fishing.bossTokens[k]||0)+qty;return `${item.itemName||(BOSS_CHEST_INFO[k]?.tokenName||k)} x${qty}`;}
+    if(t==='chest'){fishing.bossChests[k]=(fishing.bossChests[k]||0)+qty;return `${item.itemName||(BOSS_CHEST_INFO[k]?.name||k)} x${qty}`;}
+    if(t==='accessory'){fishing.accessories[k]=fishing.accessories[k]||{name:item.itemName||k,icon:item.img,rarity:item.rarity,count:0};fishing.accessories[k].count=Number(fishing.accessories[k].count||0)+qty;return `${item.itemName||k} x${qty}`;}
     return item.itemName||k;
   }
   function auction43Stats(auctionList,itemType,itemKey){
@@ -4066,6 +4093,14 @@ window.addFriendMulti=async function(){const fid=$('friendUidInput')?.value?.tri
     const entry=(window.__auction43SellEntries||{})[sel.value];
     if(!entry){box.innerHTML='<div class="small">판매할 항목을 선택하면 권장 시장가가 표시됩니다.</div>';if(img)img.src='./assets/icons/fish_shadow.png';return}
     if(img)img.src=entry.img||'./assets/icons/fish_shadow.png';
+    const qtyInput=$('auction44Qty');
+    if(qtyInput){
+      const maxQty=Math.max(1,Number(entry.ownedCount||1));
+      qtyInput.max=String(maxQty);
+      if(!qtyInput.value||Number(qtyInput.value)<1)qtyInput.value='1';
+      if(Number(qtyInput.value)>maxQty)qtyInput.value=String(maxQty);
+      qtyInput.disabled=maxQty<=1 || ['rod','frame'].includes(entry.itemType);
+    }
     const price=Number(input?.value||entry.marketPrice||0);
     const status=getAuctionPriceStatus(price,entry.marketPrice);
     const stats=auction43Stats(window.__auctionListCache||[],entry.itemType,entry.itemKey);
@@ -4089,6 +4124,7 @@ window.addFriendMulti=async function(){const fid=$('friendUidInput')?.value?.tri
       <div class="auction20-form-card auction43-select-row">
         <div class="auction20-field"><label>판매 종류</label><select id="auctionSellType" onchange="window.__auction43SellType=this.value;changeAuctionSellType()">${AUCTION_TYPES.filter(x=>x[0]!=='all').map(([k,v])=>`<option value="${k}" ${k===sellType?'selected':''}>${v}</option>`).join('')}</select></div>
         <div class="auction20-field"><label>내 보유 목록</label><select id="auctionItemSelect" onchange="updateAuctionMarketPrice()">${firstOptions||'<option value="">판매 가능한 항목 없음</option>'}</select></div>
+        <div class="auction20-field"><label>수량</label><input id="auction44Qty" type="number" min="1" max="${firstEntry?.ownedCount||1}" value="1" oninput="updateAuctionMarketPrice()"></div>
         <div class="auction20-field"><label>판매가</label><input id="auctionPriceInput" type="number" placeholder="${firstEntry?.marketPrice||'가격'}" oninput="updateAuctionMarketPrice()"></div>
         <button onclick="createAuctionItem()">등록</button>
       </div>
@@ -4102,7 +4138,7 @@ window.addFriendMulti=async function(){const fid=$('friendUidInput')?.value?.tri
       return `<div class="auction20-card auction43-card ${own?'own':''}">
         <div class="auction43-card-img"><img src="${a.img||getAuctionFishImg(a.fishKey)||'./assets/icons/fish_shadow.png'}" alt="${auction43Esc(a.itemName||a.fishName||'')}"></div>
         <div class="auction43-card-main"><span class="auction43-chip">${auction43TypeLabel(itemType)}</span><span class="auction-badge">${getRarityName(a.rarity||'common')}</span> <span class="auction20-price-label ${status.key}">${status.text}</span>
-          <div class="auction20-name">${auction43Esc(a.itemName||a.fishName||'아이템')}</div>
+          <div class="auction20-name">${auction43Esc(a.itemName||a.fishName||'아이템')} ${Number(a.qty||1)>1?`x${formatNumber(a.qty)}`:''}</div>
           <div class="auction20-price">${formatNumber(a.price)}G</div>
           <div class="auction20-meta">권장가 ${formatNumber(market)}G · 판매자 ${auction43Esc(a.sellerName||'낚시꾼')}<br>남은시간 ${Math.max(0,Math.floor((a.expiresAt-now)/3600000))}시간 · 수수료 ${Math.round(Number(a.feeRate||TRADE_FEE_RATE)*100)}% · <span class="auction43-mail-note">우편 수령</span></div>
           <div class="auction20-actions">${own?`<button onclick="editAuctionItem('${a.id}')">등록 수정</button>`:`<button onclick="confirmBuyAuctionItem('${a.id}')">구매</button>`}</div>
@@ -4115,12 +4151,16 @@ window.addFriendMulti=async function(){const fid=$('friendUidInput')?.value?.tri
   window.createAuctionItem=async function(){
     try{
       ensureAuction43State();
-      const today=new Date().toISOString().slice(0,10);
-      const count=await dbGet(`multiplayer/auctionDaily/${today}/${uid}`)||0;
-      if(count>=2){shop20Toast('오늘 등록 한도 초과','1인 하루 2개까지 가능합니다.');return}
+      const auctionData=await dbGet('multiplayer/auctions')||{};
+      const count=Object.values(auctionData).filter(a=>a&&a.sellerUid===uid&&a.status==='active'&&Number(a.expiresAt||0)>Date.now()).length;
+      if(count>=2){shop20Toast('등록 한도 초과','현재 게시중인 물품은 1인 2개까지 가능합니다.');return}
       const key=$('auctionItemSelect')?.value, price=Math.floor(Number($('auctionPriceInput')?.value||0));
       const entry=(window.__auction43SellEntries||{})[key];
+      let qty=Math.max(1,Math.floor(Number($('auction44Qty')?.value||1)));
       if(!entry||price<=0){shop20Toast('등록 정보를 확인해주세요.','판매 항목과 가격을 입력하세요.');return}
+      const maxQty=Math.max(1,Number(entry.ownedCount||1));
+      if(['rod','frame'].includes(entry.itemType))qty=1;
+      if(qty>maxQty){shop20Toast('수량 확인',`보유 수량은 ${formatNumber(maxQty)}개입니다.`);return}
       const can=auction43CanRemoveForSale(entry);
       if(!can.ok){shop20Toast('판매 불가',can.msg);return}
       let usePermit=false;
@@ -4130,12 +4170,12 @@ window.addFriendMulti=async function(){const fid=$('friendUidInput')?.value?.tri
       }
       const status=getAuctionPriceStatus(price,entry.marketPrice);
       if(status.key==='low'&&!confirm(`시장가보다 낮은 가격입니다.\n권장 시장가: ${formatNumber(entry.marketPrice)}G\n등록가: ${formatNumber(price)}G\n그래도 등록할까요?`))return;
-      auction43RemoveOne(entry,usePermit);
+      auction43RemoveOne(entry,usePermit,qty);
       const id=`${uid}_${Date.now()}`;
-      await dbPatch({[`multiplayer/auctions/${id}`]:{sellerUid:uid,sellerName:getPlayerName(),itemType:entry.itemType,itemKey:entry.itemKey,itemName:entry.name,img:entry.img,rarity:entry.rarity,qty:1,payload:entry.payload||{},price,marketPrice:entry.marketPrice,feeRate:TRADE_FEE_RATE,createdAt:Date.now(),expiresAt:Date.now()+48*3600000,status:'active'}});
+      await dbPatch({[`multiplayer/auctions/${id}`]:{sellerUid:uid,sellerName:getPlayerName(),itemType:entry.itemType,itemKey:entry.itemKey,itemName:entry.name,img:entry.img,rarity:entry.rarity,qty,payload:entry.payload||{},price,marketPrice:entry.marketPrice,feeRate:TRADE_FEE_RATE,createdAt:Date.now(),expiresAt:Date.now()+48*3600000,status:'active'}});
       fishing.updatedAt=Date.now();
       await update(ref(db,`users/${uid}`),{fishing,lastPlayedAt:serverTimestamp()});
-      shop20Toast('거래소 등록 완료!',`${entry.name} · ${formatNumber(price)}G`);
+      shop20Toast('거래소 등록 완료!',`${entry.name} x${qty} · ${formatNumber(price)}G`);
       render();await loadMulti();
     }catch(e){console.error('거래소 등록 실패',e);shop20Toast('거래소 등록 실패',`${e.dbPath||'multiplayer/auctions'} · ${getFirebaseErrorMessage(e)}`)}
   };
@@ -4148,7 +4188,7 @@ window.addFriendMulti=async function(){const fid=$('friendUidInput')?.value?.tri
       const market=a.marketPrice||auction43ItemInfo(itemType,itemKey)?.marketPrice||0;
       const status=getAuctionPriceStatus(a.price,market);
       const m=ensureAuctionConfirmModal();
-      $('auctionBuyConfirmBody').innerHTML=`<img src="${a.img||getAuctionFishImg(a.fishKey)||'./assets/icons/fish_shadow.png'}" alt=""><div class="ui-modal-title">${auction43Esc(a.itemName||a.fishName||'아이템')}</div><div class="ui-modal-sub">${formatNumber(a.price)}G · <span class="auction20-price-label ${status.key}">${status.text}</span></div><div class="small">종류 ${auction43TypeLabel(itemType)}<br>판매자 ${auction43Esc(a.sellerName||'낚시꾼')}<br>구매하면 우편함으로 도착하며, 받기를 눌러 인벤토리에 지급됩니다.</div><div class="auction20-confirm-actions"><button class="secondary" onclick="closeAuctionConfirm()">취소</button><button onclick="buyAuctionItem('${id}')">구매 확정</button></div>`;
+      $('auctionBuyConfirmBody').innerHTML=`<img src="${a.img||getAuctionFishImg(a.fishKey)||'./assets/icons/fish_shadow.png'}" alt=""><div class="ui-modal-title">${auction43Esc(a.itemName||a.fishName||'아이템')} ${Number(a.qty||1)>1?`x${formatNumber(a.qty)}`:''}</div><div class="ui-modal-sub">${formatNumber(a.price)}G · <span class="auction20-price-label ${status.key}">${status.text}</span></div><div class="small">종류 ${auction43TypeLabel(itemType)}<br>판매자 ${auction43Esc(a.sellerName||'낚시꾼')}<br>구매하면 우편함으로 도착하며, 받기를 눌러 인벤토리에 지급됩니다.</div><div class="auction20-confirm-actions"><button class="secondary" onclick="closeAuctionConfirm()">취소</button><button onclick="buyAuctionItem('${id}')">구매 확정</button></div>`;
       m.classList.add('show');
     }catch(e){console.error(e);shop20Toast('구매 확인 실패',getFirebaseErrorMessage(e))}
   };
@@ -4188,12 +4228,12 @@ window.addFriendMulti=async function(){const fid=$('friendUidInput')?.value?.tri
         [`multiplayer/auctions/${id}/fee`]:fee,
         [`multiplayer/auctions/${id}/netGold`]:net,
         [`multiplayer/bossMailByUser/${a.sellerUid}/${sellerMailId}`]:{id:sellerMailId,type:'gold',auctionId:id,gold:net,gross:a.price,fee,title:'거래소 판매 정산',desc:`${a.itemName||a.fishName||'아이템'} 판매 완료 · ${formatNumber(a.price)}G - 수수료 ${formatNumber(fee)}G = ${formatNumber(net)}G`,createdAt:Date.now(),claimed:false},
-        [`multiplayer/bossMailByUser/${uid}/${buyerMailId}`]:{id:buyerMailId,type:'auction_item',auctionId:id,item:{itemType,itemKey,itemName:a.itemName||a.fishName,img:a.img,rarity:a.rarity,qty:1,payload:a.payload||{}},title:'거래소 구매품 도착',desc:`${a.itemName||a.fishName||'아이템'} x1 수령 가능`,createdAt:Date.now(),claimed:false}
+        [`multiplayer/bossMailByUser/${uid}/${buyerMailId}`]:{id:buyerMailId,type:'auction_item',auctionId:id,item:{itemType,itemKey,itemName:a.itemName||a.fishName,img:a.img,rarity:a.rarity,qty:Number(a.qty)||1,payload:a.payload||{}},title:'거래소 구매품 도착',desc:`${a.itemName||a.fishName||'아이템'} x${Number(a.qty)||1} 수령 가능`,createdAt:Date.now(),claimed:false}
       });
       fishing.updatedAt=Date.now();
       await update(ref(db,`users/${uid}`),{fishing,lastPlayedAt:serverTimestamp()});
       closeAuctionConfirm();
-      shop20Toast('구매 완료!',`${a.itemName||a.fishName||'아이템'}이 우편함으로 도착합니다.`);
+      shop20Toast('구매 완료!',`${a.itemName||a.fishName||'아이템'} x${Number(a.qty)||1} 우편함 도착`);
       await importBossMailsFromFirebase();
       render();await loadMulti();
     }catch(e){console.error('거래소 구매 실패',e);shop20Toast('거래소 구매 실패',`${e.dbPath||'multiplayer/auctions'} · ${getFirebaseErrorMessage(e)}`)}
@@ -4442,12 +4482,95 @@ if($('sellAllPreviewBtn'))$('sellAllPreviewBtn').onclick=sellAllFish;
 
 document.querySelectorAll(".tab-btn").forEach(btn=>{
   btn.onclick=()=>{
+    if(btn.dataset.tab==='Lab'&&!fishing?.adminMode){shop20Toast?.('관리자 전용','상점 3.0을 7번 눌러 관리자 모드를 켜주세요.');return;}
     document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
     document.querySelectorAll(".tab-page").forEach(p=>p.classList.remove("active"));
     btn.classList.add("active");
-    document.getElementById("tab"+btn.dataset.tab).classList.add("active");
+    const page=document.getElementById("tab"+btn.dataset.tab);if(page)page.classList.add("active");
   };
 });
+
+
+
+
+/* ===============================
+   14.0 Fishing Lab Prototype
+================================ */
+(function(){
+  let lab=null;
+  const LAB_TYPES={
+    easy:{name:'붕어',icon:'🐟',time:14,power:10,decay:3.2,run:1.6,jitter:0.8,target:100},
+    shark:{name:'상어',icon:'🦈',time:12,power:8,decay:5.0,run:2.7,jitter:1.4,target:100},
+    legend:{name:'전설 물고기',icon:'✨',time:10,power:7,decay:6.0,run:3.4,jitter:2.2,target:100},
+    boss:{name:'보스 물고기',icon:'🐉',time:9,power:6,decay:7.2,run:4.2,jitter:3.0,target:100}
+  };
+  function labEl(id){return document.getElementById(id)}
+  function setLabMessage(msg){const el=labEl('lab14Message');if(el)el.textContent=msg}
+  function setLabResult(msg,color){const el=labEl('lab14Result');if(el){el.textContent=msg||'';el.style.color=color||'#facc15'}}
+  function renderLab(){
+    const fill=labEl('lab14ProgressFill'),pt=labEl('lab14ProgressText'),tt=labEl('lab14TimeText'),mt=labEl('lab14MoodText'),fish=labEl('lab14Fish');
+    if(!lab){if(fill)fill.style.width='0%';if(pt)pt.textContent='0%';if(tt)tt.textContent='0.0초';if(mt)mt.textContent='대기';return;}
+    const pct=Math.max(0,Math.min(100,lab.progress));
+    if(fill)fill.style.width=pct+'%';
+    if(pt)pt.textContent=Math.floor(pct)+'%';
+    if(tt)tt.textContent=Math.max(0,lab.left).toFixed(1)+'초';
+    if(mt)mt.textContent=lab.mood;
+    if(fish){fish.textContent=lab.cfg.icon;fish.style.left=Math.max(18,Math.min(86,lab.fishPos))+'%';fish.style.transform=`translate(-50%,-50%) scale(${lab.mood==='돌진'?1.18:1})`;}
+  }
+  function newMood(){
+    if(!lab)return;
+    const pool=['도망','돌진','급정지','방향전환'];
+    lab.mood=pool[Math.floor(Math.random()*pool.length)];
+    if(lab.mood==='급정지')lab.decayMul=.35;
+    else if(lab.mood==='돌진')lab.decayMul=1.55;
+    else if(lab.mood==='방향전환'){lab.decayMul=1.05;lab.dir*=-1;}
+    else lab.decayMul=1;
+    const arena=labEl('lab14Arena');
+    if(arena&&lab.mood==='돌진'){arena.classList.remove('lab14-danger');void arena.offsetWidth;arena.classList.add('lab14-danger');}
+    setLabMessage(`${lab.cfg.name} 상태: ${lab.mood}! 릴 감기로 끌어오세요.`);
+  }
+  function loop(ts){
+    if(!lab||!lab.running)return;
+    if(!lab.last)lab.last=ts;
+    const dt=Math.min(.05,(ts-lab.last)/1000);lab.last=ts;
+    lab.left-=dt;
+    lab.moodTimer-=dt;
+    if(lab.moodTimer<=0){lab.moodTimer=.55+Math.random()*.7;newMood();}
+    lab.progress-=lab.cfg.decay*lab.decayMul*dt;
+    lab.fishPos+=lab.dir*(lab.cfg.run+lab.cfg.jitter*Math.random())*dt*8;
+    if(lab.fishPos>86){lab.fishPos=86;lab.dir=-1}
+    if(lab.fishPos<18){lab.fishPos=18;lab.dir=1}
+    if(lab.progress>=lab.cfg.target){finishLab(true);return;}
+    if(lab.progress<=0||lab.left<=0){finishLab(false);return;}
+    renderLab();lab.raf=requestAnimationFrame(loop);
+  }
+  function finishLab(success){
+    if(!lab)return;
+    lab.running=false;if(lab.raf)cancelAnimationFrame(lab.raf);
+    renderLab();
+    if(success){setLabResult(`SUCCESS! ${lab.cfg.name} 포획`, '#86efac');setLabMessage('낚시 2.0 프로토타입 성공. 이 방식이 괜찮으면 정식 낚시에 적용할 수 있습니다.');}
+    else{setLabResult(`FAILED! ${lab.cfg.name} 도주`, '#f87171');setLabMessage('실패했습니다. 난이도/속도/버튼 파워를 조정해볼 수 있습니다.');}
+    lab=null;
+  }
+  window.startFishingLab=function(type){
+    if(!fishing?.adminMode){shop20Toast?.('관리자 전용','상점 3.0을 7번 눌러 관리자 모드를 켜주세요.');return;}
+    const cfg=LAB_TYPES[type]||LAB_TYPES.easy;
+    lab={cfg,running:true,progress:35,left:cfg.time,fishPos:72,dir:Math.random()>.5?1:-1,mood:'시작',moodTimer:.2,decayMul:1,last:0,raf:null};
+    setLabResult('');setLabMessage(`${cfg.name} 테스트 시작! 릴 감기 버튼이나 SPACE를 누르세요.`);renderLab();lab.raf=requestAnimationFrame(loop);
+  };
+  window.labFishingReel=function(){
+    if(!lab||!lab.running)return;
+    lab.progress+=lab.cfg.power;
+    lab.fishPos-=4;
+    setLabMessage(`릴 감기! +${lab.cfg.power}`);
+    renderLab();
+  };
+  window.stopFishingLab=function(){
+    if(lab?.raf)cancelAnimationFrame(lab.raf);
+    lab=null;setLabMessage('테스트가 중단되었습니다.');setLabResult('');renderLab();
+  };
+  document.addEventListener('keydown',e=>{if(e.code==='Space'&&lab?.running){window.labFishingReel();e.preventDefault();}});
+})();
 
 
 /* ===============================
@@ -4911,25 +5034,97 @@ async function renderBossRareDropLog(){
     if(e.itemType==='frame'){if(usePermit)fishing.auctionPermits--; if(fishing.cosmetics?.equippedProfile===e.itemKey)fishing.cosmetics.equippedProfile='profile_none'; delete fishing.cosmetics.owned[e.itemKey]; delete fishing.ownedShopItems[e.itemKey];}
     if(e.itemType==='token')fishing.bossTokens[e.itemKey]=Math.max(0,Number(fishing.bossTokens[e.itemKey]||0)-1);
     if(e.itemType==='chest')fishing.bossChests[e.itemKey]=Math.max(0,Number(fishing.bossChests[e.itemKey]||0)-1);
-    if(e.itemType==='accessory'){const cur=fishing.accessories[e.itemKey]; if(typeof cur==='number')fishing.accessories[e.itemKey]=Math.max(0,cur-1); else if(cur)cur.count=Math.max(0,Number(cur.count||0)-1);}
+    if(e.itemType==='accessory'){const cur=fishing.accessories[e.itemKey]; if(typeof cur==='number')fishing.accessories[e.itemKey]=Math.max(0,cur-1); else if(cur)cur.count=Math.max(0,Number(cur.count||0)-qty);}
   }
   function grant44(item){
     ensure44(); const t=item.itemType,k=item.itemKey;
-    if(t==='fish'){const p=item.payload||parseInventoryKey(k);const ik=getInventoryKey(p.fishKey,p.sizeKey);fishing.inventory[ik]=(fishing.inventory[ik]||0)+1;if(p.fishKey)fishing.discovered[p.fishKey]=true;return item.itemName||getSizedFishName(p.fishKey,p.sizeKey);}
+    const qty=Math.max(1,Math.floor(Number(item.qty||item.payload?.qty||1)));
+    if(t==='fish'){
+      const p=item.payload||parseInventoryKey(k);const ik=getInventoryKey(p.fishKey,p.sizeKey);
+      fishing.inventory[ik]=(fishing.inventory[ik]||0)+qty;
+      if(p.fishKey)fishing.discovered[p.fishKey]=true;
+      return `${item.itemName||getSizedFishName(p.fishKey,p.sizeKey)} x${qty}`;
+    }
     if(t==='rod'){fishing.ownedShopItems[k]=true;return item.itemName||EQUIP_RODS[k]?.name||k;}
     if(t==='frame'){fishing.cosmetics.owned[k]=true;fishing.ownedShopItems[k]=true;return item.itemName||COSMETIC_ITEMS[k]?.name||k;}
-    if(t==='token'){fishing.bossTokens[k]=(fishing.bossTokens[k]||0)+1;return item.itemName||BOSS_CHEST_INFO[k]?.tokenName||k;}
-    if(t==='chest'){fishing.bossChests[k]=(fishing.bossChests[k]||0)+1;return item.itemName||BOSS_CHEST_INFO[k]?.name||k;}
-    if(t==='accessory'){fishing.accessories[k]=fishing.accessories[k]||{name:item.itemName||k,icon:item.img,rarity:item.rarity,count:0};fishing.accessories[k].count=Number(fishing.accessories[k].count||0)+1;return item.itemName||k;}
+    if(t==='token'){fishing.bossTokens[k]=(fishing.bossTokens[k]||0)+qty;return `${item.itemName||BOSS_CHEST_INFO[k]?.tokenName||k} x${qty}`;}
+    if(t==='chest'){fishing.bossChests[k]=(fishing.bossChests[k]||0)+qty;return `${item.itemName||BOSS_CHEST_INFO[k]?.name||k} x${qty}`;}
+    if(t==='accessory'){
+      fishing.accessories[k]=fishing.accessories[k]||{name:item.itemName||k,icon:item.img,rarity:item.rarity,count:0};
+      fishing.accessories[k].count=Number(fishing.accessories[k].count||0)+qty;
+      return `${item.itemName||k} x${qty}`;
+    }
     return item.itemName||k;
   }
-  window.auction44ChangeSellType=function(){const type=$('auction44SellType')?.value||'fish';const opts=entries44(type);window.__auction44Entries=Object.fromEntries(opts.map(e=>[`${e.itemType}:${e.itemKey}`,e]));$('auction44ItemSelect').innerHTML=opts.map(e=>`<option value="${e.itemType}:${esc44(e.itemKey)}">${esc44(e.name)} x${e.ownedCount}${e.equipped?' · 장착중':''}</option>`).join('')||'<option value="">판매 가능한 항목 없음</option>';auction44UpdateMarket();};
-  window.auction44UpdateMarket=function(){const key=$('auction44ItemSelect')?.value;const e=(window.__auction44Entries||{})[key];if(!e){$('auction44MarketBox').innerHTML='<div class="small">판매 가능한 항목이 없습니다.</div>';return;}if($('auction44Img'))$('auction44Img').src=e.img||'./assets/icons/star.png';const price=Number($('auction44Price')?.value||e.marketPrice||0);const s=getAuctionPriceStatus(price,e.marketPrice);$('auction44MarketBox').innerHTML=`<b>권장 시장가 ${formatNumber(e.marketPrice)}G</b> <span class="auction20-price-label ${s.key}">${s.text}</span><div class="small">${TYPE_LABEL[e.itemType]} · ${esc44(e.name)}${e.equipped?' · 장착중, 판매권 필요':''}</div>`;};
+  window.auction44ChangeSellType=function(){
+    const type=$('auction44SellType')?.value||'fish';
+    const opts=entries44(type);
+    window.__auction44Entries=Object.fromEntries(opts.map(e=>[`${e.itemType}:${e.itemKey}`,e]));
+    const select=$('auction44ItemSelect');
+    if(select){
+      select.innerHTML=opts.map(e=>`<option value="${e.itemType}:${esc44(e.itemKey)}">${esc44(e.name)} x${e.ownedCount}${e.equipped?' · 장착중':''}</option>`).join('')||'<option value="">판매 가능한 항목 없음</option>';
+    }
+    const qty=$('auction44Qty');
+    if(qty){qty.value='1'; qty.max=String(Math.max(1,opts[0]?.ownedCount||1)); qty.disabled=!(opts[0]?.ownedCount>1);}
+    auction44UpdateMarket();
+  };
+  window.auction44UpdateMarket=function(){
+    const key=$('auction44ItemSelect')?.value;
+    const e=(window.__auction44Entries||{})[key];
+    const qtyEl=$('auction44Qty');
+    if(!e){
+      if($('auction44MarketBox'))$('auction44MarketBox').innerHTML='<div class="small">판매 가능한 항목이 없습니다.</div>';
+      if(qtyEl){qtyEl.value='1';qtyEl.max='1';qtyEl.disabled=true;}
+      return;
+    }
+    if(qtyEl){
+      const max=Math.max(1,Number(e.ownedCount||1));
+      qtyEl.max=String(max);
+      qtyEl.disabled=max<=1;
+      let v=Math.max(1,Math.floor(Number(qtyEl.value||1)));
+      if(v>max)v=max;
+      qtyEl.value=String(v);
+    }
+    if($('auction44Img'))$('auction44Img').src=e.img||'./assets/icons/star.png';
+    const price=Number($('auction44Price')?.value||e.marketPrice||0);
+    const qty=Number(qtyEl?.value||1);
+    const s=getAuctionPriceStatus(price,e.marketPrice);
+    if($('auction44MarketBox'))$('auction44MarketBox').innerHTML=`<b>권장 시장가 ${formatNumber(e.marketPrice)}G</b> <span class="auction20-price-label ${s.key}">${s.text}</span><div class="small">${TYPE_LABEL[e.itemType]} · ${esc44(e.name)} · 등록 수량 ${formatNumber(qty)}개${e.equipped?' · 장착중, 판매권 필요':''}</div>`;
+  };
   window.createAuction44Item=async function(){
-    try{ensure44();const auctionData=await dbGet('multiplayer/auctions')||{};const count=Object.values(auctionData).filter(a=>a&&a.sellerUid===uid&&a.status==='active'&&Number(a.expiresAt||0)>Date.now()).length;if(count>=2){shop20Toast('등록 한도 초과','현재 게시중인 물품은 1인 2개까지 가능합니다.');return;}const key=$('auction44ItemSelect')?.value,price=Math.floor(Number($('auction44Price')?.value||0));const e=(window.__auction44Entries||{})[key];if(!e||price<=0){shop20Toast('등록 정보를 확인해주세요.');return;}let usePermit=false;if((e.itemType==='rod'&&fishing.equipment?.rod===e.itemKey)||(e.itemType==='frame'&&fishing.cosmetics?.equippedProfile===e.itemKey)){if((fishing.auctionPermits||0)<=0){shop20Toast('판매 불가','장착 중인 낚싯대/프레임은 장착 해제 판매권이 필요합니다.');return;}if(!confirm(`장착 해제 판매권 1개를 사용해서 ${e.name}을 등록할까요?`))return;usePermit=true;}const st=getAuctionPriceStatus(price,e.marketPrice);if(st.key==='low'&&!confirm(`시장가보다 낮습니다. 그래도 등록할까요?`))return;remove44(e,usePermit);const id=`${uid}_${Date.now()}`;await dbPatch({[`multiplayer/auctions/${id}`]:{sellerUid:uid,sellerName:getPlayerName(),itemType:e.itemType,itemKey:e.itemKey,itemName:e.name,img:e.img,rarity:e.rarity,price,marketPrice:e.marketPrice,feeRate:FEE,payload:e.payload||{},createdAt:Date.now(),expiresAt:Date.now()+48*3600000,status:'active'},[`multiplayer/auctionDaily/${today}/${uid}`]:count+1});fishing.updatedAt=Date.now();await update(ref(db,`users/${uid}`),{fishing,lastPlayedAt:serverTimestamp()});shop20Toast('거래소 등록 완료!',`${e.name} · ${formatNumber(price)}G`);render();await loadMulti();}catch(err){console.error(err);shop20Toast('거래소 등록 실패',getFirebaseErrorMessage(err));}
+    try{
+      ensure44();
+      const auctionData=await dbGet('multiplayer/auctions')||{};
+      const activeMine=Object.values(auctionData).filter(a=>a&&a.sellerUid===uid&&a.status==='active'&&Number(a.expiresAt||0)>Date.now()).length;
+      if(activeMine>=2){shop20Toast('등록 한도 초과','현재 게시중인 물품은 1인 2개까지 가능합니다.');return;}
+      const key=$('auction44ItemSelect')?.value;
+      const price=Math.floor(Number($('auction44Price')?.value||0));
+      const e=(window.__auction44Entries||{})[key];
+      const qty=Math.max(1,Math.floor(Number($('auction44Qty')?.value||1)));
+      if(!e||price<=0){shop20Toast('등록 정보를 확인해주세요.');return;}
+      const maxQty=Math.max(1,Number(e.ownedCount||1));
+      if(qty>maxQty){shop20Toast('수량 확인','보유 수량보다 많이 등록할 수 없습니다.');return;}
+      if(['rod','frame'].includes(e.itemType)&&qty!==1){shop20Toast('수량 확인','낚싯대와 프레임은 1개씩만 등록할 수 있습니다.');return;}
+      let usePermit=false;
+      if((e.itemType==='rod'&&fishing.equipment?.rod===e.itemKey)||(e.itemType==='frame'&&fishing.cosmetics?.equippedProfile===e.itemKey)){
+        if((fishing.auctionPermits||0)<=0){shop20Toast('판매 불가','장착 중인 낚싯대/프레임은 장착 해제 판매권이 필요합니다.');return;}
+        if(!confirm(`장착 해제 판매권 1개를 사용해서 ${e.name}을 등록할까요?`))return;
+        usePermit=true;
+      }
+      const st=getAuctionPriceStatus(price,e.marketPrice);
+      if(st.key==='low'&&!confirm(`시장가보다 낮습니다. 그래도 등록할까요?`))return;
+      for(let i=0;i<qty;i++)remove44(e,i===0&&usePermit);
+      const id=`${uid}_${Date.now()}`;
+      const itemName=qty>1?`${e.name} x${qty}`:e.name;
+      await dbPatch({[`multiplayer/auctions/${id}`]:{sellerUid:uid,sellerName:getPlayerName(),itemType:e.itemType,itemKey:e.itemKey,itemName,img:e.img,rarity:e.rarity,qty,price,marketPrice:e.marketPrice,feeRate:FEE,payload:{...(e.payload||{}),qty},createdAt:Date.now(),expiresAt:Date.now()+48*3600000,status:'active'}});
+      fishing.updatedAt=Date.now();
+      await update(ref(db,`users/${uid}`),{fishing,lastPlayedAt:serverTimestamp()});
+      shop20Toast('거래소 등록 완료!',`${itemName} · ${formatNumber(price)}G`);
+      render();await loadMulti();
+    }catch(err){console.error(err);shop20Toast('거래소 등록 실패',getFirebaseErrorMessage(err));}
   };
   window.confirmBuyAuctionItem=async function(id){try{const a=await dbGet(`multiplayer/auctions/${id}`);if(!a||a.status!=='active'||a.expiresAt<Date.now()){shop20Toast('구매 불가','이미 판매되었거나 만료된 물품입니다.');await loadMulti();return;}if(a.sellerUid===uid){editAuctionItem(id);return;}const m=ensureAuctionConfirmModal();const t=a.itemType||'fish', mk=a.marketPrice||0, st=getAuctionPriceStatus(a.price,mk);$('auctionBuyConfirmBody').innerHTML=`<img src="${a.img||getAuctionFishImg(a.fishKey)||'./assets/icons/star.png'}" alt=""><div class="ui-modal-title">${esc44(a.itemName||a.fishName||'아이템')}</div><div class="ui-modal-sub">${formatNumber(a.price)}G · <span class="auction20-price-label ${st.key}">${st.text}</span></div><div class="small">종류 ${TYPE_LABEL[t]||'물고기'}<br>구매품은 우편함으로 도착합니다.</div><div class="auction20-confirm-actions"><button class="secondary" onclick="closeAuctionConfirm()">취소</button><button onclick="buyAuctionItem('${id}')">구매 확정</button></div>`;m.classList.add('show');}catch(e){shop20Toast('구매 확인 실패',getFirebaseErrorMessage(e));}};
-  window.buyAuctionItem=async function(id){try{const a=await dbGet(`multiplayer/auctions/${id}`);if(!a||a.status!=='active'||a.expiresAt<Date.now()){shop20Toast('구매 불가','이미 판매되었거나 만료된 물품입니다.');closeAuctionConfirm();await loadMulti();return;}if((fishing.gold||0)<Number(a.price||0)){shop20Toast('골드가 부족합니다.');return;}const fee=Math.floor(Number(a.price||0)*Number(a.feeRate??FEE)),net=Number(a.price||0)-fee;fishing.gold-=Number(a.price||0);const sellerMail=`auction_gold_${id}_${Date.now()}`,buyerMail=`auction_item_${id}_${Date.now()}`;await dbPatch({[`multiplayer/auctions/${id}/status`]:'sold',[`multiplayer/auctions/${id}/buyerUid`]:uid,[`multiplayer/auctions/${id}/buyerName`]:getPlayerName(),[`multiplayer/auctions/${id}/soldAt`]:Date.now(),[`multiplayer/auctions/${id}/fee`]:fee,[`multiplayer/auctions/${id}/netGold`]:net,[`multiplayer/bossMailByUser/${a.sellerUid}/${sellerMail}`]:{id:sellerMail,type:'gold',gold:net,gross:a.price,fee,title:'거래소 판매 정산',desc:`${a.itemName||a.fishName||'아이템'} 판매 완료 · 실수령 ${formatNumber(net)}G`,createdAt:Date.now(),claimed:false},[`multiplayer/bossMailByUser/${uid}/${buyerMail}`]:{id:buyerMail,type:'auction_item',item:{itemType:a.itemType||'fish',itemKey:a.itemKey||getInventoryKey(a.fishKey,a.sizeKey),itemName:a.itemName||a.fishName,img:a.img,rarity:a.rarity,payload:a.payload||{}},title:'거래소 구매품 도착',desc:`${a.itemName||a.fishName||'아이템'} 수령 가능`,createdAt:Date.now(),claimed:false}});fishing.updatedAt=Date.now();await update(ref(db,`users/${uid}`),{fishing,lastPlayedAt:serverTimestamp()});closeAuctionConfirm();shop20Toast('구매 완료!','우편함에서 수령하세요.');render();await loadMulti();}catch(e){console.error(e);shop20Toast('거래소 구매 실패',getFirebaseErrorMessage(e));}};
+  window.buyAuctionItem=async function(id){try{const a=await dbGet(`multiplayer/auctions/${id}`);if(!a||a.status!=='active'||a.expiresAt<Date.now()){shop20Toast('구매 불가','이미 판매되었거나 만료된 물품입니다.');closeAuctionConfirm();await loadMulti();return;}if((fishing.gold||0)<Number(a.price||0)){shop20Toast('골드가 부족합니다.');return;}const fee=Math.floor(Number(a.price||0)*Number(a.feeRate??FEE)),net=Number(a.price||0)-fee;fishing.gold-=Number(a.price||0);const sellerMail=`auction_gold_${id}_${Date.now()}`,buyerMail=`auction_item_${id}_${Date.now()}`;await dbPatch({[`multiplayer/auctions/${id}/status`]:'sold',[`multiplayer/auctions/${id}/buyerUid`]:uid,[`multiplayer/auctions/${id}/buyerName`]:getPlayerName(),[`multiplayer/auctions/${id}/soldAt`]:Date.now(),[`multiplayer/auctions/${id}/fee`]:fee,[`multiplayer/auctions/${id}/netGold`]:net,[`multiplayer/bossMailByUser/${a.sellerUid}/${sellerMail}`]:{id:sellerMail,type:'gold',gold:net,gross:a.price,fee,title:'거래소 판매 정산',desc:`${a.itemName||a.fishName||'아이템'} 판매 완료 · 실수령 ${formatNumber(net)}G`,createdAt:Date.now(),claimed:false},[`multiplayer/bossMailByUser/${uid}/${buyerMail}`]:{id:buyerMail,type:'auction_item',item:{itemType:a.itemType||'fish',itemKey:a.itemKey||getInventoryKey(a.fishKey,a.sizeKey),itemName:a.itemName||a.fishName,img:a.img,rarity:a.rarity,qty:Number(a.qty||a.payload?.qty||1),payload:{...(a.payload||{}),qty:Number(a.qty||a.payload?.qty||1)}},title:'거래소 구매품 도착',desc:`${a.itemName||a.fishName||'아이템'} 수령 가능`,createdAt:Date.now(),claimed:false}});fishing.updatedAt=Date.now();await update(ref(db,`users/${uid}`),{fishing,lastPlayedAt:serverTimestamp()});closeAuctionConfirm();shop20Toast('구매 완료!','우편함에서 수령하세요.');render();await loadMulti();}catch(e){console.error(e);shop20Toast('거래소 구매 실패',getFirebaseErrorMessage(e));}};
   window.renderMultiAuction=async function(box){
     ensure44(); await importBossMailsFromFirebase();
     let data={};try{data=await dbGet('multiplayer/auctions')||{};}catch(e){console.error(e)}
@@ -4939,8 +5134,8 @@ async function renderBossRareDropLog(){
     const sellType=window.__auction44SellType||'fish';
     const typeOpts=TYPES.filter(x=>x[0]!=='all').map(([k,v])=>`<option value="${k}" ${sellType===k?'selected':''}>${v}</option>`).join('');
     const tabs=`<div class="auction43-type-tabs">${TYPES.map(([k,v])=>`<button class="${filter===k?'active':''}" onclick="window.__auction44Filter='${k}';window.loadMulti&&window.loadMulti()">${v}</button>`).join('')}</div>`;
-    const cards=list.map(a=>{const t=a.itemType||'fish', key=a.itemKey||getInventoryKey(a.fishKey,a.sizeKey), mk=a.marketPrice||itemInfo44(t,key)?.marketPrice||0, st=getAuctionPriceStatus(a.price,mk), own=a.sellerUid===uid;return `<div class="auction20-card auction43-card ${own?'own':''}"><div class="auction43-card-img"><img src="${a.img||getAuctionFishImg(a.fishKey)||'./assets/icons/star.png'}" alt=""></div><div><span class="auction43-chip">${TYPE_LABEL[t]||'물고기'}</span> <span class="auction20-price-label ${st.key}">${st.text}</span><div class="auction20-name">${esc44(a.itemName||a.fishName||'아이템')}</div><div class="auction20-price">${formatNumber(a.price)}G</div><div class="auction20-meta">권장가 ${formatNumber(mk)}G · 판매자 ${esc44(a.sellerName||'낚시꾼')}<br>남은시간 ${Math.max(0,Math.floor((a.expiresAt-now)/3600000))}시간 · 수수료 8% · 우편 수령</div><div class="auction20-actions">${own?`<button onclick="editAuctionItem('${a.id}')">등록 수정</button>`:`<button onclick="confirmBuyAuctionItem('${a.id}')">구매</button>`}</div></div></div>`;}).join('');
-    box.innerHTML=`<div class="multi10-card auction20-wrap">${multi10Title('auction','통합 거래소 2.2')}<div class="small">물고기, 보스 낚싯대/프레임/토큰/상자/장신구 거래가 가능합니다. 판매금과 구매품은 우편함으로 지급됩니다.</div><div class="auction43-topline"><div class="auction43-permit">🧾 장착 해제 판매권 보유: <b>${formatNumber(fishing.auctionPermits||0)}</b>개</div></div><div class="auction20-form-card auction43-select-row"><div class="auction20-field"><label>판매 종류</label><select id="auction44SellType" onchange="window.__auction44SellType=this.value;auction44ChangeSellType()">${typeOpts}</select></div><div class="auction20-field"><label>내 보유 목록</label><select id="auction44ItemSelect" onchange="auction44UpdateMarket()"></select></div><div class="auction20-field"><label>판매가</label><input id="auction44Price" type="number" placeholder="가격" oninput="auction44UpdateMarket()"></div><button onclick="createAuction44Item()">등록</button></div><div id="auction44MarketBox" class="auction-market-box"><div class="small">판매할 항목을 선택하면 권장 시장가가 표시됩니다.</div></div>${tabs}<div class="auction20-grid">${cards||'<div class="small">등록된 판매 물품이 없습니다.</div>'}</div></div>`;
+    const cards=list.map(a=>{const t=a.itemType||'fish', key=a.itemKey||getInventoryKey(a.fishKey,a.sizeKey), mk=a.marketPrice||itemInfo44(t,key)?.marketPrice||0, st=getAuctionPriceStatus(a.price,mk), own=a.sellerUid===uid;return `<div class="auction20-card auction43-card ${own?'own':''}"><div class="auction43-card-img"><img src="${a.img||getAuctionFishImg(a.fishKey)||'./assets/icons/star.png'}" alt=""></div><div><span class="auction43-chip">${TYPE_LABEL[t]||'물고기'}</span> <span class="auction20-price-label ${st.key}">${st.text}</span><div class="auction20-name">${esc44(a.itemName||a.fishName||'아이템')}</div><div class="auction20-price">${formatNumber(a.price)}G</div><div class="small">수량 ${formatNumber(Number(a.qty||a.payload?.qty||1))}개</div><div class="auction20-meta">권장가 ${formatNumber(mk)}G · 판매자 ${esc44(a.sellerName||'낚시꾼')}<br>남은시간 ${Math.max(0,Math.floor((a.expiresAt-now)/3600000))}시간 · 수수료 8% · 우편 수령</div><div class="auction20-actions">${own?`<button onclick="editAuctionItem('${a.id}')">등록 수정</button>`:`<button onclick="confirmBuyAuctionItem('${a.id}')">구매</button>`}</div></div></div>`;}).join('');
+    box.innerHTML=`<div class="multi10-card auction20-wrap">${multi10Title('auction','통합 거래소 2.2')}<div class="small">물고기, 보스 낚싯대/프레임/토큰/상자/장신구 거래가 가능합니다. 판매금과 구매품은 우편함으로 지급됩니다.</div><div class="auction43-topline"><div class="auction43-permit">🧾 장착 해제 판매권 보유: <b>${formatNumber(fishing.auctionPermits||0)}</b>개</div></div><div class="auction20-form-card auction43-select-row"><div class="auction20-field"><label>판매 종류</label><select id="auction44SellType" onchange="window.__auction44SellType=this.value;auction44ChangeSellType()">${typeOpts}</select></div><div class="auction20-field"><label>내 보유 목록</label><select id="auction44ItemSelect" onchange="auction44UpdateMarket()"></select></div><div class="auction20-field"><label>수량</label><input id="auction44Qty" type="number" min="1" value="1" oninput="auction44UpdateMarket()"></div><div class="auction20-field"><label>판매가</label><input id="auction44Price" type="number" placeholder="가격" oninput="auction44UpdateMarket()"></div><button onclick="createAuction44Item()">등록</button></div><div id="auction44MarketBox" class="auction-market-box"><div class="small">판매할 항목을 선택하면 권장 시장가가 표시됩니다.</div></div>${tabs}<div class="auction20-grid">${cards||'<div class="small">등록된 판매 물품이 없습니다.</div>'}</div></div>`;
     auction44ChangeSellType();
   };
   const importBase44=window.importBossMailsFromFirebase||importBossMailsFromFirebase;
