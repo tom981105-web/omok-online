@@ -2121,6 +2121,53 @@ html,body{
       <div id="fishBook"></div>
     </div>
   </section>
+
+  <section id="tabLab" class="tab-page hidden">
+    <div class="box lab14-wrap">
+      <div class="lab14-head">
+        <div>
+          <h2>🧪 낚시 2.0 실험실</h2>
+          <div class="small">관리자 전용 테스트 공간입니다. 기존 낚시는 변경하지 않고 새 미니게임만 실험합니다.</div>
+        </div>
+        <div class="lab14-badge">ADMIN LAB</div>
+      </div>
+
+      <div class="lab14-grid">
+        <button onclick="startFishingLab('easy')">🐟 붕어 테스트</button>
+        <button onclick="startFishingLab('shark')">🦈 상어 테스트</button>
+        <button onclick="startFishingLab('legend')">✨ 전설 테스트</button>
+        <button onclick="startFishingLab('boss')">🐉 보스 테스트</button>
+      </div>
+
+      <div id="lab14Arena" class="lab14-arena">
+        <div class="lab14-water"></div>
+        <div class="lab14-track">
+          <div id="lab14Hook" class="lab14-hook">🪝</div>
+          <div id="lab14Fish" class="lab14-fish">🐟</div>
+        </div>
+
+        <div class="lab14-progress">
+          <div id="lab14ProgressFill" class="lab14-progress-fill"></div>
+        </div>
+
+        <div class="lab14-stats">
+          <div class="lab14-stat">진행률 <b id="lab14ProgressText">0%</b></div>
+          <div class="lab14-stat">남은 시간 <b id="lab14TimeText">0.0초</b></div>
+          <div class="lab14-stat">상태 <b id="lab14MoodText">대기</b></div>
+        </div>
+
+        <div id="lab14Message" class="lab14-message">테스트할 물고기를 선택하세요.</div>
+
+        <div class="lab14-actions">
+          <button onclick="labFishingReel()">🎣 릴 감기 / SPACE</button>
+          <button class="secondary" onclick="stopFishingLab()">중단</button>
+        </div>
+
+        <div id="lab14Result" class="lab14-result"></div>
+      </div>
+    </div>
+  </section>
+
 </section>
 </div>
 
