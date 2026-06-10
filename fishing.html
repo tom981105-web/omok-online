@@ -1827,6 +1827,25 @@ html,body{
 @keyframes labDangerShake{0%,100%{transform:translate(0,0)}25%{transform:translate(-3px,2px)}50%{transform:translate(3px,-2px)}75%{transform:translate(-2px,-1px)}}
 @media(max-width:720px){.lab14-grid{grid-template-columns:1fr 1fr}.lab14-stats{grid-template-columns:1fr}.lab14-actions{grid-template-columns:1fr}.lab14-fish{font-size:36px}.lab14-hook{font-size:28px}.lab14-track{height:76px}}
 
+
+
+/* ===============================
+   14.2 Fishing Lab Tension Prototype
+================================ */
+.lab14-bars{position:relative;z-index:2;display:grid;gap:10px;margin:12px 0}
+.lab14-bar-label{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:900;color:#cbd5e1;margin-bottom:4px}
+.lab14-tension{position:relative;background:rgba(2,6,23,.7);border:1px solid rgba(255,255,255,.18);border-radius:999px;height:24px;overflow:hidden}
+.lab14-tension::before{content:"SAFE";position:absolute;left:35%;width:40%;top:0;bottom:0;display:grid;place-items:center;font-size:10px;font-weight:1000;color:rgba(255,255,255,.55);background:rgba(34,197,94,.18);border-left:1px solid rgba(34,197,94,.35);border-right:1px solid rgba(34,197,94,.35);z-index:1}
+.lab14-tension-fill{position:relative;z-index:2;height:100%;width:50%;background:linear-gradient(90deg,#38bdf8,#22c55e,#facc15,#ef4444);box-shadow:0 0 18px rgba(239,68,68,.35);transition:width .06s linear}
+.lab14-settings{position:relative;z-index:2;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:rgba(2,6,23,.45);border:1px solid rgba(148,163,184,.16);border-radius:14px;padding:10px;margin:10px 0}
+.lab14-setting{font-size:12px;color:#cbd5e1;font-weight:900}
+.lab14-setting input{width:100%;margin-top:6px}
+.lab14-hold-btn.holding{background:#ef4444!important;color:white!important;box-shadow:0 0 24px rgba(239,68,68,.55)!important}
+.lab14-arena.lab14-break{animation:labBreakShake .12s linear 6;border-color:#ef4444}
+.lab14-arena.lab14-safe{box-shadow:inset 0 0 0 2px rgba(34,197,94,.35),0 18px 40px rgba(0,0,0,.26)}
+@keyframes labBreakShake{0%,100%{transform:translate(0,0)}25%{transform:translate(-6px,3px)}50%{transform:translate(5px,-3px)}75%{transform:translate(-3px,-2px)}}
+@media(max-width:720px){.lab14-settings{grid-template-columns:1fr}.lab14-bars{gap:8px}}
+
 </style>
 
 <style id="accessory11Css">
@@ -2146,20 +2165,34 @@ html,body{
           <div id="lab14Fish" class="lab14-fish">🐟</div>
         </div>
 
-        <div class="lab14-progress">
-          <div id="lab14ProgressFill" class="lab14-progress-fill"></div>
+        <div class="lab14-bars">
+          <div>
+            <div class="lab14-bar-label"><span>포획 게이지</span><span id="lab14ProgressText">0%</span></div>
+            <div class="lab14-progress"><div id="lab14ProgressFill" class="lab14-progress-fill"></div></div>
+          </div>
+          <div>
+            <div class="lab14-bar-label"><span>줄 텐션</span><span id="lab14TensionText">50%</span></div>
+            <div class="lab14-tension"><div id="lab14TensionFill" class="lab14-tension-fill"></div></div>
+          </div>
         </div>
 
         <div class="lab14-stats">
-          <div class="lab14-stat">진행률 <b id="lab14ProgressText">0%</b></div>
           <div class="lab14-stat">남은 시간 <b id="lab14TimeText">0.0초</b></div>
           <div class="lab14-stat">상태 <b id="lab14MoodText">대기</b></div>
+          <div class="lab14-stat">조작 <b id="lab14ControlText">대기</b></div>
         </div>
 
-        <div id="lab14Message" class="lab14-message">테스트할 물고기를 선택하세요.</div>
+        <div class="lab14-settings">
+          <label class="lab14-setting">릴 파워 <input id="lab14PowerInput" type="range" min="4" max="12" value="8"></label>
+          <label class="lab14-setting">텐션 증가 <input id="lab14TensionInput" type="range" min="7" max="18" value="12"></label>
+          <label class="lab14-setting">돌진 빈도 <input id="lab14PanicInput" type="range" min="10" max="45" value="24"></label>
+        </div>
+
+        <div id="lab14Message" class="lab14-message">테스트할 물고기를 선택하세요. 꾹 누르면 텐션이 올라가고, 너무 놓으면 물고기가 도망갑니다.</div>
 
         <div class="lab14-actions">
-          <button onclick="labFishingReel()">🎣 릴 감기 / SPACE</button>
+          <button id="lab14HoldBtn" class="lab14-hold-btn"
+            onpointerdown="labFishingHold(true)" onpointerup="labFishingHold(false)" onpointercancel="labFishingHold(false)" onpointerleave="labFishingHold(false)">🎣 누르고/떼면서 릴 조절</button>
           <button class="secondary" onclick="stopFishingLab()">중단</button>
         </div>
 
@@ -4541,82 +4574,127 @@ document.querySelectorAll(".tab-btn").forEach(btn=>{
 
 
 /* ===============================
-   14.0 Fishing Lab Prototype
+   14.2 Fishing Lab Tension Prototype
 ================================ */
 (function(){
   let lab=null;
   const LAB_TYPES={
-    easy:{name:'붕어',icon:'🐟',time:14,power:10,decay:3.2,run:1.6,jitter:0.8,target:100},
-    shark:{name:'상어',icon:'🦈',time:12,power:8,decay:5.0,run:2.7,jitter:1.4,target:100},
-    legend:{name:'전설 물고기',icon:'✨',time:10,power:7,decay:6.0,run:3.4,jitter:2.2,target:100},
-    boss:{name:'보스 물고기',icon:'🐉',time:9,power:6,decay:7.2,run:4.2,jitter:3.0,target:100}
+    easy:{name:'붕어',icon:'🐟',time:18,baseDecay:5,escape:8,run:1.0,jitter:.8,target:100,tensionLeak:10},
+    shark:{name:'상어',icon:'🦈',time:15,baseDecay:7,escape:11,run:1.8,jitter:1.5,target:100,tensionLeak:13},
+    legend:{name:'전설 물고기',icon:'✨',time:13,baseDecay:9,escape:14,run:2.4,jitter:2.2,target:100,tensionLeak:16},
+    boss:{name:'보스 물고기',icon:'🐉',time:12,baseDecay:11,escape:17,run:3.1,jitter:2.8,target:100,tensionLeak:19}
   };
   function labEl(id){return document.getElementById(id)}
+  function labNum(id,fallback){const el=labEl(id);const n=Number(el?.value);return Number.isFinite(n)?n:fallback}
   function setLabMessage(msg){const el=labEl('lab14Message');if(el)el.textContent=msg}
   function setLabResult(msg,color){const el=labEl('lab14Result');if(el){el.textContent=msg||'';el.style.color=color||'#facc15'}}
+  function isSafeTension(){return lab&&lab.tension>=35&&lab.tension<=75}
   function renderLab(){
-    const fill=labEl('lab14ProgressFill'),pt=labEl('lab14ProgressText'),tt=labEl('lab14TimeText'),mt=labEl('lab14MoodText'),fish=labEl('lab14Fish');
-    if(!lab){if(fill)fill.style.width='0%';if(pt)pt.textContent='0%';if(tt)tt.textContent='0.0초';if(mt)mt.textContent='대기';return;}
+    const fill=labEl('lab14ProgressFill'),pt=labEl('lab14ProgressText'),tt=labEl('lab14TimeText'),mt=labEl('lab14MoodText'),ct=labEl('lab14ControlText'),fish=labEl('lab14Fish'),tf=labEl('lab14TensionFill'),tx=labEl('lab14TensionText'),btn=labEl('lab14HoldBtn'),arena=labEl('lab14Arena');
+    if(!lab){
+      if(fill)fill.style.width='0%';if(pt)pt.textContent='0%';if(tt)tt.textContent='0.0초';if(mt)mt.textContent='대기';if(ct)ct.textContent='대기';if(tf)tf.style.width='50%';if(tx)tx.textContent='50%';if(btn)btn.classList.remove('holding');if(arena)arena.classList.remove('lab14-safe','lab14-danger','lab14-break');return;
+    }
     const pct=Math.max(0,Math.min(100,lab.progress));
+    const tension=Math.max(0,Math.min(100,lab.tension));
     if(fill)fill.style.width=pct+'%';
     if(pt)pt.textContent=Math.floor(pct)+'%';
+    if(tf)tf.style.width=tension+'%';
+    if(tx)tx.textContent=Math.floor(tension)+'%';
     if(tt)tt.textContent=Math.max(0,lab.left).toFixed(1)+'초';
     if(mt)mt.textContent=lab.mood;
-    if(fish){fish.textContent=lab.cfg.icon;fish.style.left=Math.max(18,Math.min(86,lab.fishPos))+'%';fish.style.transform=`translate(-50%,-50%) scale(${lab.mood==='돌진'?1.18:1})`;}
+    if(ct)ct.textContent=lab.reeling?'감는 중':'풀어줌';
+    if(btn)btn.classList.toggle('holding',!!lab.reeling);
+    if(arena){arena.classList.toggle('lab14-safe',isSafeTension());}
+    if(fish){fish.textContent=lab.cfg.icon;fish.style.left=Math.max(18,Math.min(86,lab.fishPos))+'%';fish.style.transform=`translate(-50%,-50%) scale(${lab.mood==='돌진'?1.24:1}) rotate(${lab.mood==='방향전환'?12:0}deg)`;}
   }
-  function newMood(){
+  function newMood(force){
     if(!lab)return;
-    const pool=['도망','돌진','급정지','방향전환'];
-    lab.mood=pool[Math.floor(Math.random()*pool.length)];
-    if(lab.mood==='급정지')lab.decayMul=.35;
-    else if(lab.mood==='돌진')lab.decayMul=1.55;
-    else if(lab.mood==='방향전환'){lab.decayMul=1.05;lab.dir*=-1;}
+    const panicRate=labNum('lab14PanicInput',24)/100;
+    const roll=Math.random();
+    let mood=force;
+    if(!mood){
+      if(roll<panicRate)mood='돌진';
+      else mood=['도망','급정지','방향전환','버티기'][Math.floor(Math.random()*4)];
+    }
+    lab.mood=mood;
+    lab.moodTime=1.05+Math.random()*.85;
+    if(mood==='급정지')lab.decayMul=.45;
+    else if(mood==='돌진')lab.decayMul=1.35;
+    else if(mood==='방향전환'){lab.decayMul=1.05;lab.dir*=-1;lab.tension+=Math.random()>.5?16:-12;}
+    else if(mood==='버티기')lab.decayMul=.8;
     else lab.decayMul=1;
     const arena=labEl('lab14Arena');
-    if(arena&&lab.mood==='돌진'){arena.classList.remove('lab14-danger');void arena.offsetWidth;arena.classList.add('lab14-danger');}
-    setLabMessage(`${lab.cfg.name} 상태: ${lab.mood}! 릴 감기로 끌어오세요.`);
+    if(arena&&mood==='돌진'){arena.classList.remove('lab14-danger');void arena.offsetWidth;arena.classList.add('lab14-danger');}
+    const tips={
+      '돌진':'⚠ 돌진! 계속 감으면 텐션이 폭발합니다. 잠깐 떼세요.',
+      '도망':'도망 중! 텐션이 너무 낮아지지 않게 짧게 감으세요.',
+      '급정지':'급정지! 지금은 감아도 비교적 안전합니다.',
+      '방향전환':'방향전환! 텐션이 흔들립니다.',
+      '버티기':'버티기! 안전 구간을 유지하면 포획이 빨라집니다.'
+    };
+    setLabMessage(`${lab.cfg.name} 상태: ${mood} · ${tips[mood]||''}`);
   }
   function loop(ts){
     if(!lab||!lab.running)return;
     if(!lab.last)lab.last=ts;
     const dt=Math.min(.05,(ts-lab.last)/1000);lab.last=ts;
     lab.left-=dt;
-    lab.moodTimer-=dt;
-    if(lab.moodTimer<=0){lab.moodTimer=.55+Math.random()*.7;newMood();}
-    lab.progress-=lab.cfg.decay*lab.decayMul*dt;
-    lab.fishPos+=lab.dir*(lab.cfg.run+lab.cfg.jitter*Math.random())*dt*8;
-    if(lab.fishPos>86){lab.fishPos=86;lab.dir=-1}
-    if(lab.fishPos<18){lab.fishPos=18;lab.dir=1}
+    lab.moodTimer-=dt; lab.moodTime-=dt;
+    if(lab.moodTime<=0)lab.decayMul=1;
+    if(lab.moodTimer<=0){lab.moodTimer=.75+Math.random()*1.05;newMood();}
+
+    const power=labNum('lab14PowerInput',8);
+    const tensionGain=labNum('lab14TensionInput',12);
+    const safe=isSafeTension();
+
+    if(lab.reeling){
+      const moodPenalty=lab.mood==='돌진'?.35:lab.mood==='버티기'?.8:1;
+      lab.progress += (safe ? power*2.15 : power*.82) * moodPenalty * dt;
+      lab.tension += (tensionGain*(lab.mood==='돌진'?2.15:1)) * dt;
+      lab.fishPos -= (4.5 + power*.25) * dt;
+    }else{
+      lab.progress -= lab.cfg.baseDecay * lab.decayMul * dt;
+      lab.tension -= lab.cfg.tensionLeak * (lab.mood==='도망'?1.45:1) * dt;
+      lab.fishPos += lab.cfg.escape * dt;
+    }
+
+    // 안전 구간 보너스: 누르지 않아도 아주 조금 안정화, 감으면 포획 가속
+    if(safe){ lab.progress += (lab.reeling?3.2:0.7)*dt; }
+
+    lab.fishPos += lab.dir*(lab.cfg.run+lab.cfg.jitter*Math.random())*dt*4;
+    if(lab.fishPos>86){lab.fishPos=86;lab.dir=-1;lab.tension-=2}
+    if(lab.fishPos<18){lab.fishPos=18;lab.dir=1;lab.tension+=3}
+
+    if(lab.tension>=100){finishLab(false,'줄이 끊어졌습니다!');return;}
+    if(lab.tension<=0){finishLab(false,'줄이 풀려 물고기가 도망갔습니다!');return;}
     if(lab.progress>=lab.cfg.target){finishLab(true);return;}
-    if(lab.progress<=0||lab.left<=0){finishLab(false);return;}
+    if(lab.progress<=0||lab.left<=0){finishLab(false,lab.left<=0?'시간 초과!':'포획 게이지가 사라졌습니다!');return;}
     renderLab();lab.raf=requestAnimationFrame(loop);
   }
-  function finishLab(success){
+  function finishLab(success,reason){
     if(!lab)return;
+    const arena=labEl('lab14Arena');
+    if(!success&&arena){arena.classList.remove('lab14-break');void arena.offsetWidth;arena.classList.add('lab14-break')}
     lab.running=false;if(lab.raf)cancelAnimationFrame(lab.raf);
     renderLab();
-    if(success){setLabResult(`SUCCESS! ${lab.cfg.name} 포획`, '#86efac');setLabMessage('낚시 2.0 프로토타입 성공. 이 방식이 괜찮으면 정식 낚시에 적용할 수 있습니다.');}
-    else{setLabResult(`FAILED! ${lab.cfg.name} 도주`, '#f87171');setLabMessage('실패했습니다. 난이도/속도/버튼 파워를 조정해볼 수 있습니다.');}
-    lab=null;
+    if(success){setLabResult(`SUCCESS! ${lab.cfg.name} 포획`, '#86efac');setLabMessage('성공! 꾹 누르는 게임이 아니라 텐션을 안전 구간에 유지하는 방식입니다.');}
+    else{setLabResult(`FAILED! ${lab.cfg.name} 도주`, '#f87171');setLabMessage(reason||'실패했습니다. 누름/뗌 타이밍을 조절해야 합니다.');}
+    lab=null;renderLab();
   }
   window.startFishingLab=function(type){
     if(!fishing?.adminMode){shop20Toast?.('관리자 전용','상점 3.0을 7번 눌러 관리자 모드를 켜주세요.');return;}
     const cfg=LAB_TYPES[type]||LAB_TYPES.easy;
-    lab={cfg,running:true,progress:35,left:cfg.time,fishPos:72,dir:Math.random()>.5?1:-1,mood:'시작',moodTimer:.2,decayMul:1,last:0,raf:null};
-    setLabResult('');setLabMessage(`${cfg.name} 테스트 시작! 릴 감기 버튼이나 SPACE를 누르세요.`);renderLab();lab.raf=requestAnimationFrame(loop);
+    lab={cfg,running:true,progress:28,tension:50,left:cfg.time,fishPos:72,dir:Math.random()>.5?1:-1,mood:'시작',moodTimer:.25,moodTime:0,decayMul:1,last:0,raf:null,reeling:false};
+    setLabResult('');setLabMessage(`${cfg.name} 테스트 시작! 누르고/떼면서 텐션을 SAFE 구간에 유지하세요.`);renderLab();newMood('도망');lab.raf=requestAnimationFrame(loop);
   };
-  window.labFishingReel=function(){
-    if(!lab||!lab.running)return;
-    lab.progress+=lab.cfg.power;
-    lab.fishPos-=4;
-    setLabMessage(`릴 감기! +${lab.cfg.power}`);
-    renderLab();
-  };
+  window.labFishingHold=function(on){if(!lab||!lab.running)return;lab.reeling=!!on;renderLab();};
+  window.labFishingReel=function(){window.labFishingHold(true);setTimeout(()=>window.labFishingHold(false),160);};
   window.stopFishingLab=function(){
     if(lab?.raf)cancelAnimationFrame(lab.raf);
     lab=null;setLabMessage('테스트가 중단되었습니다.');setLabResult('');renderLab();
   };
-  document.addEventListener('keydown',e=>{if(e.code==='Space'&&lab?.running){window.labFishingReel();e.preventDefault();}});
+  document.addEventListener('keydown',e=>{if(e.code==='Space'&&lab?.running){window.labFishingHold(true);e.preventDefault();}});
+  document.addEventListener('keyup',e=>{if(e.code==='Space'&&lab?.running){window.labFishingHold(false);e.preventDefault();}});
 })();
 
 
