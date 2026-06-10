@@ -1846,6 +1846,15 @@ html,body{
 @keyframes labBreakShake{0%,100%{transform:translate(0,0)}25%{transform:translate(-6px,3px)}50%{transform:translate(5px,-3px)}75%{transform:translate(-3px,-2px)}}
 @media(max-width:720px){.lab14-settings{grid-template-columns:1fr}.lab14-bars{gap:8px}}
 
+
+/* 14.3 Mobile Touch Fix */
+html, body, button, #holdBtn, #fishGame, #miniGameBox, .timing-action-btn{
+  -webkit-user-select:none !important;
+  user-select:none !important;
+  -webkit-touch-callout:none !important;
+  -webkit-tap-highlight-color:transparent !important;
+}
+
 </style>
 
 <style id="accessory11Css">
